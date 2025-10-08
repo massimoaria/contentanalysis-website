@@ -1,0 +1,703 @@
+---
+title: "Complete Tutorial"
+subtitle: "End-to-End Workflow for Scientific Content Analysis"
+---
+
+## Introduction
+
+This tutorial provides a complete workflow for analyzing scientific papers using the contentanalysis package. We'll work through a real example, from PDF import to final visualizations and reporting.
+
+## Setup
+
+### Install Required Packages
+
+```{r setup, eval=FALSE}
+# Install contentanalysis
+devtools::install_github("massimoaria/contentanalysis")
+
+# Install supporting packages
+install.packages(c("dplyr", "ggplot2", "tidyr", "knitr"))
+
+# Load libraries
+library(contentanalysis)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+```
+
+## Step 1: Obtain Sample Paper
+
+We'll use an open-access paper on Machine Learning:
+
+```{r download, eval=FALSE}
+# Download example paper
+paper_url <- "https://raw.githubusercontent.com/massimoaria/contentanalysis/master/inst/examples/example_paper.pdf"
+download.file(paper_url, destfile = "example_paper.pdf", mode = "wb")
+
+# Verify download
+file.exists("example_paper.pdf")
+```
+
+::: {.callout-note}
+## Using Your Own Papers
+
+Replace the URL with your own PDF file path. Ensure the PDF is text-based (not a scanned image).
+:::
+
+## Step 2: Import and Inspect PDF
+
+### Import with Section Detection
+
+```{r import, eval=FALSE}
+# Import PDF with automatic section detection
+doc <- pdf2txt_auto(
+  "example_paper.pdf",
+  n_columns = 2,          # Two-column layout
+  sections = TRUE         # Detect sections
+)
+
+# Check detected sections
+cat("Detected sections:\n")
+print(names(doc))
+
+# Preview Abstract
+cat("\n=== Abstract Preview ===\n")
+cat(substr(doc$Abstract, 1, 500), "...\n")
+```
+
+### Verify Section Quality
+
+```{r verify, eval=FALSE}
+# Check section word counts
+section_lengths <- sapply(doc[names(doc) != "Full_text"], function(x) {
+  length(strsplit(x, "\\s+")[[1]])
+})
+
+section_df <- data.frame(
+  section = names(section_lengths),
+  words = section_lengths
+) %>%
+  arrange(desc(words))
+
+print(section_df)
+
+# Visualize section lengths
+ggplot(section_df, aes(x = reorder(section, words), y = words, fill = section)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  labs(title = "Word Count by Section",
+       x = "Section", y = "Number of Words") +
+  theme_minimal()
+```
+
+## Step 3: Comprehensive Content Analysis
+
+### Main Analysis
+
+```{r analysis, eval=FALSE}
+# Perform comprehensive analysis
+analysis <- analyze_scientific_content(
+  text = doc,
+  doi = "10.1016/j.mlwa.2021.100094",  # Paper's DOI
+  mailto = "your@email.com",            # Your email for CrossRef
+  window_size = 10,                     # Context window
+  remove_stopwords = TRUE,              # Remove common words
+  ngram_range = c(1, 3),               # Unigrams to trigrams
+  use_sections_for_citations = TRUE
+)
+
+# View summary
+print(analysis$summary)
+```
+
+### Interpret Summary Statistics
+
+```{r interpret, eval=FALSE}
+# Extract key metrics
+total_words <- analysis$summary$total_words
+citations <- analysis$summary$citations_extracted
+density <- analysis$summary$citation_density
+diversity <- analysis$summary$lexical_diversity
+
+cat("Document Statistics:\n")
+cat("===================\n")
+cat(sprintf("Total words: %d\n", total_words))
+cat(sprintf("Citations: %d\n", citations))
+cat(sprintf("Citation density: %.2f per 1000 words\n", density))
+cat(sprintf("Lexical diversity: %.3f\n", diversity))
+
+# Assess citation intensity
+if (density < 5) {
+  cat("\n→ Low citation density (typical for theoretical papers)\n")
+} else if (density < 15) {
+  cat("\n→ Moderate citation density (standard empirical paper)\n")
+} else {
+  cat("\n→ High citation density (review paper or methods paper)\n")
+}
+```
+
+## Step 4: Citation Analysis
+
+### Extract and Explore Citations
+
+```{r citations, eval=FALSE}
+# View first citations
+head(analysis$citations, 10)
+
+# Citation types
+citation_summary <- analysis$citations %>%
+  group_by(citation_type) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  mutate(percentage = round(count / sum(count) * 100, 1))
+
+print(citation_summary)
+
+# Visualize
+ggplot(citation_summary, aes(x = citation_type, y = count, fill = citation_type)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = paste0(count, " (", percentage, "%)")), 
+            vjust = -0.5) +
+  labs(title = "Citation Types",
+       x = "Type", y = "Count") +
+  theme_minimal()
+```
+
+### Citations by Section
+
+```{r sections_cit, eval=FALSE}
+# Citation distribution across sections
+section_citations <- analysis$citations %>%
+  count(section, sort = TRUE)
+
+print(section_citations)
+
+# Visualize
+ggplot(section_citations, aes(x = reorder(section, n), y = n, fill = section)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  labs(title = "Citations by Section",
+       x = "Section", y = "Number of Citations") +
+  theme_minimal()
+```
+
+### Most Cited References
+
+```{r most_cited, eval=FALSE}
+# Top 10 most cited references
+top_cited <- analysis$citation_references_mapping %>%
+  count(ref_full_text, sort = TRUE) %>%
+  head(10) %>%
+  mutate(ref_short = substr(ref_full_text, 1, 60))
+
+print(top_cited)
+
+# Visualize
+ggplot(top_cited, aes(x = reorder(ref_short, n), y = n)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Top 10 Most Cited References",
+       x = NULL, y = "Citation Count") +
+  theme_minimal()
+```
+
+### Citation Contexts
+
+```{r contexts, eval=FALSE}
+# Examine citation contexts
+contexts_sample <- analysis$citation_contexts %>%
+  select(citation_text_clean, section, words_before, words_after) %>%
+  head(5)
+
+print(contexts_sample)
+
+# Find method citations
+method_citations <- analysis$citation_contexts %>%
+  filter(grepl("method|approach|algorithm|technique", 
+               paste(words_before, words_after), 
+               ignore.case = TRUE)) %>%
+  select(citation_text_clean, section, words_before, words_after)
+
+cat("\nMethod-related citations found:", nrow(method_citations), "\n")
+head(method_citations)
+```
+
+## Step 5: Network Visualization
+
+### Create Citation Network
+
+```{r network, eval=FALSE}
+# Create interactive network
+network <- create_citation_network(
+  citation_analysis_results = analysis,
+  max_distance = 800,
+  min_connections = 2,
+  show_labels = TRUE
+)
+
+# Display network
+network
+```
+
+### Analyze Network Statistics
+
+```{r network_stats, eval=FALSE}
+# Get network statistics
+stats <- attr(network, "stats")
+
+cat("Network Statistics:\n")
+cat("===================\n")
+cat("Nodes:", stats$n_nodes, "\n")
+cat("Edges:", stats$n_edges, "\n")
+cat("Avg distance:", round(stats$avg_distance), "characters\n")
+cat("Max distance:", stats$max_distance, "characters\n")
+
+# Network density
+density <- stats$n_edges / (stats$n_nodes * (stats$n_nodes - 1) / 2)
+cat("Network density:", round(density, 3), "\n")
+
+# Section distribution
+print(stats$section_distribution)
+
+# Hub citations
+hub_threshold <- quantile(stats$section_distribution$n, 0.75)
+hubs <- stats$section_distribution %>%
+  filter(n >= hub_threshold) %>%
+  arrange(desc(n))
+
+cat("\nHub citations (top 25%):\n")
+print(hubs)
+```
+
+### Export Network
+
+```{r export_network, eval=FALSE}
+library(htmlwidgets)
+
+# Save as standalone HTML
+saveWidget(network, 
+           "citation_network.html",
+           selfcontained = TRUE,
+           title = "Citation Network")
+
+cat("Network saved to: citation_network.html\n")
+```
+
+## Step 6: Text Analysis
+
+### Word Frequency Analysis
+
+```{r word_freq, eval=FALSE}
+# Top 30 words
+top_words <- head(analysis$word_frequencies, 30)
+print(top_words)
+
+# Visualize top 20
+top_20 <- head(analysis$word_frequencies, 20)
+
+ggplot(top_20, aes(x = reorder(word, frequency), y = frequency)) +
+  geom_col(fill = "darkgreen") +
+  coord_flip() +
+  labs(title = "Top 20 Most Frequent Words",
+       x = "Word", y = "Frequency") +
+  theme_minimal()
+```
+
+### N-gram Analysis
+
+```{r ngrams, eval=FALSE}
+# Most common bigrams
+top_bigrams <- head(analysis$ngrams$`2gram`, 15)
+print(top_bigrams)
+
+# Most common trigrams
+top_trigrams <- head(analysis$ngrams$`3gram`, 10)
+print(top_trigrams)
+
+# Visualize bigrams
+ggplot(top_bigrams, aes(x = reorder(ngram, frequency), y = frequency)) +
+  geom_col(fill = "coral") +
+  coord_flip() +
+  labs(title = "Top 15 Bigrams",
+       x = "Bigram", y = "Frequency") +
+  theme_minimal()
+```
+
+### Word Distribution Tracking
+
+```{r distribution, eval=FALSE}
+# Define key terms to track
+key_terms <- c("machine learning", "random forest", "accuracy", 
+               "classification", "model")
+
+# Calculate distribution
+dist <- calculate_word_distribution(
+  text = doc,
+  selected_words = key_terms,
+  use_sections = TRUE,
+  normalize = TRUE
+)
+
+# View results
+print(dist)
+
+# Interactive visualization
+plot_word_distribution(
+  dist,
+  plot_type = "line",
+  show_points = TRUE,
+  smooth = TRUE
+)
+```
+
+## Step 7: Readability Assessment
+
+### Overall Readability
+
+```{r readability, eval=FALSE}
+# Calculate readability for full text
+readability <- calculate_readability_indices(
+  doc$Full_text,
+  detailed = TRUE
+)
+
+print(readability)
+
+# Interpret
+cat("\nInterpretation:\n")
+cat("Flesch Reading Ease:", readability$flesch_reading_ease, "\n")
+if (readability$flesch_reading_ease < 30) {
+  cat("→ Very difficult (graduate level)\n")
+} else if (readability$flesch_reading_ease < 50) {
+  cat("→ Difficult (college level)\n")
+} else {
+  cat("→ Fairly difficult (high school to college)\n")
+}
+
+cat("\nGrade Level:", round(readability$flesch_kincaid_grade, 1), "\n")
+```
+
+### Compare Sections
+
+```{r readability_sections, eval=FALSE}
+# Calculate for each section
+sections <- c("Abstract", "Introduction", "Methods", "Results", "Discussion")
+section_readability <- data.frame()
+
+for (section in sections) {
+  if (section %in% names(doc)) {
+    metrics <- calculate_readability_indices(doc[[section]], detailed = FALSE)
+    metrics$section <- section
+    section_readability <- rbind(section_readability, metrics)
+  }
+}
+
+print(section_readability)
+
+# Visualize
+ggplot(section_readability, 
+       aes(x = reorder(section, flesch_reading_ease), 
+           y = flesch_reading_ease, fill = section)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  labs(title = "Readability by Section",
+       subtitle = "Higher scores = easier to read",
+       x = "Section", y = "Flesch Reading Ease") +
+  theme_minimal()
+```
+
+## Step 8: Comprehensive Reporting
+
+### Create Summary Report
+
+```{r report, eval=FALSE}
+# Compile comprehensive report
+report <- list(
+  document_info = list(
+    doi = "10.1016/j.mlwa.2021.100094",
+    total_words = analysis$summary$total_words,
+    sections = names(doc)[names(doc) != "Full_text"]
+  ),
+  
+  citation_metrics = list(
+    total_citations = analysis$summary$citations_extracted,
+    narrative = analysis$summary$narrative_citations,
+    parenthetical = analysis$summary$parenthetical_citations,
+    matched = analysis$summary$references_matched,
+    density = analysis$summary$citation_density
+  ),
+  
+  text_metrics = list(
+    lexical_diversity = analysis$summary$lexical_diversity,
+    top_10_words = head(analysis$word_frequencies$word, 10),
+    top_10_bigrams = head(analysis$ngrams$`2gram`$ngram, 10)
+  ),
+  
+  readability = list(
+    flesch_reading_ease = readability$flesch_reading_ease,
+    grade_level = readability$flesch_kincaid_grade,
+    gunning_fog = readability$gunning_fog
+  ),
+  
+  network_stats = list(
+    nodes = stats$n_nodes,
+    edges = stats$n_edges,
+    density = stats$n_edges / (stats$n_nodes * (stats$n_nodes - 1) / 2)
+  )
+)
+
+# Print report
+cat("COMPREHENSIVE ANALYSIS REPORT\n")
+cat("=============================\n\n")
+
+cat("DOCUMENT INFORMATION\n")
+cat("DOI:", report$document_info$doi, "\n")
+cat("Total words:", report$document_info$total_words, "\n")
+cat("Sections:", paste(report$document_info$sections, collapse = ", "), "\n\n")
+
+cat("CITATION METRICS\n")
+cat("Total citations:", report$citation_metrics$total_citations, "\n")
+cat("Citation density:", round(report$citation_metrics$density, 2), "per 1000 words\n")
+cat("Match rate:", round(report$citation_metrics$matched / report$citation_metrics$total_citations * 100, 1), "%\n\n")
+
+cat("TEXT METRICS\n")
+cat("Lexical diversity:", round(report$text_metrics$lexical_diversity, 3), "\n")
+cat("Top words:", paste(head(report$text_metrics$top_10_words, 5), collapse = ", "), "\n\n")
+
+cat("READABILITY\n")
+cat("Reading ease:", round(report$readability$flesch_reading_ease, 1), "\n")
+cat("Grade level:", round(report$readability$grade_level, 1), "\n\n")
+
+cat("NETWORK STATISTICS\n")
+cat("Citation nodes:", report$network_stats$nodes, "\n")
+cat("Connections:", report$network_stats$edges, "\n")
+cat("Density:", round(report$network_stats$density, 3), "\n")
+```
+
+### Export All Results
+
+```{r export_all, eval=FALSE}
+# Create output directory
+dir.create("analysis_output", showWarnings = FALSE)
+
+# 1. Citations
+write.csv(analysis$citations, 
+          "analysis_output/citations.csv", 
+          row.names = FALSE)
+
+# 2. Matched references
+write.csv(analysis$citation_references_mapping,
+          "analysis_output/matched_references.csv",
+          row.names = FALSE)
+
+# 3. Word frequencies
+write.csv(analysis$word_frequencies,
+          "analysis_output/word_frequencies.csv",
+          row.names = FALSE)
+
+# 4. Bigrams
+write.csv(analysis$ngrams$`2gram`,
+          "analysis_output/bigrams.csv",
+          row.names = FALSE)
+
+# 5. Trigrams
+write.csv(analysis$ngrams$`3gram`,
+          "analysis_output/trigrams.csv",
+          row.names = FALSE)
+
+# 6. Network statistics
+write.csv(stats$section_distribution,
+          "analysis_output/network_stats.csv",
+          row.names = FALSE)
+
+# 7. Readability by section
+write.csv(section_readability,
+          "analysis_output/readability.csv",
+          row.names = FALSE)
+
+# 8. Summary report as JSON
+library(jsonlite)
+write_json(report, 
+           "analysis_output/summary_report.json",
+           pretty = TRUE, 
+           auto_unbox = TRUE)
+
+cat("All results exported to: analysis_output/\n")
+```
+
+## Step 9: Advanced Visualizations
+
+### Create Publication-Ready Figures
+
+```{r pub_figs, eval=FALSE}
+library(patchwork)
+
+# Figure 1: Overview
+p1 <- ggplot(section_df, aes(x = reorder(section, words), y = words)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "A) Document Structure", x = NULL, y = "Words") +
+  theme_minimal()
+
+p2 <- ggplot(citation_summary, aes(x = citation_type, y = count, fill = citation_type)) +
+  geom_col(show.legend = FALSE) +
+  labs(title = "B) Citation Types", x = NULL, y = "Count") +
+  theme_minimal()
+
+# Combine
+combined <- p1 + p2
+print(combined)
+
+ggsave("analysis_output/figure1_overview.png", 
+       combined, width = 10, height = 5, dpi = 300)
+
+# Figure 2: Text analysis
+p3 <- ggplot(head(top_words, 15), 
+             aes(x = reorder(word, frequency), y = frequency)) +
+  geom_col(fill = "darkgreen") +
+  coord_flip() +
+  labs(title = "A) Top Words", x = NULL, y = "Frequency") +
+  theme_minimal()
+
+p4 <- ggplot(section_readability, 
+             aes(x = reorder(section, flesch_reading_ease), 
+                 y = flesch_reading_ease)) +
+  geom_col(fill = "coral") +
+  coord_flip() +
+  labs(title = "B) Readability", x = NULL, y = "FRE Score") +
+  theme_minimal()
+
+combined2 <- p3 + p4
+print(combined2)
+
+ggsave("analysis_output/figure2_text_analysis.png",
+       combined2, width = 10, height = 5, dpi = 300)
+```
+
+## Step 10: Batch Processing
+
+### Analyze Multiple Papers
+
+```{r batch, eval=FALSE}
+# Define papers to analyze
+papers_df <- data.frame(
+  file = c("paper1.pdf", "paper2.pdf", "paper3.pdf"),
+  doi = c("10.xxxx/1", "10.xxxx/2", "10.xxxx/3"),
+  name = c("Paper A", "Paper B", "Paper C"),
+  stringsAsFactors = FALSE
+)
+
+# Process all papers
+all_results <- list()
+all_networks <- list()
+
+for (i in 1:nrow(papers_df)) {
+  cat("\nProcessing:", papers_df$name[i], "\n")
+  
+  # Import
+  doc <- pdf2txt_auto(papers_df$file[i], n_columns = 2)
+  
+  # Analyze
+  all_results[[i]] <- analyze_scientific_content(
+    text = doc,
+    doi = papers_df$doi[i],
+    mailto = "your@email.com"
+  )
+  
+  # Network
+  all_networks[[i]] <- create_citation_network(
+    all_results[[i]],
+    max_distance = 800,
+    min_connections = 2
+  )
+  
+  Sys.sleep(1)  # Be polite to CrossRef API
+}
+
+names(all_results) <- papers_df$name
+names(all_networks) <- papers_df$name
+
+# Compare papers
+comparison <- data.frame(
+  paper = papers_df$name,
+  words = sapply(all_results, function(r) r$summary$total_words),
+  citations = sapply(all_results, function(r) r$summary$citations_extracted),
+  density = sapply(all_results, function(r) r$summary$citation_density),
+  diversity = sapply(all_results, function(r) r$summary$lexical_diversity),
+  network_nodes = sapply(all_networks, function(n) attr(n, "stats")$n_nodes),
+  network_edges = sapply(all_networks, function(n) attr(n, "stats")$n_edges)
+)
+
+print(comparison)
+
+# Visualize comparison
+comparison_long <- comparison %>%
+  select(paper, citations, density, diversity) %>%
+  pivot_longer(cols = -paper, names_to = "metric", values_to = "value")
+
+ggplot(comparison_long, aes(x = paper, y = value, fill = paper)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~metric, scales = "free_y") +
+  labs(title = "Comparison Across Papers",
+       x = NULL, y = "Value") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Conclusion
+
+This tutorial covered the complete workflow:
+
+1. ✓ PDF import with section detection
+2. ✓ Comprehensive content analysis
+3. ✓ Citation extraction and matching
+4. ✓ Interactive network visualization
+5. ✓ Text analysis and n-grams
+6. ✓ Readability assessment
+7. ✓ Comprehensive reporting
+8. ✓ Data export
+9. ✓ Publication-ready figures
+10. ✓ Batch processing
+
+## Next Steps
+
+- Explore [Reference Documentation](reference/) for detailed function information
+- Try the analysis on your own papers
+- Customize visualizations for your needs
+- Integrate into your research workflow
+
+## Resources
+
+- [GitHub Repository](https://github.com/massimoaria/contentanalysis)
+- [Issue Tracker](https://github.com/massimoaria/contentanalysis/issues)
+- [Get Started Guide](get-started.qmd)
+
+## Troubleshooting
+
+### Common Issues
+
+**PDF Import Problems**
+```r
+# Try different column settings
+doc1 <- pdf2txt_auto("paper.pdf", n_columns = 1)
+doc2 <- pdf2txt_auto("paper.pdf", n_columns = 2)
+# Compare which works better
+```
+
+**Low Citation Matching**
+```r
+# Ensure DOI and email are provided
+# Check References section was extracted
+names(doc)  # Should include "References"
+```
+
+**Network Not Displaying**
+```r
+# Adjust parameters
+network <- create_citation_network(
+  analysis,
+  max_distance = 1000,  # Increase
+  min_connections = 1    # Decrease
+)
+```
+
+For more help, see the [Get Started](get-started.qmd) troubleshooting section.

@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>project-overview – contentanalysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-5b5e0f69128e32151b46c337b8151f47.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-dc4c7ae4f528ce8f48831ac90917952e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    <img src="./logo.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">contentanalysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./get-started.html"> 
+<span class="menu-text">Get Started</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-reference" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Reference</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-reference">    
+        <li>
+    <a class="dropdown-item" href="./reference/pdf-import.html">
+ <span class="dropdown-text">PDF Import</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./reference/content-analysis.html">
+ <span class="dropdown-text">Content Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./reference/citation-analysis.html">
+ <span class="dropdown-text">Citation Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./reference/network-viz.html">
+ <span class="dropdown-text">Network Visualization</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./reference/text-analysis.html">
+ <span class="dropdown-text">Text Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./reference/readability.html">
+ <span class="dropdown-text">Readability Metrics</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./tutorial.html"> 
+<span class="menu-text">Tutorial</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/yourusername/contentanalysis"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#contentanalysis-website---project-overview" id="toc-contentanalysis-website---project-overview" class="nav-link active" data-scroll-target="#contentanalysis-website---project-overview">contentanalysis Website - Project Overview</a>
+  <ul class="collapse">
+  <li><a href="#complete-file-list" id="toc-complete-file-list" class="nav-link" data-scroll-target="#complete-file-list">📦 Complete File List</a>
+  <ul class="collapse">
+  <li><a href="#configuration-files" id="toc-configuration-files" class="nav-link" data-scroll-target="#configuration-files">Configuration Files</a></li>
+  <li><a href="#content-pages" id="toc-content-pages" class="nav-link" data-scroll-target="#content-pages">Content Pages</a></li>
+  <li><a href="#reference-documentation-reference" id="toc-reference-documentation-reference" class="nav-link" data-scroll-target="#reference-documentation-reference">Reference Documentation (<code>reference/</code>)</a></li>
+  <li><a href="#styling" id="toc-styling" class="nav-link" data-scroll-target="#styling">Styling</a></li>
+  <li><a href="#deployment" id="toc-deployment" class="nav-link" data-scroll-target="#deployment">Deployment</a></li>
+  </ul></li>
+  <li><a href="#website-structure" id="toc-website-structure" class="nav-link" data-scroll-target="#website-structure">🎯 Website Structure</a></li>
+  <li><a href="#design-features" id="toc-design-features" class="nav-link" data-scroll-target="#design-features">🎨 Design Features</a>
+  <ul class="collapse">
+  <li><a href="#theme-colors" id="toc-theme-colors" class="nav-link" data-scroll-target="#theme-colors">Theme &amp; Colors</a></li>
+  <li><a href="#typography" id="toc-typography" class="nav-link" data-scroll-target="#typography">Typography</a></li>
+  <li><a href="#visual-elements" id="toc-visual-elements" class="nav-link" data-scroll-target="#visual-elements">Visual Elements</a></li>
+  </ul></li>
+  <li><a href="#content-highlights" id="toc-content-highlights" class="nav-link" data-scroll-target="#content-highlights">📊 Content Highlights</a>
+  <ul class="collapse">
+  <li><a href="#homepage-features" id="toc-homepage-features" class="nav-link" data-scroll-target="#homepage-features">Homepage Features</a></li>
+  <li><a href="#get-started-guide" id="toc-get-started-guide" class="nav-link" data-scroll-target="#get-started-guide">Get Started Guide</a></li>
+  <li><a href="#reference-documentation" id="toc-reference-documentation" class="nav-link" data-scroll-target="#reference-documentation">Reference Documentation</a></li>
+  <li><a href="#complete-tutorial" id="toc-complete-tutorial" class="nav-link" data-scroll-target="#complete-tutorial">Complete Tutorial</a></li>
+  </ul></li>
+  <li><a href="#key-features" id="toc-key-features" class="nav-link" data-scroll-target="#key-features">🚀 Key Features</a>
+  <ul class="collapse">
+  <li><a href="#for-users" id="toc-for-users" class="nav-link" data-scroll-target="#for-users">For Users</a></li>
+  <li><a href="#for-developers" id="toc-for-developers" class="nav-link" data-scroll-target="#for-developers">For Developers</a></li>
+  </ul></li>
+  <li><a href="#content-strategy" id="toc-content-strategy" class="nav-link" data-scroll-target="#content-strategy">📝 Content Strategy</a>
+  <ul class="collapse">
+  <li><a href="#documentation-hierarchy" id="toc-documentation-hierarchy" class="nav-link" data-scroll-target="#documentation-hierarchy">Documentation Hierarchy</a></li>
+  <li><a href="#code-examples" id="toc-code-examples" class="nav-link" data-scroll-target="#code-examples">Code Examples</a></li>
+  <li><a href="#visual-aids" id="toc-visual-aids" class="nav-link" data-scroll-target="#visual-aids">Visual Aids</a></li>
+  </ul></li>
+  <li><a href="#technical-stack" id="toc-technical-stack" class="nav-link" data-scroll-target="#technical-stack">🛠️ Technical Stack</a>
+  <ul class="collapse">
+  <li><a href="#core-technologies" id="toc-core-technologies" class="nav-link" data-scroll-target="#core-technologies">Core Technologies</a></li>
+  <li><a href="#dependencies" id="toc-dependencies" class="nav-link" data-scroll-target="#dependencies">Dependencies</a></li>
+  </ul></li>
+  <li><a href="#deployment-workflow" id="toc-deployment-workflow" class="nav-link" data-scroll-target="#deployment-workflow">📦 Deployment Workflow</a></li>
+  <li><a href="#learning-resources" id="toc-learning-resources" class="nav-link" data-scroll-target="#learning-resources">🎓 Learning Resources</a>
+  <ul class="collapse">
+  <li><a href="#for-beginners" id="toc-for-beginners" class="nav-link" data-scroll-target="#for-beginners">For Beginners</a></li>
+  <li><a href="#for-advanced-users" id="toc-for-advanced-users" class="nav-link" data-scroll-target="#for-advanced-users">For Advanced Users</a></li>
+  <li><a href="#for-contributors" id="toc-for-contributors" class="nav-link" data-scroll-target="#for-contributors">For Contributors</a></li>
+  </ul></li>
+  <li><a href="#analytics-metrics" id="toc-analytics-metrics" class="nav-link" data-scroll-target="#analytics-metrics">📈 Analytics &amp; Metrics</a></li>
+  <li><a href="#maintenance-plan" id="toc-maintenance-plan" class="nav-link" data-scroll-target="#maintenance-plan">🔄 Maintenance Plan</a>
+  <ul class="collapse">
+  <li><a href="#regular-updates" id="toc-regular-updates" class="nav-link" data-scroll-target="#regular-updates">Regular Updates</a></li>
+  <li><a href="#community-engagement" id="toc-community-engagement" class="nav-link" data-scroll-target="#community-engagement">Community Engagement</a></li>
+  </ul></li>
+  <li><a href="#success-metrics" id="toc-success-metrics" class="nav-link" data-scroll-target="#success-metrics">🎯 Success Metrics</a></li>
+  <li><a href="#unique-features" id="toc-unique-features" class="nav-link" data-scroll-target="#unique-features">🌟 Unique Features</a></li>
+  <li><a href="#support-channels" id="toc-support-channels" class="nav-link" data-scroll-target="#support-channels">📞 Support Channels</a></li>
+  <li><a href="#best-practices-implemented" id="toc-best-practices-implemented" class="nav-link" data-scroll-target="#best-practices-implemented">🔐 Best Practices Implemented</a></li>
+  <li><a href="#customization-options" id="toc-customization-options" class="nav-link" data-scroll-target="#customization-options">🎨 Customization Options</a></li>
+  <li><a href="#quality-checklist" id="toc-quality-checklist" class="nav-link" data-scroll-target="#quality-checklist">✅ Quality Checklist</a></li>
+  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps">🚀 Next Steps</a></li>
+  <li><a href="#quick-deployment-checklist" id="toc-quick-deployment-checklist" class="nav-link" data-scroll-target="#quick-deployment-checklist">📋 Quick Deployment Checklist</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/yourusername/contentanalysis/edit/main/project-overview.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/yourusername/contentanalysis/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><h1 class="title display-7"></h1></header><div class="quarto-title-block"><div class="quarto-title-tools-only"><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+
+
+
+
+<section id="contentanalysis-website---project-overview" class="level1">
+<h1>contentanalysis Website - Project Overview</h1>
+<section id="complete-file-list" class="level2">
+<h2 class="anchored" data-anchor-id="complete-file-list">📦 Complete File List</h2>
+<p>This project contains all files needed for a professional Quarto website for the contentanalysis R package.</p>
+<section id="configuration-files" class="level3">
+<h3 class="anchored" data-anchor-id="configuration-files">Configuration Files</h3>
+<ul>
+<li><strong><code>_quarto.yml</code></strong> - Main Quarto configuration (navigation, theme, format)</li>
+<li><strong><code>.gitignore</code></strong> - Git ignore rules</li>
+</ul>
+</section>
+<section id="content-pages" class="level3">
+<h3 class="anchored" data-anchor-id="content-pages">Content Pages</h3>
+<ul>
+<li><strong><code>index.qmd</code></strong> - Homepage with features and quick start</li>
+<li><strong><code>get-started.qmd</code></strong> - Installation and basic usage guide</li>
+<li><strong><code>tutorial.qmd</code></strong> - Complete end-to-end tutorial</li>
+<li><strong><code>about.qmd</code></strong> - About page with project information</li>
+</ul>
+</section>
+<section id="reference-documentation-reference" class="level3">
+<h3 class="anchored" data-anchor-id="reference-documentation-reference">Reference Documentation (<code>reference/</code>)</h3>
+<ul>
+<li><strong><code>pdf-import.qmd</code></strong> - PDF import functions documentation</li>
+<li><strong><code>content-analysis.qmd</code></strong> - Main analysis function documentation</li>
+<li><strong><code>citation-analysis.qmd</code></strong> - Citation extraction and analysis</li>
+<li><strong><code>network-viz.qmd</code></strong> - Network visualization documentation</li>
+<li><strong><code>text-analysis.qmd</code></strong> - Text analysis functions</li>
+<li><strong><code>readability.qmd</code></strong> - Readability metrics documentation</li>
+</ul>
+</section>
+<section id="styling" class="level3">
+<h3 class="anchored" data-anchor-id="styling">Styling</h3>
+<ul>
+<li><strong><code>custom.scss</code></strong> - Custom theme SCSS (colors, typography, components)</li>
+<li><strong><code>styles.css</code></strong> - Additional CSS styles (hero sections, cards, etc.)</li>
+</ul>
+</section>
+<section id="deployment" class="level3">
+<h3 class="anchored" data-anchor-id="deployment">Deployment</h3>
+<ul>
+<li><strong><code>deploy.sh</code></strong> - Automated deployment script</li>
+<li><strong><code>README.md</code></strong> - Repository documentation</li>
+<li><strong><code>SETUP_INSTRUCTIONS.md</code></strong> - Complete setup guide</li>
+</ul>
+</section>
+</section>
+<section id="website-structure" class="level2">
+<h2 class="anchored" data-anchor-id="website-structure">🎯 Website Structure</h2>
+<pre><code>Homepage (index.qmd)
+├── Get Started (get-started.qmd)
+│   ├── Installation
+│   ├── Your First Analysis
+│   ├── Common Workflows
+│   └── Troubleshooting
+│
+├── Reference Documentation
+│   ├── PDF Import (reference/pdf-import.qmd)
+│   ├── Content Analysis (reference/content-analysis.qmd)
+│   ├── Citation Analysis (reference/citation-analysis.qmd)
+│   ├── Network Visualization (reference/network-viz.qmd)
+│   ├── Text Analysis (reference/text-analysis.qmd)
+│   └── Readability Metrics (reference/readability.qmd)
+│
+├── Tutorial (tutorial.qmd)
+│   ├── Step 1-10: Complete Workflow
+│   ├── Advanced Examples
+│   └── Batch Processing
+│
+└── About (about.qmd)
+    ├── Project Information
+    ├── Contributing Guidelines
+    ├── Citation
+    └── Contact</code></pre>
+</section>
+<section id="design-features" class="level2">
+<h2 class="anchored" data-anchor-id="design-features">🎨 Design Features</h2>
+<section id="theme-colors" class="level3">
+<h3 class="anchored" data-anchor-id="theme-colors">Theme &amp; Colors</h3>
+<ul>
+<li><strong>Primary Color</strong>: #2c3e50 (dark blue-grey)</li>
+<li><strong>Secondary Color</strong>: #3498db (bright blue)</li>
+<li><strong>Success</strong>: #27ae60 (green)</li>
+<li><strong>Warning</strong>: #f39c12 (orange)</li>
+<li><strong>Danger</strong>: #e74c3c (red)</li>
+</ul>
+</section>
+<section id="typography" class="level3">
+<h3 class="anchored" data-anchor-id="typography">Typography</h3>
+<ul>
+<li><strong>Headers</strong>: Segoe UI / Roboto</li>
+<li><strong>Body</strong>: Segoe UI / Roboto</li>
+<li><strong>Code</strong>: Source Code Pro / Monaco</li>
+</ul>
+</section>
+<section id="visual-elements" class="level3">
+<h3 class="anchored" data-anchor-id="visual-elements">Visual Elements</h3>
+<ul>
+<li>Hero section with gradient</li>
+<li>Feature cards with hover effects</li>
+<li>Color-coded callout boxes</li>
+<li>Interactive code examples</li>
+<li>Responsive grid layouts</li>
+<li>Publication-ready figures</li>
+</ul>
+</section>
+</section>
+<section id="content-highlights" class="level2">
+<h2 class="anchored" data-anchor-id="content-highlights">📊 Content Highlights</h2>
+<section id="homepage-features" class="level3">
+<h3 class="anchored" data-anchor-id="homepage-features">Homepage Features</h3>
+<ul>
+<li>Package overview with key features</li>
+<li>Quick start code example</li>
+<li>Installation instructions</li>
+<li>Links to documentation sections</li>
+<li>Citation information</li>
+</ul>
+</section>
+<section id="get-started-guide" class="level3">
+<h3 class="anchored" data-anchor-id="get-started-guide">Get Started Guide</h3>
+<ul>
+<li>Installation steps</li>
+<li>First analysis walkthrough</li>
+<li>Common workflows (4 examples)</li>
+<li>Batch processing example</li>
+<li>Troubleshooting section</li>
+</ul>
+</section>
+<section id="reference-documentation" class="level3">
+<h3 class="anchored" data-anchor-id="reference-documentation">Reference Documentation</h3>
+<p>Each function page includes: - Function signature and arguments - Usage examples from the vignette - Advanced use cases - Tips and best practices - Common issues and solutions - Cross-references to related functions</p>
+</section>
+<section id="complete-tutorial" class="level3">
+<h3 class="anchored" data-anchor-id="complete-tutorial">Complete Tutorial</h3>
+<ul>
+<li>10-step workflow from PDF to final report</li>
+<li>Real example with code and outputs</li>
+<li>Visualization examples</li>
+<li>Export and reporting</li>
+<li>Batch processing guide</li>
+</ul>
+</section>
+</section>
+<section id="key-features" class="level2">
+<h2 class="anchored" data-anchor-id="key-features">🚀 Key Features</h2>
+<section id="for-users" class="level3">
+<h3 class="anchored" data-anchor-id="for-users">For Users</h3>
+<ol type="1">
+<li><strong>Clear Navigation</strong>: Easy access to all documentation</li>
+<li><strong>Searchable Content</strong>: Built-in search functionality</li>
+<li><strong>Code Examples</strong>: Real, executable examples throughout</li>
+<li><strong>Interactive Elements</strong>: Dynamic plots and networks</li>
+<li><strong>Mobile Responsive</strong>: Works on all devices</li>
+</ol>
+</section>
+<section id="for-developers" class="level3">
+<h3 class="anchored" data-anchor-id="for-developers">For Developers</h3>
+<ol type="1">
+<li><strong>Easy to Update</strong>: Simple <code>.qmd</code> file editing</li>
+<li><strong>Automated Deployment</strong>: One-command deployment script</li>
+<li><strong>Version Control</strong>: Full Git integration</li>
+<li><strong>Customizable</strong>: Modular SCSS and CSS</li>
+<li><strong>Well Documented</strong>: Comments and instructions throughout</li>
+</ol>
+</section>
+</section>
+<section id="content-strategy" class="level2">
+<h2 class="anchored" data-anchor-id="content-strategy">📝 Content Strategy</h2>
+<section id="documentation-hierarchy" class="level3">
+<h3 class="anchored" data-anchor-id="documentation-hierarchy">Documentation Hierarchy</h3>
+<ol type="1">
+<li><strong>Quick Start</strong> → Get users up and running fast</li>
+<li><strong>Reference</strong> → Detailed function documentation</li>
+<li><strong>Tutorial</strong> → Complete workflows and examples</li>
+<li><strong>About</strong> → Project context and community</li>
+</ol>
+</section>
+<section id="code-examples" class="level3">
+<h3 class="anchored" data-anchor-id="code-examples">Code Examples</h3>
+<ul>
+<li>All examples use the same paper from the vignette</li>
+<li>Examples build on each other progressively</li>
+<li>Real outputs shown where possible</li>
+<li>Comments explain key steps</li>
+</ul>
+</section>
+<section id="visual-aids" class="level3">
+<h3 class="anchored" data-anchor-id="visual-aids">Visual Aids</h3>
+<ul>
+<li>Syntax highlighting for all code</li>
+<li>Output examples formatted clearly</li>
+<li>Callout boxes for important notes</li>
+<li>Step numbers in tutorials</li>
+<li>Icons for different content types</li>
+</ul>
+</section>
+</section>
+<section id="technical-stack" class="level2">
+<h2 class="anchored" data-anchor-id="technical-stack">🛠️ Technical Stack</h2>
+<section id="core-technologies" class="level3">
+<h3 class="anchored" data-anchor-id="core-technologies">Core Technologies</h3>
+<ul>
+<li><strong>Quarto</strong> (1.3+): Static site generator</li>
+<li><strong>R</strong> (4.0+): Code execution</li>
+<li><strong>Git</strong>: Version control</li>
+<li><strong>GitHub Pages</strong>: Hosting</li>
+</ul>
+</section>
+<section id="dependencies" class="level3">
+<h3 class="anchored" data-anchor-id="dependencies">Dependencies</h3>
+<ul>
+<li>Bootstrap (via Quarto theme)</li>
+<li>visNetwork (for interactive networks)</li>
+<li>ggplot2 (for visualizations)</li>
+<li>dplyr/tidyr (for data manipulation)</li>
+</ul>
+</section>
+</section>
+<section id="deployment-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="deployment-workflow">📦 Deployment Workflow</h2>
+<pre><code>Edit .qmd files
+     ↓
+quarto preview (test locally)
+     ↓
+quarto render (build site)
+     ↓
+git commit &amp; push
+     ↓
+GitHub Pages auto-deploys
+     ↓
+Live website updated</code></pre>
+</section>
+<section id="learning-resources" class="level2">
+<h2 class="anchored" data-anchor-id="learning-resources">🎓 Learning Resources</h2>
+<p>The website includes:</p>
+<section id="for-beginners" class="level3">
+<h3 class="anchored" data-anchor-id="for-beginners">For Beginners</h3>
+<ul>
+<li>Installation guide</li>
+<li>Basic usage examples</li>
+<li>Step-by-step tutorial</li>
+<li>Troubleshooting help</li>
+</ul>
+</section>
+<section id="for-advanced-users" class="level3">
+<h3 class="anchored" data-anchor-id="for-advanced-users">For Advanced Users</h3>
+<ul>
+<li>Complete function reference</li>
+<li>Advanced examples</li>
+<li>Batch processing</li>
+<li>Network analysis</li>
+<li>Custom configurations</li>
+</ul>
+</section>
+<section id="for-contributors" class="level3">
+<h3 class="anchored" data-anchor-id="for-contributors">For Contributors</h3>
+<ul>
+<li>Contributing guidelines</li>
+<li>Code of conduct</li>
+<li>GitHub workflow</li>
+<li>Issue templates</li>
+</ul>
+</section>
+</section>
+<section id="analytics-metrics" class="level2">
+<h2 class="anchored" data-anchor-id="analytics-metrics">📈 Analytics &amp; Metrics</h2>
+<p>Consider adding (optional): - Google Analytics for usage tracking - GitHub stars/forks display - Download statistics - Citation count</p>
+</section>
+<section id="maintenance-plan" class="level2">
+<h2 class="anchored" data-anchor-id="maintenance-plan">🔄 Maintenance Plan</h2>
+<section id="regular-updates" class="level3">
+<h3 class="anchored" data-anchor-id="regular-updates">Regular Updates</h3>
+<ul>
+<li>Keep examples up-to-date with package versions</li>
+<li>Add new features as package develops</li>
+<li>Update troubleshooting based on user issues</li>
+<li>Refresh screenshots and outputs</li>
+</ul>
+</section>
+<section id="community-engagement" class="level3">
+<h3 class="anchored" data-anchor-id="community-engagement">Community Engagement</h3>
+<ul>
+<li>Respond to GitHub issues</li>
+<li>Accept pull requests</li>
+<li>Update FAQ based on questions</li>
+<li>Showcase user examples</li>
+</ul>
+</section>
+</section>
+<section id="success-metrics" class="level2">
+<h2 class="anchored" data-anchor-id="success-metrics">🎯 Success Metrics</h2>
+<p>Website effectiveness measured by: - GitHub stars and forks - User engagement (time on site) - Documentation clarity (fewer support issues) - Community contributions - Package downloads</p>
+</section>
+<section id="unique-features" class="level2">
+<h2 class="anchored" data-anchor-id="unique-features">🌟 Unique Features</h2>
+<p>What makes this website stand out:</p>
+<ol type="1">
+<li><strong>Real Examples</strong>: All examples use actual paper from package</li>
+<li><strong>Progressive Learning</strong>: From basic to advanced systematically</li>
+<li><strong>Visual Networks</strong>: Interactive citation networks</li>
+<li><strong>Batch Processing</strong>: Real-world multi-paper workflows</li>
+<li><strong>Complete Workflow</strong>: End-to-end research workflow</li>
+<li><strong>Publication Ready</strong>: High-quality figures and exports</li>
+</ol>
+</section>
+<section id="support-channels" class="level2">
+<h2 class="anchored" data-anchor-id="support-channels">📞 Support Channels</h2>
+<ul>
+<li><strong>Documentation</strong>: Website reference pages</li>
+<li><strong>Tutorial</strong>: Step-by-step guide</li>
+<li><strong>GitHub Issues</strong>: Bug reports and features</li>
+<li><strong>Email</strong>: Direct contact (in About page)</li>
+</ul>
+</section>
+<section id="best-practices-implemented" class="level2">
+<h2 class="anchored" data-anchor-id="best-practices-implemented">🔐 Best Practices Implemented</h2>
+<ul>
+<li>Semantic HTML structure</li>
+<li>Accessible navigation</li>
+<li>Mobile-first responsive design</li>
+<li>Fast loading times</li>
+<li>Clean URLs</li>
+<li>SEO-friendly content</li>
+<li>Cross-browser compatibility</li>
+<li>Version control integration</li>
+</ul>
+</section>
+<section id="customization-options" class="level2">
+<h2 class="anchored" data-anchor-id="customization-options">🎨 Customization Options</h2>
+<p>Easy to customize: - Colors via <code>custom.scss</code> - Layouts via <code>_quarto.yml</code> - Styles via <code>styles.css</code> - Content via <code>.qmd</code> files - Navigation via YAML config</p>
+</section>
+<section id="quality-checklist" class="level2">
+<h2 class="anchored" data-anchor-id="quality-checklist">✅ Quality Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="">All pages render correctly</label></li>
+<li><label><input type="checkbox" checked="">Navigation works on all devices</label></li>
+<li><label><input type="checkbox" checked="">Code examples are executable</label></li>
+<li><label><input type="checkbox" checked="">Links are functional</label></li>
+<li><label><input type="checkbox" checked="">Images load properly</label></li>
+<li><label><input type="checkbox" checked="">Responsive design works</label></li>
+<li><label><input type="checkbox" checked="">Accessibility standards met</label></li>
+<li><label><input type="checkbox" checked="">SEO optimized</label></li>
+<li><label><input type="checkbox" checked="">Fast loading times</label></li>
+<li><label><input type="checkbox" checked="">Cross-browser compatible</label></li>
+</ul>
+</section>
+<section id="next-steps" class="level2">
+<h2 class="anchored" data-anchor-id="next-steps">🚀 Next Steps</h2>
+<p>After deployment:</p>
+<ol type="1">
+<li><strong>Announce</strong>: Share on social media, R communities</li>
+<li><strong>Monitor</strong>: Watch for user feedback and issues</li>
+<li><strong>Update</strong>: Keep content fresh and current</li>
+<li><strong>Engage</strong>: Respond to community contributions</li>
+<li><strong>Improve</strong>: Iterate based on user needs</li>
+</ol>
+<hr>
+</section>
+<section id="quick-deployment-checklist" class="level2">
+<h2 class="anchored" data-anchor-id="quick-deployment-checklist">📋 Quick Deployment Checklist</h2>
+<p>Before deploying:</p>
+<ol type="1">
+<li><label><input type="checkbox">Update all <code>yourusername</code> placeholders</label></li>
+<li><label><input type="checkbox">Add logo.png (optional)</label></li>
+<li><label><input type="checkbox">Test all pages locally</label></li>
+<li><label><input type="checkbox">Check all links work</label></li>
+<li><label><input type="checkbox">Verify code examples</label></li>
+<li><label><input type="checkbox">Review README</label></li>
+<li><label><input type="checkbox">Configure GitHub repository</label></li>
+<li><label><input type="checkbox">Enable GitHub Pages</label></li>
+<li><label><input type="checkbox">Test live deployment</label></li>
+<li><label><input type="checkbox">Share the URL!</label></li>
+</ol>
+<hr>
+<p><strong>Website URL</strong>: https://yourusername.github.io/contentanalysis</p>
+<p><strong>Repository</strong>: https://github.com/yourusername/contentanalysis</p>
+<p><strong>Package</strong>: https://github.com/massimoaria/contentanalysis</p>
+<hr>
+<p><em>This website provides comprehensive documentation for the contentanalysis R package, making it easy for researchers to extract and analyze scientific content from PDF documents.</em></p>
+
+
+<!-- -->
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/yourusername\.github\.io\/contentanalysis");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># contentanalysis Website - Project Overview</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## 📦 Complete File List</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>This project contains all files needed for a professional Quarto website for the contentanalysis R package.</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">### Configuration Files</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`_quarto.yml`** - Main Quarto configuration (navigation, theme, format)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`.gitignore`** - Git ignore rules</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### Content Pages</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`index.qmd`** - Homepage with features and quick start</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`get-started.qmd`** - Installation and basic usage guide</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`tutorial.qmd`** - Complete end-to-end tutorial</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`about.qmd`** - About page with project information</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="fu">### Reference Documentation (`reference/`)</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`pdf-import.qmd`** - PDF import functions documentation</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`content-analysis.qmd`** - Main analysis function documentation</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`citation-analysis.qmd`** - Citation extraction and analysis</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`network-viz.qmd`** - Network visualization documentation</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`text-analysis.qmd`** - Text analysis functions</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`readability.qmd`** - Readability metrics documentation</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="fu">### Styling</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`custom.scss`** - Custom theme SCSS (colors, typography, components)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`styles.css`** - Additional CSS styles (hero sections, cards, etc.)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="fu">### Deployment</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`deploy.sh`** - Automated deployment script</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`README.md`** - Repository documentation</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`SETUP_INSTRUCTIONS.md`** - Complete setup guide</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🎯 Website Structure</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="in">Homepage (index.qmd)</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="in">├── Get Started (get-started.qmd)</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── Installation</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── Your First Analysis</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── Common Workflows</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="in">│   └── Troubleshooting</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="in">│</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="in">├── Reference Documentation</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── PDF Import (reference/pdf-import.qmd)</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── Content Analysis (reference/content-analysis.qmd)</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── Citation Analysis (reference/citation-analysis.qmd)</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── Network Visualization (reference/network-viz.qmd)</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── Text Analysis (reference/text-analysis.qmd)</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="in">│   └── Readability Metrics (reference/readability.qmd)</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="in">│</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="in">├── Tutorial (tutorial.qmd)</span></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── Step 1-10: Complete Workflow</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── Advanced Examples</span></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="in">│   └── Batch Processing</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="in">│</span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a><span class="in">└── About (about.qmd)</span></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="in">    ├── Project Information</span></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a><span class="in">    ├── Contributing Guidelines</span></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="in">    ├── Citation</span></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a><span class="in">    └── Contact</span></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🎨 Design Features</span></span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a><span class="fu">### Theme &amp; Colors</span></span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Primary Color**: #2c3e50 (dark blue-grey)</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Secondary Color**: #3498db (bright blue)</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Success**: #27ae60 (green)</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Warning**: #f39c12 (orange)</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Danger**: #e74c3c (red)</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a><span class="fu">### Typography</span></span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Headers**: Segoe UI / Roboto</span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Body**: Segoe UI / Roboto</span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Code**: Source Code Pro / Monaco</span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="fu">### Visual Elements</span></span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Hero section with gradient</span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Feature cards with hover effects</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Color-coded callout boxes</span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Interactive code examples</span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Responsive grid layouts</span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Publication-ready figures</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a><span class="fu">## 📊 Content Highlights</span></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a><span class="fu">### Homepage Features</span></span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Package overview with key features</span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Quick start code example</span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Installation instructions</span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Links to documentation sections</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Citation information</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a><span class="fu">### Get Started Guide</span></span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Installation steps</span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>First analysis walkthrough</span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Common workflows (4 examples)</span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Batch processing example</span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Troubleshooting section</span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a><span class="fu">### Reference Documentation</span></span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>Each function page includes:</span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Function signature and arguments</span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Usage examples from the vignette</span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Advanced use cases</span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Tips and best practices</span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Common issues and solutions</span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Cross-references to related functions</span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a><span class="fu">### Complete Tutorial</span></span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>10-step workflow from PDF to final report</span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Real example with code and outputs</span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Visualization examples</span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Export and reporting</span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Batch processing guide</span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🚀 Key Features</span></span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a><span class="fu">### For Users</span></span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Clear Navigation**: Easy access to all documentation</span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Searchable Content**: Built-in search functionality</span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Code Examples**: Real, executable examples throughout</span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Interactive Elements**: Dynamic plots and networks</span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Mobile Responsive**: Works on all devices</span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a><span class="fu">### For Developers</span></span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Easy to Update**: Simple <span class="in">`.qmd`</span> file editing</span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Automated Deployment**: One-command deployment script</span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Version Control**: Full Git integration</span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Customizable**: Modular SCSS and CSS</span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Well Documented**: Comments and instructions throughout</span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a><span class="fu">## 📝 Content Strategy</span></span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a><span class="fu">### Documentation Hierarchy</span></span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Quick Start** → Get users up and running fast</span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Reference** → Detailed function documentation</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Tutorial** → Complete workflows and examples</span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**About** → Project context and community</span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a><span class="fu">### Code Examples</span></span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>All examples use the same paper from the vignette</span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Examples build on each other progressively</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Real outputs shown where possible</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Comments explain key steps</span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a><span class="fu">### Visual Aids</span></span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Syntax highlighting for all code</span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Output examples formatted clearly</span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Callout boxes for important notes</span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Step numbers in tutorials</span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Icons for different content types</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🛠️ Technical Stack</span></span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a><span class="fu">### Core Technologies</span></span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Quarto** (1.3+): Static site generator</span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**R** (4.0+): Code execution</span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Git**: Version control</span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**GitHub Pages**: Hosting</span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a><span class="fu">### Dependencies</span></span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Bootstrap (via Quarto theme)</span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>visNetwork (for interactive networks)</span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>ggplot2 (for visualizations)</span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>dplyr/tidyr (for data manipulation)</span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a><span class="fu">## 📦 Deployment Workflow</span></span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a><span class="in">Edit .qmd files</span></span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a><span class="in">     ↓</span></span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a><span class="in">quarto preview (test locally)</span></span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a><span class="in">     ↓</span></span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a><span class="in">quarto render (build site)</span></span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a><span class="in">     ↓</span></span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a><span class="in">git commit &amp; push</span></span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a><span class="in">     ↓</span></span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a><span class="in">GitHub Pages auto-deploys</span></span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a><span class="in">     ↓</span></span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a><span class="in">Live website updated</span></span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🎓 Learning Resources</span></span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>The website includes:</span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a><span class="fu">### For Beginners</span></span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Installation guide</span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Basic usage examples</span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Step-by-step tutorial</span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Troubleshooting help</span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a><span class="fu">### For Advanced Users</span></span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Complete function reference</span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Advanced examples</span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Batch processing</span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Network analysis</span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Custom configurations</span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a><span class="fu">### For Contributors</span></span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Contributing guidelines</span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Code of conduct</span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>GitHub workflow</span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Issue templates</span>
+<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a><span class="fu">## 📈 Analytics &amp; Metrics</span></span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a>Consider adding (optional):</span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Google Analytics for usage tracking</span>
+<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>GitHub stars/forks display</span>
+<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Download statistics</span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Citation count</span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🔄 Maintenance Plan</span></span>
+<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a><span class="fu">### Regular Updates</span></span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Keep examples up-to-date with package versions</span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Add new features as package develops</span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Update troubleshooting based on user issues</span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Refresh screenshots and outputs</span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a><span class="fu">### Community Engagement</span></span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Respond to GitHub issues</span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Accept pull requests</span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Update FAQ based on questions</span>
+<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Showcase user examples</span>
+<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🎯 Success Metrics</span></span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a>Website effectiveness measured by:</span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>GitHub stars and forks</span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>User engagement (time on site)</span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Documentation clarity (fewer support issues)</span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Community contributions</span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Package downloads</span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🌟 Unique Features</span></span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a>What makes this website stand out:</span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Real Examples**: All examples use actual paper from package</span>
+<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Progressive Learning**: From basic to advanced systematically</span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Visual Networks**: Interactive citation networks</span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Batch Processing**: Real-world multi-paper workflows</span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Complete Workflow**: End-to-end research workflow</span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**Publication Ready**: High-quality figures and exports</span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a><span class="fu">## 📞 Support Channels</span></span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Documentation**: Website reference pages</span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Tutorial**: Step-by-step guide</span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**GitHub Issues**: Bug reports and features</span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Email**: Direct contact (in About page)</span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🔐 Best Practices Implemented</span></span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Semantic HTML structure</span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Accessible navigation</span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Mobile-first responsive design</span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Fast loading times</span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Clean URLs</span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>SEO-friendly content</span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Cross-browser compatibility</span>
+<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Version control integration</span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🎨 Customization Options</span></span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a>Easy to customize:</span>
+<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Colors via <span class="in">`custom.scss`</span></span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Layouts via <span class="in">`_quarto.yml`</span></span>
+<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Styles via <span class="in">`styles.css`</span></span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Content via <span class="in">`.qmd`</span> files</span>
+<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Navigation via YAML config</span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a><span class="fu">## ✅ Quality Checklist</span></span>
+<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[x]</span> All pages render correctly</span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[x]</span> Navigation works on all devices</span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[x]</span> Code examples are executable</span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[x]</span> Links are functional</span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[x]</span> Images load properly</span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[x]</span> Responsive design works</span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[x]</span> Accessibility standards met</span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[x]</span> SEO optimized</span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[x]</span> Fast loading times</span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[x]</span> Cross-browser compatible</span>
+<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🚀 Next Steps</span></span>
+<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a>After deployment:</span>
+<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Announce**: Share on social media, R communities</span>
+<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Monitor**: Watch for user feedback and issues</span>
+<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Update**: Keep content fresh and current</span>
+<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Engage**: Respond to community contributions</span>
+<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Improve**: Iterate based on user needs</span>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a><span class="fu">## 📋 Quick Deployment Checklist</span></span>
+<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a>Before deploying:</span>
+<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span><span class="co">[ ]</span> Update all <span class="in">`yourusername`</span> placeholders</span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span><span class="co">[ ]</span> Add logo.png (optional)</span>
+<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span><span class="co">[ ]</span> Test all pages locally</span>
+<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span><span class="co">[ ]</span> Check all links work</span>
+<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span><span class="co">[ ]</span> Verify code examples</span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span><span class="co">[ ]</span> Review README</span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span><span class="co">[ ]</span> Configure GitHub repository</span>
+<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span><span class="co">[ ]</span> Enable GitHub Pages</span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span><span class="co">[ ]</span> Test live deployment</span>
+<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span><span class="co">[ ]</span> Share the URL!</span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a>**Website URL**: https://yourusername.github.io/contentanalysis</span>
+<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a>**Repository**: https://github.com/yourusername/contentanalysis</span>
+<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a>**Package**: https://github.com/massimoaria/contentanalysis</span>
+<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a>*This website provides comprehensive documentation for the contentanalysis R package, making it easy for researchers to extract and analyze scientific content from PDF documents.*</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Built with <a href="https://quarto.org/">Quarto</a></p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/yourusername/contentanalysis/edit/main/project-overview.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/yourusername/contentanalysis/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+ License: GPL-3
+  </li>  
+    <li class="nav-item">
+ © 2024
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

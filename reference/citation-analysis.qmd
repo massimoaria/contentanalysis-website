@@ -1,0 +1,525 @@
+---
+title: "Citation Analysis"
+---
+
+## Overview
+
+The contentanalysis package provides sophisticated tools for extracting, analyzing, and matching citations in scientific documents. It detects multiple citation formats, extracts contextual information, and automatically matches citations to references using CrossRef.
+
+## Citation Detection
+
+### Supported Citation Formats
+
+The package detects two main citation types:
+
+**Narrative Citations**
+- Author is part of the sentence
+- Examples: "Smith (2020) showed...", "According to Jones et al. (2019)..."
+
+**Parenthetical Citations**
+- Author in parentheses
+- Examples: "(Smith, 2020)", "(Jones et al., 2019; Brown, 2021)"
+
+### Citation Patterns
+
+```{r patterns, eval=FALSE}
+library(contentanalysis)
+library(dplyr)
+
+# After analysis
+doc <- pdf2txt_auto("paper.pdf", n_columns = 2)
+analysis <- analyze_scientific_content(
+  text = doc,
+  doi = "10.xxxx/xxxxx",
+  mailto = "your@email.com"
+)
+
+# View citation types
+table(analysis$citations$citation_type)
+
+# Example distribution:
+#   narrative parenthetical 
+#        18            24
+
+# View sample citations
+analysis$citations %>%
+  select(citation_text, citation_type, section) %>%
+  head(10)
+```
+
+## Citation Extraction
+
+### Basic Citation Information
+
+Each citation includes:
+
+```{r citation_info, eval=FALSE}
+# Citation data structure
+str(analysis$citations)
+
+# Key fields:
+# - citation_text: Raw citation text
+# - citation_text_clean: Cleaned version
+# - citation_type: narrative or parenthetical
+# - section: Document section where found
+# - position: Character position in document
+```
+
+### Citation by Section
+
+Analyze citation patterns across sections:
+
+```{r by_section, eval=FALSE}
+# Citations per section
+section_counts <- analysis$citations %>%
+  count(section, sort = TRUE)
+
+print(section_counts)
+
+# Example output:
+#   section       n
+#   Discussion   12
+#   Introduction 10
+#   Methods       8
+#   Results       7
+#   Abstract      5
+
+# Citation types by section
+section_types <- analysis$citations %>%
+  group_by(section, citation_type) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  tidyr::pivot_wider(names_from = citation_type, values_from = count)
+
+print(section_types)
+```
+
+### Citation Density
+
+Calculate citation intensity:
+
+```{r density, eval=FALSE}
+# Overall citation density (per 1000 words)
+analysis$summary$citation_density
+
+# Citation density by section
+section_words <- sapply(doc[names(doc) != "Full_text"], function(x) {
+  length(strsplit(x, "\\s+")[[1]])
+})
+
+section_citation_counts <- analysis$citations %>%
+  count(section)
+
+density_by_section <- section_citation_counts %>%
+  mutate(
+    words = section_words[section],
+    density = (n / words) * 1000
+  ) %>%
+  arrange(desc(density))
+
+print(density_by_section)
+```
+
+## Citation Contexts
+
+### Extracting Context
+
+Access text surrounding citations:
+
+```{r context, eval=FALSE}
+# View citation contexts
+contexts <- analysis$citation_contexts %>%
+  select(citation_text_clean, section, words_before, words_after)
+
+head(contexts, 5)
+
+# Example:
+# citation_text_clean  section  words_before                  words_after
+# "Breiman (2001)"     Methods  "as shown by the method of"   "provides excellent results"
+```
+
+### Analyzing Citation Usage
+
+Examine how citations are used:
+
+```{r usage, eval=FALSE}
+# Find citations with specific context patterns
+
+# Method citations
+method_citations <- analysis$citation_contexts %>%
+  filter(grepl("method|approach|technique|algorithm", 
+               paste(words_before, words_after), 
+               ignore.case = TRUE))
+
+cat("Method-related citations:", nrow(method_citations), "\n")
+
+# Supporting citations
+support_citations <- analysis$citation_contexts %>%
+  filter(grepl("shown|demonstrated|found|reported", 
+               words_before, 
+               ignore.case = TRUE))
+
+cat("Supporting evidence citations:", nrow(support_citations), "\n")
+
+# Contrasting citations
+contrast_citations <- analysis$citation_contexts %>%
+  filter(grepl("however|unlike|contrary|different", 
+               words_before, 
+               ignore.case = TRUE))
+
+cat("Contrasting citations:", nrow(contrast_citations), "\n")
+```
+
+### Context Length Analysis
+
+```{r context_length, eval=FALSE}
+# Average context length
+analysis$citation_contexts %>%
+  mutate(
+    before_length = sapply(strsplit(words_before, "\\s+"), length),
+    after_length = sapply(strsplit(words_after, "\\s+"), length)
+  ) %>%
+  summarise(
+    avg_before = mean(before_length),
+    avg_after = mean(after_length)
+  )
+```
+
+## Reference Matching
+
+### Automatic Matching
+
+Citations are automatically matched to references:
+
+```{r matching, eval=FALSE}
+# View matched citations
+matched <- analysis$citation_references_mapping %>%
+  select(citation_text_clean, cite_author, cite_year,
+         ref_full_text, match_confidence)
+
+head(matched, 10)
+
+# Match quality distribution
+table(matched$match_confidence)
+
+# High confidence matches
+high_conf_rate <- mean(matched$match_confidence == "high")
+cat("High confidence rate:", round(high_conf_rate * 100, 1), "%\n")
+```
+
+### Matching Diagnostics
+
+Assess matching quality:
+
+```{r diagnostics, eval=FALSE}
+# Print diagnostics
+print_matching_diagnostics(analysis)
+
+# Custom diagnostic
+matching_stats <- analysis$citation_references_mapping %>%
+  group_by(match_confidence) %>%
+  summarise(
+    count = n(),
+    avg_year_match = mean(!is.na(cite_year) & 
+                          cite_year == ref_year, na.rm = TRUE)
+  )
+
+print(matching_stats)
+```
+
+### Unmatched Citations
+
+Identify citations without matches:
+
+```{r unmatched, eval=FALSE}
+# Find unmatched citations
+all_citations <- analysis$citations$citation_text_clean
+matched_citations <- unique(analysis$citation_references_mapping$citation_text_clean)
+
+unmatched <- setdiff(all_citations, matched_citations)
+
+cat("Unmatched citations:", length(unmatched), "\n")
+cat("Match rate:", 
+    round((1 - length(unmatched)/length(all_citations)) * 100, 1), 
+    "%\n")
+
+# View unmatched
+if (length(unmatched) > 0) {
+  cat("\nUnmatched citations:\n")
+  print(head(unmatched, 10))
+}
+```
+
+## Advanced Analysis
+
+### Most Cited References
+
+Identify frequently cited works:
+
+```{r most_cited, eval=FALSE}
+# Citation frequency
+cite_freq <- analysis$citation_references_mapping %>%
+  count(ref_full_text, sort = TRUE)
+
+# Top 10 most cited
+top_cited <- head(cite_freq, 10)
+print(top_cited)
+
+# Visualize
+library(ggplot2)
+ggplot(top_cited, aes(x = reorder(substr(ref_full_text, 1, 50), n), y = n)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Top 10 Most Cited References",
+       x = "Reference", y = "Citation Count") +
+  theme_minimal()
+```
+
+### Citation Networks
+
+Analyze co-citation patterns:
+
+```{r cooccurrence, eval=FALSE}
+# Citations that appear together
+network_data <- analysis$network_data
+
+# Most frequently co-cited pairs
+top_pairs <- network_data %>%
+  arrange(distance) %>%
+  head(20)
+
+print(top_pairs %>% select(citation_from, citation_to, distance))
+
+# Average co-occurrence distance
+mean_distance <- mean(network_data$distance)
+cat("Average distance between co-cited references:", 
+    round(mean_distance), "characters\n")
+```
+
+### Author Analysis
+
+Extract author information:
+
+```{r authors, eval=FALSE}
+# Parse authors from citations
+extract_first_author <- function(cite) {
+  # Simple extraction (customize as needed)
+  gsub("\\s*\\(.*\\)", "", cite) %>%
+    gsub("\\s*et al\\..*", "", .) %>%
+    trimws()
+}
+
+citation_authors <- analysis$citations %>%
+  mutate(first_author = extract_first_author(citation_text_clean))
+
+# Most cited first authors
+author_counts <- citation_authors %>%
+  count(first_author, sort = TRUE)
+
+head(author_counts, 15)
+```
+
+### Temporal Analysis
+
+Analyze citation years:
+
+```{r temporal, eval=FALSE}
+# Extract years from matched citations
+year_data <- analysis$citation_references_mapping %>%
+  filter(!is.na(cite_year)) %>%
+  count(cite_year) %>%
+  arrange(cite_year)
+
+# Visualize
+ggplot(year_data, aes(x = cite_year, y = n)) +
+  geom_line(color = "steelblue", size = 1) +
+  geom_point(color = "steelblue", size = 2) +
+  labs(title = "Citations by Publication Year",
+       x = "Year", y = "Number of Citations") +
+  theme_minimal()
+
+# Recent vs older citations
+current_year <- as.numeric(format(Sys.Date(), "%Y"))
+recent_threshold <- current_year - 5
+
+recent_vs_old <- analysis$citation_references_mapping %>%
+  filter(!is.na(cite_year)) %>%
+  mutate(period = ifelse(cite_year >= recent_threshold, "Recent", "Older")) %>%
+  count(period)
+
+print(recent_vs_old)
+```
+
+## Citation Metrics
+
+### Calculate Citation Metrics
+
+```{r metrics, eval=FALSE}
+# Comprehensive citation metrics
+metrics <- list(
+  total_citations = nrow(analysis$citations),
+  unique_references = length(unique(
+    analysis$citation_references_mapping$ref_full_text
+  )),
+  narrative_citations = sum(analysis$citations$citation_type == "narrative"),
+  parenthetical_citations = sum(analysis$citations$citation_type == "parenthetical"),
+  matched_rate = nrow(analysis$citation_references_mapping) / 
+                 nrow(analysis$citations),
+  citation_density = analysis$summary$citation_density,
+  avg_citations_per_section = mean(table(analysis$citations$section)),
+  sections_with_citations = length(unique(analysis$citations$section))
+)
+
+# Print metrics
+cat("Citation Analysis Metrics:\n")
+cat("==========================\n")
+for (name in names(metrics)) {
+  cat(sprintf("%-30s: %.2f\n", name, metrics[[name]]))
+}
+```
+
+### Section-Specific Metrics
+
+```{r section_metrics, eval=FALSE}
+# Detailed section metrics
+section_metrics <- analysis$citations %>%
+  group_by(section) %>%
+  summarise(
+    total_citations = n(),
+    narrative = sum(citation_type == "narrative"),
+    parenthetical = sum(citation_type == "parenthetical"),
+    narrative_pct = round(narrative / total_citations * 100, 1)
+  ) %>%
+  arrange(desc(total_citations))
+
+print(section_metrics)
+```
+
+## Export Citation Data
+
+### Export Functions
+
+```{r export, eval=FALSE}
+# Create export directory
+dir.create("citation_analysis", showWarnings = FALSE)
+
+# 1. All citations
+write.csv(analysis$citations,
+          "citation_analysis/all_citations.csv",
+          row.names = FALSE)
+
+# 2. Matched citations with references
+write.csv(analysis$citation_references_mapping,
+          "citation_analysis/matched_citations.csv",
+          row.names = FALSE)
+
+# 3. Citation contexts
+write.csv(analysis$citation_contexts,
+          "citation_analysis/citation_contexts.csv",
+          row.names = FALSE)
+
+# 4. Citation metrics
+metrics_df <- data.frame(
+  metric = names(metrics),
+  value = unlist(metrics)
+)
+write.csv(metrics_df,
+          "citation_analysis/metrics.csv",
+          row.names = FALSE)
+
+# 5. Section distribution
+write.csv(section_metrics,
+          "citation_analysis/section_metrics.csv",
+          row.names = FALSE)
+```
+
+## Case Studies
+
+### Case Study 1: Literature Review Paper
+
+Analyzing citation patterns in a literature review:
+
+```{r case1, eval=FALSE}
+# High citation density expected
+if (analysis$summary$citation_density > 15) {
+  cat("High citation density detected - consistent with review paper\n")
+}
+
+# Introduction should have many citations
+intro_citations <- analysis$citations %>%
+  filter(section == "Introduction") %>%
+  nrow()
+
+cat("Introduction citations:", intro_citations, "\n")
+
+# Check for seminal works (older citations)
+old_citations <- analysis$citation_references_mapping %>%
+  filter(!is.na(cite_year), cite_year < 2000) %>%
+  nrow()
+
+cat("Pre-2000 citations:", old_citations, "\n")
+```
+
+### Case Study 2: Methods Paper
+
+Analyzing a methodology-focused paper:
+
+```{r case2, eval=FALSE}
+# Methods section should have substantial citations
+methods_citations <- analysis$citations %>%
+  filter(section == "Methods") %>%
+  nrow()
+
+methods_pct <- methods_citations / nrow(analysis$citations) * 100
+
+cat("Methods citations:", methods_citations, 
+    "(", round(methods_pct, 1), "%)\n")
+
+# Look for method-related terms in contexts
+method_contexts <- analysis$citation_contexts %>%
+  filter(section == "Methods",
+         grepl("algorithm|procedure|technique|approach", 
+               paste(words_before, words_after),
+               ignore.case = TRUE))
+
+cat("Method-related citation contexts:", nrow(method_contexts), "\n")
+```
+
+## Tips and Best Practices
+
+::: {.callout-tip}
+## Improving Match Rates
+
+To improve citation-reference matching:
+
+1. **Always provide DOI**: Enables CrossRef integration
+2. **Check Reference section**: Ensure it was properly extracted
+3. **Review low-confidence matches**: May need manual verification
+4. **Standard formats**: Works best with standard citation styles
+:::
+
+::: {.callout-tip}
+## Context Window
+
+Choose appropriate window size:
+
+- **Narrow (5-7 words)**: For focused analysis
+- **Medium (10-12 words)**: Good balance (recommended)
+- **Wide (15-20 words)**: For sentence-level context
+:::
+
+::: {.callout-warning}
+## Citation Format Variations
+
+Be aware of:
+
+- Different citation styles (APA, MLA, Chicago, etc.)
+- Non-standard formats may be missed
+- Multiple citations in one parenthesis
+- In-text references vs. bibliography citations
+:::
+
+## See Also
+
+- [Content Analysis](content-analysis.qmd): Main analysis function
+- [Network Visualization](network-viz.qmd): Visualize citation networks
+- [Tutorial](../tutorial.qmd): Complete workflow examples

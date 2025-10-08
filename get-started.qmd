@@ -1,0 +1,291 @@
+---
+title: "Get Started"
+---
+
+## Installation
+
+Install the development version from GitHub:
+
+```{r, eval=FALSE}
+# Install devtools if not already installed
+if (!require("devtools")) install.packages("devtools")
+
+# Install contentanalysis
+devtools::install_github("massimoaria/contentanalysis")
+```
+
+Load the package:
+
+```{r setup, message=FALSE}
+library(contentanalysis)
+library(dplyr)
+```
+
+## Your First Analysis
+
+### Step 1: Download an Example Paper
+
+We'll use an open-access paper on Machine Learning:
+
+```{r download, eval=FALSE}
+# Download example paper
+paper_url <- "https://raw.githubusercontent.com/massimoaria/contentanalysis/master/inst/examples/example_paper.pdf"
+download.file(paper_url, destfile = "example_paper.pdf", mode = "wb")
+```
+
+### Step 2: Import the PDF
+
+Import with automatic section detection:
+
+```{r import, eval=FALSE}
+# Import PDF with automatic section detection
+doc <- pdf2txt_auto("example_paper.pdf", n_columns = 2)
+
+# Check detected sections
+names(doc)
+```
+
+Expected output:
+```
+[1] "Full_text"    "Abstract"     "Introduction" "Methods"     
+[5] "Results"      "Discussion"   "References"
+```
+
+### Step 3: Analyze the Content
+
+Perform comprehensive analysis with CrossRef integration:
+
+```{r analysis, eval=FALSE}
+analysis <- analyze_scientific_content(
+  text = doc,
+  doi = "10.1016/j.mlwa.2021.100094",
+  mailto = "your@email.com",
+  window_size = 10,
+  remove_stopwords = TRUE,
+  ngram_range = c(1, 3)
+)
+```
+
+::: {.callout-tip}
+## CrossRef Integration
+
+Providing a DOI and email enables automatic reference matching through CrossRef. This significantly improves citation-reference matching accuracy.
+:::
+
+### Step 4: Explore the Results
+
+View summary statistics:
+
+```{r summary, eval=FALSE}
+analysis$summary
+```
+
+Example output:
+```
+$total_words
+[1] 5234
+
+$citations_extracted
+[1] 42
+
+$narrative_citations
+[1] 18
+
+$parenthetical_citations
+[1] 24
+
+$references_matched
+[1] 38
+
+$lexical_diversity
+[1] 0.421
+
+$citation_density
+[1] 8.03
+```
+
+## Common Workflows
+
+### Workflow 1: Citation Analysis
+
+Extract and analyze citations:
+
+```{r workflow1, eval=FALSE}
+# View all citations
+head(analysis$citations)
+
+# Count by type
+table(analysis$citations$citation_type)
+
+# Find citations in specific section
+intro_citations <- analysis$citations %>%
+  filter(section == "Introduction")
+
+nrow(intro_citations)
+```
+
+### Workflow 2: Text Analysis
+
+Analyze word usage:
+
+```{r workflow2, eval=FALSE}
+# Top words
+head(analysis$word_frequencies, 20)
+
+# Bigrams
+head(analysis$ngrams$`2gram`, 10)
+
+# Track specific terms
+terms <- c("machine learning", "random forest", "accuracy")
+
+dist <- calculate_word_distribution(
+  text = doc,
+  selected_words = terms,
+  use_sections = TRUE
+)
+
+# Visualize
+plot_word_distribution(dist, plot_type = "line")
+```
+
+### Workflow 3: Network Visualization
+
+Create citation networks:
+
+```{r workflow3, eval=FALSE}
+# Create network
+network <- create_citation_network(
+  analysis,
+  max_distance = 800,
+  min_connections = 2,
+  show_labels = TRUE
+)
+
+# Display
+network
+
+# View statistics
+stats <- attr(network, "stats")
+print(stats$section_distribution)
+```
+
+### Workflow 4: Readability Assessment
+
+Calculate readability metrics:
+
+```{r workflow4, eval=FALSE}
+# Full document readability
+readability <- calculate_readability_indices(
+  doc$Full_text,
+  detailed = TRUE
+)
+
+print(readability)
+
+# Compare sections
+sections <- c("Abstract", "Introduction", "Methods", "Discussion")
+readability_by_section <- lapply(sections, function(s) {
+  calculate_readability_indices(doc[[s]], detailed = FALSE)
+})
+names(readability_by_section) <- sections
+
+do.call(rbind, readability_by_section)
+```
+
+## Export Results
+
+Save your analysis results:
+
+```{r export, eval=FALSE}
+# Export citations
+write.csv(analysis$citations, 
+          "citations.csv", 
+          row.names = FALSE)
+
+# Export matched references
+write.csv(analysis$citation_references_mapping, 
+          "matched_citations.csv", 
+          row.names = FALSE)
+
+# Export word frequencies
+write.csv(analysis$word_frequencies, 
+          "word_frequencies.csv", 
+          row.names = FALSE)
+```
+
+## Processing Multiple Papers
+
+Batch process multiple documents:
+
+```{r batch, eval=FALSE}
+# List of papers and DOIs
+papers <- c("paper1.pdf", "paper2.pdf", "paper3.pdf")
+dois <- c("10.xxxx/1", "10.xxxx/2", "10.xxxx/3")
+
+# Process all papers
+results <- lapply(seq_along(papers), function(i) {
+  doc <- pdf2txt_auto(papers[i], n_columns = 2)
+  analyze_scientific_content(
+    doc, 
+    doi = dois[i],
+    mailto = "your@email.com"
+  )
+})
+
+# Extract citation counts
+citation_counts <- sapply(results, function(x) {
+  x$summary$citations_extracted
+})
+names(citation_counts) <- papers
+
+print(citation_counts)
+```
+
+## Next Steps
+
+Now that you're familiar with the basics, explore:
+
+- [Reference Documentation](reference/) for detailed function descriptions
+- [Tutorial](tutorial.qmd) for complete workflow examples
+- [Citation Analysis](reference/citation-analysis.qmd) for advanced citation techniques
+- [Network Visualization](reference/network-viz.qmd) for network analysis
+
+## Troubleshooting
+
+### Common Issues
+
+**PDF won't import**
+
+- Ensure the PDF is text-based, not scanned images
+- Try different `n_columns` values (1, 2, or 3)
+- Check that the file path is correct
+
+**Citations not detected**
+
+- Verify the paper uses standard citation formats
+- Check if sections are properly detected with `names(doc)`
+- Try adjusting `window_size` parameter
+
+**Low reference matching**
+
+- Provide a DOI for CrossRef integration
+- Ensure your email is valid for CrossRef API
+- Check that the References section was properly extracted
+
+**Network won't display**
+
+- Ensure there are enough citations (`min_connections`)
+- Try adjusting `max_distance` parameter
+- Check that citations were successfully extracted
+
+::: {.callout-note}
+## Need Help?
+
+If you encounter issues not covered here, please [open an issue](https://github.com/yourusername/contentanalysis/issues) on GitHub.
+:::
+
+## Additional Resources
+
+- [Package Vignette](https://github.com/massimoaria/contentanalysis): Detailed examples
+- [GitHub Repository](https://github.com/massimoaria/contentanalysis): Source code
+- [Issue Tracker](https://github.com/massimoaria/contentanalysis/issues): Report bugs

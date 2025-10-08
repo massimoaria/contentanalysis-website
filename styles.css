@@ -1,0 +1,408 @@
+/* Additional custom styles for contentanalysis website */
+
+/* Hero section on homepage */
+.hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4em 0;
+  margin: -2em -2em 2em -2em;
+  text-align: center;
+}
+
+.hero h1 {
+  border: none;
+  color: white;
+  font-size: 3em;
+  margin-bottom: 0.5em;
+}
+
+.hero .subtitle {
+  font-size: 1.3em;
+  opacity: 0.9;
+}
+
+/* Feature grid on homepage */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2em;
+  margin: 3em 0;
+}
+
+.feature-box {
+  background: white;
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 2em;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.feature-box:hover {
+  border-color: #3498db;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+.feature-box .icon {
+  font-size: 3em;
+  margin-bottom: 0.5em;
+}
+
+.feature-box h3 {
+  color: #2c3e50;
+  margin: 0.5em 0;
+  border: none;
+}
+
+/* Code example boxes */
+.code-example {
+  background: #f8f9fa;
+  border-left: 4px solid #3498db;
+  padding: 1.5em;
+  margin: 1.5em 0;
+  border-radius: 4px;
+}
+
+.code-example-title {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 1em;
+}
+
+/* Installation box */
+.install-box {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+  padding: 2em;
+  border-radius: 8px;
+  margin: 2em 0;
+}
+
+.install-box h3 {
+  color: white;
+  margin-top: 0;
+  border: none;
+}
+
+.install-box code {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.5em 1em;
+  display: block;
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+/* Quick links */
+.quick-links {
+  display: flex;
+  gap: 1em;
+  flex-wrap: wrap;
+  margin: 2em 0;
+}
+
+.quick-link {
+  flex: 1;
+  min-width: 200px;
+  background: white;
+  border: 2px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 1.5em;
+  text-align: center;
+  text-decoration: none;
+  color: #2c3e50;
+  transition: all 0.3s ease;
+}
+
+.quick-link:hover {
+  border-color: #3498db;
+  background: #f8f9fa;
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.quick-link-icon {
+  font-size: 2em;
+  margin-bottom: 0.5em;
+  color: #3498db;
+}
+
+.quick-link-title {
+  font-weight: 600;
+  margin-bottom: 0.3em;
+}
+
+/* Example output boxes */
+.example-output {
+  background: #2c3e50;
+  color: #ecf0f1;
+  padding: 1em;
+  border-radius: 4px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.9em;
+  margin: 1em 0;
+  overflow-x: auto;
+}
+
+/* Highlight boxes */
+.highlight-box {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-left: 4px solid #ffc107;
+  padding: 1em;
+  margin: 1.5em 0;
+  border-radius: 4px;
+}
+
+.highlight-box-success {
+  background: #d4edda;
+  border-color: #28a745;
+}
+
+.highlight-box-info {
+  background: #d1ecf1;
+  border-color: #17a2b8;
+}
+
+/* Step indicators for tutorials */
+.step-number {
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  background: #3498db;
+  color: white;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 2em;
+  font-weight: bold;
+  margin-right: 0.5em;
+}
+
+/* Function signature box */
+.function-signature {
+  background: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 4px;
+  padding: 1em;
+  margin: 1.5em 0;
+  font-family: 'Source Code Pro', monospace;
+}
+
+.function-name {
+  color: #6f42c1;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.function-params {
+  color: #24292e;
+  margin-left: 1em;
+}
+
+/* Reference documentation styling */
+.ref-section {
+  margin-bottom: 3em;
+}
+
+.ref-section h3 {
+  background: #f8f9fa;
+  padding: 0.5em 1em;
+  border-left: 4px solid #3498db;
+  margin-bottom: 1em;
+}
+
+/* Argument list */
+.arg-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.arg-list li {
+  margin-bottom: 1em;
+  padding: 0.8em;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.arg-name {
+  font-family: 'Source Code Pro', monospace;
+  color: #6f42c1;
+  font-weight: bold;
+}
+
+.arg-type {
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Version badge */
+.version-badge {
+  display: inline-block;
+  background: #28a745;
+  color: white;
+  padding: 0.3em 0.8em;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+/* Footer customization */
+.page-footer {
+  font-size: 0.9em;
+  color: #6c757d;
+}
+
+.page-footer a {
+  color: #3498db;
+}
+
+/* Improve mobile responsiveness */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2em;
+  }
+  
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-links {
+    flex-direction: column;
+  }
+  
+  .quick-link {
+    min-width: 100%;
+  }
+}
+
+/* Citation box for bibliography */
+.citation-box {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 1.5em;
+  margin: 2em 0;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.9em;
+}
+
+/* Stats boxes */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5em;
+  margin: 2em 0;
+}
+
+.stat-box {
+  background: white;
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5em;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #3498db;
+  display: block;
+}
+
+.stat-label {
+  color: #6c757d;
+  font-size: 0.9em;
+  margin-top: 0.5em;
+}
+
+/* Progress indicators */
+.progress-bar {
+  background: #e9ecef;
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+  margin: 0.5em 0;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* Badge styles */
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.6em;
+  font-size: 0.85em;
+  font-weight: 600;
+  border-radius: 3px;
+  margin: 0 0.2em;
+}
+
+.badge-primary {
+  background: #3498db;
+  color: white;
+}
+
+.badge-success {
+  background: #28a745;
+  color: white;
+}
+
+.badge-warning {
+  background: #ffc107;
+  color: #212529;
+}
+
+.badge-info {
+  background: #17a2b8;
+  color: white;
+}
+
+/* Timeline for version history */
+.timeline {
+  position: relative;
+  padding-left: 2em;
+  margin: 2em 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0.5em;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #dee2e6;
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 2em;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -1.5em;
+  top: 0.3em;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #3498db;
+  border: 3px solid white;
+  box-shadow: 0 0 0 2px #3498db;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+  background: #3498db;
+  color: white;
+}

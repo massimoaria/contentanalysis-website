@@ -1,0 +1,239 @@
+---
+title: "About"
+---
+
+## About contentanalysis
+
+**contentanalysis** is an R package designed to facilitate comprehensive analysis of scientific literature. It provides researchers with powerful tools to extract, analyze, and visualize content from PDF documents, with a particular focus on citation analysis and text mining.
+
+## Key Features
+
+### PDF Processing
+- Multi-column layout support (1, 2, or 3 columns)
+- Automatic section detection (Abstract, Introduction, Methods, Results, Discussion, etc.)
+- Structure preservation during text extraction
+- Handles complex academic paper layouts
+
+### Citation Analysis
+- Detects multiple citation formats (narrative and parenthetical)
+- Extracts citation contexts with configurable window sizes
+- Automatic reference matching via CrossRef API
+- Citation network visualization
+- Co-citation analysis
+
+### Text Analytics
+- Word frequency analysis with stopword removal
+- N-gram extraction (bigrams, trigrams, etc.)
+- Word distribution tracking across document sections
+- Readability metrics (Flesch Reading Ease, Flesch-Kincaid, etc.)
+- Lexical diversity measures
+
+### Visualization
+- Interactive citation networks with visNetwork
+- Word distribution plots (line, bar, area)
+- Customizable color schemes and layouts
+- Publication-ready figures
+
+## Use Cases
+
+The package is designed for:
+
+- **Systematic Literature Reviews**: Analyze citation patterns and content across multiple papers
+- **Bibliometric Studies**: Map citation networks and identify influential works
+- **Content Analysis Research**: Extract and quantify themes, concepts, and terminology
+- **Academic Writing Assessment**: Evaluate readability and citation practices
+- **Research Methodology**: Study how citations are deployed in scientific arguments
+
+## Development
+
+### Author
+
+Massimo Aria, Ph.D.  
+Department of Economics and Statistics  
+University of Naples Federico II
+
+### Related Projects
+
+- **[bibliometrix](https://bibliometrix.org/)**: R tool for comprehensive science mapping analysis
+- **[TALL](https://github.com/massimoaria/TALL)**: Text Analysis with Large Language models
+
+### Technology Stack
+
+contentanalysis is built using:
+
+- **R**: Statistical computing environment
+- **pdftools**: PDF text extraction
+- **rcrossref**: CrossRef API integration
+- **visNetwork**: Interactive network visualization
+- **quanteda**: Text analysis and natural language processing
+- **dplyr/tidyr**: Data manipulation
+
+## Contributing
+
+We welcome contributions! Here's how you can help:
+
+### Report Bugs
+
+If you find a bug, please [open an issue](https://github.com/massimoaria/contentanalysis/issues) with:
+
+- A clear description of the problem
+- Reproducible example
+- Your R version and operating system
+- Package version
+
+### Suggest Features
+
+Have an idea for improvement? [Open an issue](https://github.com/massimoaria/contentanalysis/issues) describing:
+
+- The feature you'd like to see
+- Why it would be useful
+- Example use cases
+
+### Submit Pull Requests
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Code of Conduct
+
+Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
+
+## Citation
+
+If you use contentanalysis in your research, please cite:
+
+```bibtex
+@Manual{contentanalysis,
+  title = {contentanalysis: Comprehensive Tools for Scientific Content Analysis},
+  author = {Massimo Aria},
+  year = {2024},
+  note = {R package version 0.1.0},
+  url = {https://github.com/massimoaria/contentanalysis}
+}
+```
+
+## License
+
+This package is free and open source software, licensed under GPL-3.
+
+```
+GPL-3 License
+
+Copyright (c) 2024 Massimo Aria
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+```
+
+## Acknowledgments
+
+Special thanks to:
+
+- The R Core Team for the R language
+- Contributors to all dependent packages
+- The open science community
+- Users who provide feedback and suggestions
+
+## Contact
+
+- **GitHub**: [github.com/massimoaria/contentanalysis](https://github.com/massimoaria/contentanalysis)
+- **Issues**: [github.com/massimoaria/contentanalysis/issues](https://github.com/massimoaria/contentanalysis/issues)
+- **Website**: [https://massimoaria.github.io/contentanalysis](https://massimoaria.github.io/contentanalysis)
+
+## Version History
+
+### Version 0.1.0 (Current)
+
+Initial release featuring:
+
+- PDF import with automatic section detection
+- Comprehensive citation analysis
+- CrossRef integration for reference matching
+- Interactive network visualization
+- Text analysis and n-gram extraction
+- Readability metrics
+- Word distribution tracking
+- Batch processing capabilities
+
+## Frequently Asked Questions
+
+### Installation
+
+**Q: How do I install the package?**
+
+```r
+devtools::install_github("massimoaria/contentanalysis")
+```
+
+**Q: What R version is required?**
+
+R >= 4.0.0 is recommended.
+
+### Usage
+
+**Q: Can I analyze scanned PDFs?**
+
+No, the package requires text-based PDFs. Scanned documents need OCR processing first.
+
+**Q: Do I need a DOI for analysis?**
+
+No, but providing a DOI enables automatic reference matching via CrossRef, which significantly improves citation-reference linking.
+
+**Q: Is an internet connection required?**
+
+Only if you use the CrossRef integration features. Local analysis works offline.
+
+**Q: Can I analyze multiple papers at once?**
+
+Yes! See the [Tutorial](tutorial.qmd) for batch processing examples.
+
+### Technical
+
+**Q: Why are some citations not detected?**
+
+Citation detection works best with standard formats (APA, MLA, Chicago). Non-standard or poorly formatted citations may be missed.
+
+**Q: How accurate is the section detection?**
+
+Very accurate for standard academic papers with clear section headers. Custom keywords can be provided for non-standard formats.
+
+**Q: Can I customize the network visualization?**
+
+Yes, through the `max_distance`, `min_connections`, and `show_labels` parameters.
+
+## Support
+
+For support:
+
+1. Check the [documentation](reference/)
+2. Read the [tutorial](tutorial.qmd)
+3. Search [existing issues](https://github.com/massimoaria/contentanalysis/issues)
+4. Open a new issue if needed
+
+## Roadmap
+
+Planned features for future releases:
+
+- Enhanced PDF layout detection
+- Additional readability metrics
+- Support for more citation styles
+- Advanced network analysis metrics
+- Integration with bibliographic databases
+- Batch analysis reporting tools
+- Machine learning-based classification
+
+Stay tuned for updates!
+
+---
+
+*Last updated: 2024*

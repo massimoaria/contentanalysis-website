@@ -1,0 +1,42 @@
+# Quarto
+/.quarto/
+/_site/
+
+# R
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor-specific
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# Output
+*.html
+!docs/*.html
+*.pdf
+
+# Don't ignore docs folder (needed for GitHub Pages)
+!docs/
+
+# Cache
+*_cache/
+*_files/

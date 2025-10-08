@@ -1,0 +1,341 @@
+---
+title: "PDF Import Functions"
+---
+
+## Overview
+
+The PDF import functions handle the extraction of text from PDF documents while preserving document structure. The package provides automatic section detection and supports various column layouts commonly found in academic papers.
+
+## Main Function
+
+### pdf2txt_auto()
+
+Import PDF with automatic section detection and multi-column support.
+
+**Usage**
+
+```r
+pdf2txt_auto(
+  file_path,
+  n_columns = 1,
+  sections = TRUE,
+  section_keywords = NULL
+)
+```
+
+**Arguments**
+
+- `file_path`: Character string. Path to the PDF file
+- `n_columns`: Integer. Number of columns in the PDF layout (1, 2, or 3)
+- `sections`: Logical. Whether to split text into sections
+- `section_keywords`: Character vector. Custom keywords for section detection
+
+**Value**
+
+A named list containing:
+
+- `Full_text`: The complete document text
+- Section-specific text (e.g., `Abstract`, `Introduction`, `Methods`, etc.)
+
+## Examples
+
+### Basic Import
+
+Import a simple single-column PDF:
+
+```{r basic, eval=FALSE}
+library(contentanalysis)
+
+# Single column PDF
+doc <- pdf2txt_auto("paper.pdf", n_columns = 1)
+
+# Check structure
+names(doc)
+str(doc, max.level = 1)
+```
+
+### Multi-Column PDFs
+
+Most academic papers use two-column layouts:
+
+```{r multicolumn, eval=FALSE}
+# Two-column layout (most common)
+doc <- pdf2txt_auto("paper.pdf", n_columns = 2)
+
+# Three-column layout (less common)
+doc_three <- pdf2txt_auto("paper.pdf", n_columns = 3)
+```
+
+### Section Detection
+
+The function automatically detects common academic sections:
+
+```{r sections, eval=FALSE}
+# With automatic section detection (default)
+doc <- pdf2txt_auto("paper.pdf", n_columns = 2, sections = TRUE)
+
+# View detected sections
+names(doc)
+# [1] "Full_text"    "Abstract"     "Introduction" "Methods"     
+# [5] "Results"      "Discussion"   "References"
+
+# Access specific sections
+cat(doc$Abstract)
+cat(doc$Introduction)
+```
+
+### Without Section Splitting
+
+Extract text without section detection:
+
+```{r no_sections, eval=FALSE}
+# Get only full text
+text_only <- pdf2txt_auto("paper.pdf", sections = FALSE)
+
+# Result is a list with only Full_text
+names(text_only)
+# [1] "Full_text"
+```
+
+### Custom Section Keywords
+
+Define custom keywords for section detection:
+
+```{r custom, eval=FALSE}
+# Custom section keywords
+my_keywords <- list(
+  Background = c("background", "literature review"),
+  Methodology = c("methodology", "experimental design"),
+  Findings = c("findings", "observations"),
+  Conclusions = c("conclusions", "summary")
+)
+
+doc <- pdf2txt_auto(
+  "paper.pdf",
+  n_columns = 2,
+  sections = TRUE,
+  section_keywords = my_keywords
+)
+
+names(doc)
+```
+
+## Working with Results
+
+### Accessing Section Content
+
+```{r access, eval=FALSE}
+# Get word count per section
+section_lengths <- sapply(doc[names(doc) != "Full_text"], function(x) {
+  length(strsplit(x, "\\s+")[[1]])
+})
+
+print(section_lengths)
+
+# Example output:
+#    Abstract Introduction      Methods      Results   Discussion   References 
+#         234         1052          876         1342          945          523
+```
+
+### Checking Section Quality
+
+```{r quality, eval=FALSE}
+# Check if important sections were detected
+required_sections <- c("Abstract", "Introduction", "Methods", "Results")
+detected <- required_sections %in% names(doc)
+names(detected) <- required_sections
+
+print(detected)
+
+# Identify missing sections
+missing <- required_sections[!detected]
+if (length(missing) > 0) {
+  cat("Warning: Missing sections:", paste(missing, collapse = ", "), "\n")
+}
+```
+
+### Preview Section Content
+
+```{r preview, eval=FALSE}
+# Preview first 500 characters of each section
+preview_sections <- function(doc, n_chars = 500) {
+  sections <- names(doc)[names(doc) != "Full_text"]
+  
+  for (section in sections) {
+    cat("\n===", section, "===\n")
+    cat(substr(doc[[section]], 1, n_chars), "...\n")
+  }
+}
+
+preview_sections(doc)
+```
+
+## Common Use Cases
+
+### Use Case 1: Prepare for Analysis
+
+```{r usecase1, eval=FALSE}
+# Import PDF
+doc <- pdf2txt_auto("example_paper.pdf", n_columns = 2)
+
+# Verify sections were detected
+if (!"Introduction" %in% names(doc)) {
+  warning("Introduction not detected - check section keywords")
+}
+
+# Pass to analysis
+analysis <- analyze_scientific_content(
+  text = doc,
+  doi = "10.xxxx/xxxxx",
+  mailto = "your@email.com"
+)
+```
+
+### Use Case 2: Extract Specific Sections
+
+```{r usecase2, eval=FALSE}
+# Import multiple papers and extract only Methods
+papers <- c("paper1.pdf", "paper2.pdf", "paper3.pdf")
+
+methods_sections <- lapply(papers, function(p) {
+  doc <- pdf2txt_auto(p, n_columns = 2)
+  doc$Methods
+})
+
+names(methods_sections) <- papers
+
+# Analyze methods section lengths
+methods_lengths <- sapply(methods_sections, function(m) {
+  if (!is.null(m)) {
+    length(strsplit(m, "\\s+")[[1]])
+  } else {
+    NA
+  }
+})
+
+print(methods_lengths)
+```
+
+### Use Case 3: Batch Processing
+
+```{r usecase3, eval=FALSE}
+# Process multiple papers with different layouts
+process_paper <- function(file, columns = 2) {
+  tryCatch({
+    doc <- pdf2txt_auto(file, n_columns = columns)
+    list(
+      success = TRUE,
+      sections = names(doc),
+      word_count = length(strsplit(doc$Full_text, "\\s+")[[1]]),
+      doc = doc
+    )
+  }, error = function(e) {
+    list(
+      success = FALSE,
+      error = e$message,
+      doc = NULL
+    )
+  })
+}
+
+# Process all PDFs in directory
+pdf_files <- list.files(pattern = "\\.pdf$")
+results <- lapply(pdf_files, process_paper)
+names(results) <- pdf_files
+
+# Check success rate
+success_rate <- mean(sapply(results, function(r) r$success))
+cat("Successfully processed:", success_rate * 100, "%\n")
+```
+
+## Tips and Best Practices
+
+::: {.callout-tip}
+## Column Detection
+
+- **Start with n_columns = 2**: Most academic papers use two columns
+- If text appears jumbled, try different column values
+- Single-column: theses, reports, preprints
+- Two-column: journal articles, conference papers
+- Three-column: some conference proceedings
+:::
+
+::: {.callout-tip}
+## Section Detection
+
+- Works best with clearly formatted section headers
+- Case-insensitive matching
+- Handles common variations (e.g., "METHODS", "Methods", "Methodology")
+- Custom keywords useful for non-standard formats
+:::
+
+::: {.callout-warning}
+## Limitations
+
+- Requires text-based PDFs (not scanned images)
+- Complex layouts may affect text extraction
+- Tables and figures may disrupt text flow
+- Some formatting is lost in plain text conversion
+:::
+
+## Troubleshooting
+
+### Problem: Garbled or Jumbled Text
+
+**Solution**: Adjust the `n_columns` parameter
+
+```{r troubleshoot1, eval=FALSE}
+# Try different column settings
+doc_1col <- pdf2txt_auto("paper.pdf", n_columns = 1)
+doc_2col <- pdf2txt_auto("paper.pdf", n_columns = 2)
+doc_3col <- pdf2txt_auto("paper.pdf", n_columns = 3)
+
+# Compare results
+sapply(list(doc_1col, doc_2col, doc_3col), function(d) {
+  substr(d$Full_text, 1, 200)
+})
+```
+
+### Problem: Sections Not Detected
+
+**Solution**: Check section headers and use custom keywords
+
+```{r troubleshoot2, eval=FALSE}
+# Import without sections to see raw text
+doc_raw <- pdf2txt_auto("paper.pdf", sections = FALSE)
+
+# Search for section markers
+section_markers <- c("abstract", "introduction", "methods", 
+                     "results", "discussion", "conclusion")
+
+positions <- sapply(section_markers, function(marker) {
+  gregexpr(marker, doc_raw$Full_text, ignore.case = TRUE)[[1]][1]
+})
+
+print(positions[positions > 0])
+```
+
+### Problem: Missing References Section
+
+**Solution**: References may be in a separate section or differently named
+
+```{r troubleshoot3, eval=FALSE}
+# Check all detected sections
+names(doc)
+
+# References might be under different names
+possible_refs <- c("References", "Bibliography", "Works Cited", "Literature")
+ref_section <- intersect(names(doc), possible_refs)
+
+if (length(ref_section) > 0) {
+  references <- doc[[ref_section]]
+} else {
+  cat("References section not found automatically\n")
+}
+```
+
+## See Also
+
+- [Content Analysis](content-analysis.qmd): Analyze imported documents
+- [Citation Analysis](citation-analysis.qmd): Extract citations from text
+- [Tutorial](../tutorial.qmd): Complete workflow examples

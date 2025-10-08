@@ -1,0 +1,529 @@
+---
+title: "Text Analysis Functions"
+---
+
+## Overview
+
+The contentanalysis package provides comprehensive text analysis capabilities including word frequency analysis, n-gram extraction, and word distribution tracking across document sections.
+
+## Word Frequency Analysis
+
+### Automatic Extraction
+
+Word frequencies are automatically calculated during content analysis:
+
+```{r basic, eval=FALSE}
+library(contentanalysis)
+library(dplyr)
+
+# Analyze document
+doc <- pdf2txt_auto("paper.pdf", n_columns = 2)
+analysis <- analyze_scientific_content(
+  text = doc,
+  remove_stopwords = TRUE
+)
+
+# View word frequencies
+head(analysis$word_frequencies, 20)
+```
+
+### Custom Stopwords
+
+Add domain-specific stopwords:
+
+```{r stopwords, eval=FALSE}
+# Define custom stopwords
+custom_stops <- c("however", "therefore", "thus", "moreover",
+                  "furthermore", "additionally", "specifically",
+                  "particularly", "generally", "typically")
+
+analysis <- analyze_scientific_content(
+  text = doc,
+  custom_stopwords = custom_stops,
+  remove_stopwords = TRUE
+)
+
+# Compare top words
+head(analysis$word_frequencies, 20)
+```
+
+### Word Frequency Analysis
+
+```{r freq_analysis, eval=FALSE}
+# Top 50 words
+top_50 <- head(analysis$word_frequencies, 50)
+
+# Visualize
+library(ggplot2)
+top_20 <- head(analysis$word_frequencies, 20)
+
+ggplot(top_20, aes(x = reorder(word, frequency), y = frequency)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Top 20 Most Frequent Words",
+       x = "Word", y = "Frequency") +
+  theme_minimal()
+
+# Word cloud
+library(wordcloud)
+wordcloud(words = analysis$word_frequencies$word,
+          freq = analysis$word_frequencies$frequency,
+          max.words = 100,
+          colors = brewer.pal(8, "Dark2"))
+```
+
+## N-gram Analysis
+
+### Extracting N-grams
+
+N-grams are automatically extracted:
+
+```{r ngrams, eval=FALSE}
+# Configure n-gram range during analysis
+analysis <- analyze_scientific_content(
+  text = doc,
+  ngram_range = c(1, 3),  # Unigrams to trigrams
+  remove_stopwords = TRUE
+)
+
+# Access n-grams
+names(analysis$ngrams)
+# [1] "1gram" "2gram" "3gram"
+
+# View bigrams
+head(analysis$ngrams$`2gram`, 20)
+
+# View trigrams
+head(analysis$ngrams$`3gram`, 20)
+```
+
+### N-gram Configurations
+
+```{r ngram_config, eval=FALSE}
+# Only bigrams and trigrams
+analysis_23 <- analyze_scientific_content(
+  text = doc,
+  ngram_range = c(2, 3)
+)
+
+# Up to 4-grams
+analysis_14 <- analyze_scientific_content(
+  text = doc,
+  ngram_range = c(1, 4)
+)
+
+# Only bigrams
+analysis_2 <- analyze_scientific_content(
+  text = doc,
+  ngram_range = c(2, 2)
+)
+
+# Compare
+cat("Bigrams found:", nrow(analysis_2$ngrams$`2gram`), "\n")
+cat("Trigrams found:", nrow(analysis_23$ngrams$`3gram`), "\n")
+cat("4-grams found:", nrow(analysis_14$ngrams$`4gram`), "\n")
+```
+
+### Analyzing N-grams
+
+```{r ngram_analysis, eval=FALSE}
+# Most frequent bigrams
+top_bigrams <- head(analysis$ngrams$`2gram`, 20)
+
+# Visualize
+ggplot(top_bigrams, aes(x = reorder(ngram, frequency), y = frequency)) +
+  geom_col(fill = "darkgreen") +
+  coord_flip() +
+  labs(title = "Top 20 Most Frequent Bigrams",
+       x = "Bigram", y = "Frequency") +
+  theme_minimal()
+
+# Filter by topic
+method_bigrams <- analysis$ngrams$`2gram` %>%
+  filter(grepl("model|method|algorithm|approach", ngram, ignore.case = TRUE))
+
+cat("Method-related bigrams:", nrow(method_bigrams), "\n")
+head(method_bigrams, 10)
+```
+
+## Word Distribution Analysis
+
+### calculate_word_distribution()
+
+Track how specific terms are distributed across the document.
+
+**Usage**
+
+```r
+calculate_word_distribution(
+  text,
+  selected_words,
+  use_sections = TRUE,
+  n_segments = 10,
+  normalize = TRUE
+)
+```
+
+**Arguments**
+
+- `text`: Named list from `pdf2txt_auto()`
+- `selected_words`: Character vector of terms to track
+- `use_sections`: Logical. Use document sections (TRUE) or equal segments (FALSE)
+- `n_segments`: Number of segments if `use_sections = FALSE`
+- `normalize`: Logical. Normalize counts as percentages
+
+### Section-Based Distribution
+
+```{r dist_sections, eval=FALSE}
+# Define terms of interest
+terms <- c("machine learning", "random forest", 
+           "accuracy", "classification", "tree")
+
+# Calculate distribution by section
+dist <- calculate_word_distribution(
+  text = doc,
+  selected_words = terms,
+  use_sections = TRUE,
+  normalize = TRUE
+)
+
+# View results
+dist %>%
+  select(segment_name, word, count, percentage) %>%
+  arrange(segment_name, desc(percentage))
+
+# Summary statistics
+dist %>%
+  group_by(word) %>%
+  summarise(
+    total_count = sum(count),
+    max_section = segment_name[which.max(percentage)],
+    max_percentage = max(percentage)
+  ) %>%
+  arrange(desc(total_count))
+```
+
+### Segment-Based Distribution
+
+For uniform analysis across document:
+
+```{r dist_segments, eval=FALSE}
+# Divide into equal segments
+dist_segments <- calculate_word_distribution(
+  text = doc,
+  selected_words = terms,
+  use_sections = FALSE,
+  n_segments = 20
+)
+
+# Track term evolution
+term_evolution <- dist_segments %>%
+  filter(word == "machine learning") %>%
+  select(segment_name, segment_index, percentage)
+
+print(term_evolution)
+```
+
+### Comparing Terms
+
+```{r compare_terms, eval=FALSE}
+# Compare usage patterns
+library(tidyr)
+
+comparison <- dist %>%
+  select(segment_name, word, percentage) %>%
+  pivot_wider(names_from = word, values_from = percentage)
+
+print(comparison)
+
+# Find section with highest term density
+density_by_section <- dist %>%
+  group_by(segment_name) %>%
+  summarise(total_percentage = sum(percentage)) %>%
+  arrange(desc(total_percentage))
+
+cat("Section with highest term density:\n")
+print(head(density_by_section))
+```
+
+## Visualization Functions
+
+### plot_word_distribution()
+
+Create interactive visualizations of word distributions.
+
+**Usage**
+
+```r
+plot_word_distribution(
+  distribution_data,
+  plot_type = "line",
+  show_points = TRUE,
+  smooth = FALSE,
+  color_palette = NULL
+)
+```
+
+**Arguments**
+
+- `distribution_data`: Output from `calculate_word_distribution()`
+- `plot_type`: "line", "bar", or "area"
+- `show_points`: Logical. Show data points on line plots
+- `smooth`: Logical. Add smoothed trend line
+- `color_palette`: Custom color palette
+
+### Line Plots
+
+```{r line_plot, eval=FALSE}
+# Basic line plot
+plot_word_distribution(
+  dist,
+  plot_type = "line",
+  show_points = TRUE
+)
+
+# With smoothing
+plot_word_distribution(
+  dist,
+  plot_type = "line",
+  show_points = TRUE,
+  smooth = TRUE
+)
+
+# Segment-based with smooth trends
+plot_word_distribution(
+  dist_segments,
+  plot_type = "line",
+  smooth = TRUE
+)
+```
+
+### Bar Plots
+
+```{r bar_plot, eval=FALSE}
+# Bar plot by section
+plot_word_distribution(
+  dist,
+  plot_type = "bar"
+)
+
+# Custom colors
+custom_colors <- c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd")
+
+plot_word_distribution(
+  dist,
+  plot_type = "bar",
+  color_palette = custom_colors
+)
+```
+
+### Area Plots
+
+```{r area_plot, eval=FALSE}
+# Area plot
+plot_word_distribution(
+  dist,
+  plot_type = "area"
+)
+
+# Stacked area for segment analysis
+plot_word_distribution(
+  dist_segments,
+  plot_type = "area"
+)
+```
+
+## Advanced Text Analysis
+
+### Lexical Diversity
+
+Measure vocabulary richness:
+
+```{r lexical, eval=FALSE}
+# From analysis summary
+analysis$summary$lexical_diversity
+
+# Calculate manually
+words <- tolower(unlist(strsplit(doc$Full_text, "\\s+")))
+words_clean <- words[!words %in% stopwords::stopwords("en")]
+
+lexical_div <- length(unique(words_clean)) / length(words_clean)
+cat("Lexical diversity:", round(lexical_div, 3), "\n")
+
+# By section
+section_diversity <- sapply(doc[names(doc) != "Full_text"], function(section_text) {
+  words <- tolower(unlist(strsplit(section_text, "\\s+")))
+  words_clean <- words[!words %in% stopwords::stopwords("en")]
+  length(unique(words_clean)) / length(words_clean)
+})
+
+print(sort(section_diversity, decreasing = TRUE))
+```
+
+### Term Co-occurrence
+
+Find terms that appear together:
+
+```{r cooccurrence, eval=FALSE}
+# Extract bigrams with specific terms
+ml_bigrams <- analysis$ngrams$`2gram` %>%
+  filter(grepl("machine|learning", ngram, ignore.case = TRUE))
+
+print(ml_bigrams)
+
+# Create co-occurrence matrix
+library(quanteda)
+library(quanteda.textstats)
+
+tokens <- tokens(doc$Full_text, remove_punct = TRUE)
+tokens_lower <- tokens_tolower(tokens)
+
+# Co-occurrence within 5-word window
+fcm <- fcm(tokens_lower, context = "window", window = 5)
+
+# Top co-occurrences with "machine"
+topfeatures(fcm["machine", ], 20)
+```
+
+### Keyword Extraction
+
+Identify key terms using TF-IDF:
+
+```{r keywords, eval=FALSE}
+# Simple TF-IDF approach
+library(tidytext)
+
+# Prepare data
+text_df <- data.frame(
+  section = names(doc)[names(doc) != "Full_text"],
+  text = unlist(doc[names(doc) != "Full_text"])
+)
+
+# Calculate TF-IDF
+words_df <- text_df %>%
+  unnest_tokens(word, text) %>%
+  count(section, word) %>%
+  bind_tf_idf(word, section, n)
+
+# Top TF-IDF words per section
+top_tfidf <- words_df %>%
+  group_by(section) %>%
+  slice_max(tf_idf, n = 10) %>%
+  ungroup()
+
+# Visualize
+ggplot(top_tfidf, aes(x = reorder_within(word, tf_idf, section), 
+                      y = tf_idf, fill = section)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~section, scales = "free") +
+  coord_flip() +
+  scale_x_reordered() +
+  labs(title = "Top Terms by Section (TF-IDF)",
+       x = NULL, y = "TF-IDF") +
+  theme_minimal()
+```
+
+### Sentiment Analysis
+
+Basic sentiment scoring:
+
+```{r sentiment, eval=FALSE}
+library(tidytext)
+
+# Get sentiment lexicon
+sentiments <- get_sentiments("bing")
+
+# Calculate sentiment by section
+section_sentiment <- text_df %>%
+  unnest_tokens(word, text) %>%
+  inner_join(sentiments, by = "word") %>%
+  count(section, sentiment) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>%
+  mutate(
+    sentiment_score = positive - negative,
+    sentiment_ratio = positive / (positive + negative)
+  )
+
+print(section_sentiment)
+
+# Visualize
+ggplot(section_sentiment, aes(x = section, y = sentiment_score, fill = section)) +
+  geom_col(show.legend = FALSE) +
+  labs(title = "Sentiment Score by Section",
+       x = "Section", y = "Sentiment Score (Positive - Negative)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Export Text Analysis
+
+```{r export, eval=FALSE}
+# Create export directory
+dir.create("text_analysis", showWarnings = FALSE)
+
+# 1. Word frequencies
+write.csv(analysis$word_frequencies,
+          "text_analysis/word_frequencies.csv",
+          row.names = FALSE)
+
+# 2. N-grams
+for (n in names(analysis$ngrams)) {
+  write.csv(analysis$ngrams[[n]],
+            paste0("text_analysis/", n, ".csv"),
+            row.names = FALSE)
+}
+
+# 3. Word distribution
+write.csv(dist,
+          "text_analysis/word_distribution.csv",
+          row.names = FALSE)
+
+# 4. Summary statistics
+summary_stats <- data.frame(
+  metric = c("total_words", "unique_words", "lexical_diversity"),
+  value = c(
+    analysis$summary$total_words,
+    nrow(analysis$word_frequencies),
+    analysis$summary$lexical_diversity
+  )
+)
+
+write.csv(summary_stats,
+          "text_analysis/summary_statistics.csv",
+          row.names = FALSE)
+```
+
+## Tips and Best Practices
+
+::: {.callout-tip}
+## Stopword Management
+
+- Use `remove_stopwords = TRUE` for cleaner analysis
+- Add domain-specific terms to `custom_stopwords`
+- Keep some function words for n-gram analysis
+- Review top words to identify missed stopwords
+:::
+
+::: {.callout-tip}
+## N-gram Selection
+
+- Bigrams capture common phrases
+- Trigrams identify technical terms
+- 4-grams useful for specific methodologies
+- Balance between detail and interpretability
+:::
+
+::: {.callout-tip}
+## Word Distribution
+
+- Use sections for structural analysis
+- Use segments for temporal evolution
+- Track 3-5 key terms for clarity
+- Normalize for fair comparison
+:::
+
+## See Also
+
+- [Content Analysis](content-analysis.qmd): Main analysis function
+- [Readability Metrics](readability.qmd): Assess text complexity
+- [Tutorial](../tutorial.qmd): Complete workflow examples

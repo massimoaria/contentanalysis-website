@@ -1,0 +1,499 @@
+---
+title: "Readability Metrics"
+---
+
+## Overview
+
+The `calculate_readability_indices()` function calculates various readability metrics to assess text complexity and accessibility. These metrics are valuable for evaluating scientific writing quality and comparing sections of academic papers.
+
+## Main Function
+
+### calculate_readability_indices()
+
+Calculate multiple readability indices for text.
+
+**Usage**
+
+```r
+calculate_readability_indices(
+  text,
+  detailed = FALSE
+)
+```
+
+**Arguments**
+
+- `text`: Character string containing the text to analyze
+- `detailed`: Logical. If TRUE, returns additional metrics and detailed statistics
+
+**Value**
+
+A data frame containing:
+
+**Basic metrics (always returned)**:
+- `flesch_reading_ease`: Flesch Reading Ease (0-100, higher = easier)
+- `flesch_kincaid_grade`: Flesch-Kincaid Grade Level
+- `gunning_fog`: Gunning Fog Index
+- `smog`: SMOG (Simple Measure of Gobbledygook) Index
+- `automated_readability`: Automated Readability Index (ARI)
+
+**Additional metrics (if detailed = TRUE)**:
+- Word count statistics
+- Sentence statistics
+- Syllable counts
+- Complex word percentages
+
+## Basic Usage
+
+### Single Text Analysis
+
+```{r basic, eval=FALSE}
+library(contentanalysis)
+
+# Import document
+doc <- pdf2txt_auto("paper.pdf", n_columns = 2)
+
+# Calculate readability for full text
+readability <- calculate_readability_indices(
+  doc$Full_text,
+  detailed = FALSE
+)
+
+print(readability)
+```
+
+Example output:
+```
+  flesch_reading_ease flesch_kincaid_grade gunning_fog smog automated_readability
+1              38.2                15.7        17.3  14.8                  16.2
+```
+
+### Detailed Analysis
+
+```{r detailed, eval=FALSE}
+# Get detailed metrics
+readability_detailed <- calculate_readability_indices(
+  doc$Full_text,
+  detailed = TRUE
+)
+
+print(readability_detailed)
+
+# Additional metrics include:
+# - total_words
+# - total_sentences
+# - total_syllables
+# - avg_words_per_sentence
+# - avg_syllables_per_word
+# - complex_word_count
+# - complex_word_percentage
+```
+
+## Understanding Metrics
+
+### Flesch Reading Ease
+
+**Scale**: 0-100 (higher scores = easier to read)
+
+- **90-100**: Very Easy (5th grade)
+- **80-90**: Easy (6th grade)
+- **70-80**: Fairly Easy (7th grade)
+- **60-70**: Standard (8th-9th grade)
+- **50-60**: Fairly Difficult (10th-12th grade)
+- **30-50**: Difficult (College)
+- **0-30**: Very Difficult (College graduate)
+
+```{r flesch, eval=FALSE}
+# Interpret Flesch Reading Ease
+interpret_flesch <- function(score) {
+  if (score >= 90) "Very Easy"
+  else if (score >= 80) "Easy"
+  else if (score >= 70) "Fairly Easy"
+  else if (score >= 60) "Standard"
+  else if (score >= 50) "Fairly Difficult"
+  else if (score >= 30) "Difficult"
+  else "Very Difficult"
+}
+
+score <- readability$flesch_reading_ease
+cat("Reading ease:", score, "-", interpret_flesch(score), "\n")
+```
+
+### Flesch-Kincaid Grade Level
+
+Indicates the U.S. grade level needed to understand the text.
+
+```{r fk, eval=FALSE}
+grade <- readability$flesch_kincaid_grade
+
+cat("Grade level required:", round(grade, 1), "\n")
+
+if (grade < 8) {
+  cat("Accessible to middle school students\n")
+} else if (grade < 12) {
+  cat("High school reading level\n")
+} else if (grade < 16) {
+  cat("College undergraduate level\n")
+} else {
+  cat("Graduate-level reading difficulty\n")
+}
+```
+
+### Other Indices
+
+**Gunning Fog Index**
+- Estimates years of formal education needed
+- Similar interpretation to Flesch-Kincaid
+
+**SMOG Index**
+- Based on complex words (3+ syllables)
+- Conservative estimate of reading grade
+
+**Automated Readability Index (ARI)**
+- Based on character counts
+- Corresponds to U.S. grade levels
+
+## Section Comparison
+
+### Compare All Sections
+
+```{r sections, eval=FALSE}
+# Calculate readability for each section
+sections_to_analyze <- c("Abstract", "Introduction", "Methods", 
+                        "Results", "Discussion")
+
+readability_by_section <- data.frame()
+
+for (section in sections_to_analyze) {
+  if (section %in% names(doc)) {
+    metrics <- calculate_readability_indices(doc[[section]], detailed = TRUE)
+    metrics$section <- section
+    readability_by_section <- rbind(readability_by_section, metrics)
+  }
+}
+
+# View results
+print(readability_by_section)
+```
+
+### Visualization
+
+```{r viz, eval=FALSE}
+library(ggplot2)
+library(tidyr)
+
+# Prepare data for plotting
+plot_data <- readability_by_section %>%
+  select(section, flesch_reading_ease, flesch_kincaid_grade, 
+         gunning_fog, smog, automated_readability) %>%
+  pivot_longer(cols = -section, names_to = "metric", values_to = "value")
+
+# Create faceted plot
+ggplot(plot_data, aes(x = section, y = value, fill = section)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~metric, scales = "free_y") +
+  labs(title = "Readability Metrics by Section",
+       x = "Section", y = "Score") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Compare Flesch Reading Ease across sections
+ggplot(readability_by_section, 
+       aes(x = reorder(section, flesch_reading_ease), 
+           y = flesch_reading_ease, fill = section)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  labs(title = "Flesch Reading Ease by Section",
+       subtitle = "Higher scores indicate easier readability",
+       x = "Section", y = "Flesch Reading Ease") +
+  theme_minimal()
+```
+
+### Statistical Comparison
+
+```{r stats, eval=FALSE}
+library(dplyr)
+
+# Summary statistics
+summary_stats <- readability_by_section %>%
+  summarise(
+    avg_ease = mean(flesch_reading_ease),
+    avg_grade = mean(flesch_kincaid_grade),
+    most_difficult = section[which.min(flesch_reading_ease)],
+    easiest = section[which.max(flesch_reading_ease)]
+  )
+
+print(summary_stats)
+
+# Section rankings
+rankings <- readability_by_section %>%
+  select(section, flesch_reading_ease, flesch_kincaid_grade) %>%
+  arrange(desc(flesch_reading_ease))
+
+cat("\nSections ranked by readability (easiest to hardest):\n")
+print(rankings)
+```
+
+## Advanced Analysis
+
+### Word Complexity Analysis
+
+```{r complexity, eval=FALSE}
+# Analyze word complexity if detailed = TRUE
+detailed_metrics <- readability_by_section %>%
+  select(section, avg_words_per_sentence, avg_syllables_per_word, 
+         complex_word_percentage)
+
+print(detailed_metrics)
+
+# Visualize complexity components
+ggplot(detailed_metrics, 
+       aes(x = avg_words_per_sentence, y = complex_word_percentage, 
+           color = section, size = avg_syllables_per_word)) +
+  geom_point(alpha = 0.7) +
+  labs(title = "Text Complexity Components",
+       x = "Average Words per Sentence",
+       y = "Complex Word Percentage (%)",
+       size = "Avg Syllables per Word") +
+  theme_minimal()
+```
+
+### Sentence Length Analysis
+
+```{r sentences, eval=FALSE}
+# Compare sentence lengths across sections
+sentence_analysis <- readability_by_section %>%
+  select(section, total_sentences, total_words, avg_words_per_sentence) %>%
+  arrange(desc(avg_words_per_sentence))
+
+print(sentence_analysis)
+
+# Identify verbose sections
+verbose_threshold <- mean(sentence_analysis$avg_words_per_sentence) + 
+                    sd(sentence_analysis$avg_words_per_sentence)
+
+verbose_sections <- sentence_analysis %>%
+  filter(avg_words_per_sentence > verbose_threshold)
+
+if (nrow(verbose_sections) > 0) {
+  cat("\nVerbose sections (long sentences):\n")
+  print(verbose_sections)
+}
+```
+
+### Time-Series Analysis
+
+Track readability across document segments:
+
+```{r timeseries, eval=FALSE}
+# Divide document into segments
+n_segments <- 20
+full_text <- doc$Full_text
+text_length <- nchar(full_text)
+segment_size <- text_length / n_segments
+
+segment_readability <- data.frame()
+
+for (i in 1:n_segments) {
+  start_pos <- (i - 1) * segment_size + 1
+  end_pos <- min(i * segment_size, text_length)
+  segment_text <- substr(full_text, start_pos, end_pos)
+  
+  metrics <- calculate_readability_indices(segment_text, detailed = FALSE)
+  metrics$segment <- i
+  segment_readability <- rbind(segment_readability, metrics)
+}
+
+# Plot trend
+ggplot(segment_readability, aes(x = segment, y = flesch_reading_ease)) +
+  geom_line(color = "steelblue", size = 1) +
+  geom_point(color = "steelblue", size = 2) +
+  geom_smooth(method = "loess", se = TRUE, alpha = 0.2) +
+  labs(title = "Readability Throughout Document",
+       x = "Document Segment", y = "Flesch Reading Ease") +
+  theme_minimal()
+```
+
+## Comparative Studies
+
+### Compare Multiple Papers
+
+```{r compare, eval=FALSE}
+# Analyze multiple papers
+papers <- c("paper1.pdf", "paper2.pdf", "paper3.pdf")
+paper_names <- c("Paper A", "Paper B", "Paper C")
+
+comparison <- data.frame()
+
+for (i in seq_along(papers)) {
+  doc <- pdf2txt_auto(papers[i], n_columns = 2)
+  metrics <- calculate_readability_indices(doc$Full_text, detailed = TRUE)
+  metrics$paper <- paper_names[i]
+  comparison <- rbind(comparison, metrics)
+}
+
+# Compare papers
+print(comparison)
+
+# Visualize
+ggplot(comparison, aes(x = paper, y = flesch_reading_ease, fill = paper)) +
+  geom_col(show.legend = FALSE) +
+  labs(title = "Readability Comparison Across Papers",
+       x = "Paper", y = "Flesch Reading Ease") +
+  theme_minimal()
+```
+
+### Benchmarking
+
+Compare against discipline standards:
+
+```{r benchmark, eval=FALSE}
+# Define discipline benchmarks (example values)
+benchmarks <- data.frame(
+  discipline = c("Medicine", "Computer Science", "Social Sciences", 
+                 "Humanities", "Natural Sciences"),
+  typical_fre = c(35, 42, 48, 52, 38),
+  typical_fkg = c(16, 14, 13, 12, 15)
+)
+
+# Compare paper to benchmarks
+paper_metrics <- calculate_readability_indices(doc$Full_text)
+paper_fre <- paper_metrics$flesch_reading_ease
+paper_fkg <- paper_metrics$flesch_kincaid_grade
+
+# Find closest discipline
+benchmarks$fre_diff <- abs(benchmarks$typical_fre - paper_fre)
+closest <- benchmarks[which.min(benchmarks$fre_diff), ]
+
+cat("Your paper's readability is closest to:", closest$discipline, "\n")
+cat("Your FRE:", paper_fre, "vs typical:", closest$typical_fre, "\n")
+```
+
+## Export Readability Data
+
+```{r export, eval=FALSE}
+# Create export directory
+dir.create("readability_analysis", showWarnings = FALSE)
+
+# 1. Section readability
+write.csv(readability_by_section,
+          "readability_analysis/section_readability.csv",
+          row.names = FALSE)
+
+# 2. Segment readability (if calculated)
+if (exists("segment_readability")) {
+  write.csv(segment_readability,
+            "readability_analysis/segment_readability.csv",
+            row.names = FALSE)
+}
+
+# 3. Summary report
+summary_report <- data.frame(
+  metric = c("Overall Flesch Reading Ease",
+             "Overall Grade Level",
+             "Most Readable Section",
+             "Least Readable Section"),
+  value = c(
+    readability$flesch_reading_ease,
+    readability$flesch_kincaid_grade,
+    summary_stats$easiest,
+    summary_stats$most_difficult
+  )
+)
+
+write.csv(summary_report,
+          "readability_analysis/summary_report.csv",
+          row.names = FALSE)
+```
+
+## Interpretation Guidelines
+
+### Academic Writing Standards
+
+```{r standards, eval=FALSE}
+# Evaluate against academic standards
+evaluate_academic_readability <- function(fre, fkg) {
+  cat("\n=== Readability Assessment ===\n\n")
+  
+  # Flesch Reading Ease
+  cat("Flesch Reading Ease:", round(fre, 1), "\n")
+  if (fre < 30) {
+    cat("✓ Appropriate for academic/professional audience\n")
+  } else if (fre < 50) {
+    cat("✓ Standard academic difficulty\n")
+  } else {
+    cat("⚠ May be too simple for academic publication\n")
+  }
+  
+  # Grade Level
+  cat("\nGrade Level:", round(fkg, 1), "\n")
+  if (fkg >= 14) {
+    cat("✓ College/graduate level appropriate\n")
+  } else if (fkg >= 12) {
+    cat("~ Upper undergraduate level\n")
+  } else {
+    cat("⚠ Below typical academic standard\n")
+  }
+  
+  # Recommendations
+  cat("\nRecommendations:\n")
+  if (fre > 50) {
+    cat("- Consider using more technical vocabulary\n")
+    cat("- Increase sentence complexity where appropriate\n")
+  }
+  if (fkg < 12) {
+    cat("- Add more complex sentence structures\n")
+    cat("- Incorporate domain-specific terminology\n")
+  }
+  if (fre < 25 || fkg > 18) {
+    cat("- Consider breaking up very long sentences\n")
+    cat("- Ensure clarity is not sacrificed for complexity\n")
+  }
+}
+
+# Apply to your document
+metrics <- calculate_readability_indices(doc$Full_text)
+evaluate_academic_readability(metrics$flesch_reading_ease, 
+                              metrics$flesch_kincaid_grade)
+```
+
+## Tips and Best Practices
+
+::: {.callout-tip}
+## Interpreting Results
+
+- **Context matters**: Technical papers naturally score lower
+- **Section differences**: Methods often harder than Discussion
+- **Audience consideration**: Adjust expectations by field
+- **Balance**: Clarity vs. necessary complexity
+:::
+
+::: {.callout-tip}
+## Improving Readability
+
+To improve scores while maintaining rigor:
+
+1. Break long sentences into shorter ones
+2. Use active voice when possible
+3. Define technical terms clearly
+4. Vary sentence length and structure
+5. Use transitional phrases effectively
+:::
+
+::: {.callout-note}
+## Academic Standards
+
+Typical academic papers:
+
+- **FRE**: 30-50 (Difficult to Fairly Difficult)
+- **FK Grade**: 13-16 (College to Graduate level)
+- **Gunning Fog**: 14-18
+
+Lower scores aren't always better for academic writing!
+:::
+
+## See Also
+
+- [Text Analysis](text-analysis.qmd): Word frequency and n-grams
+- [Content Analysis](content-analysis.qmd): Comprehensive analysis
+- [Tutorial](../tutorial.qmd): Complete workflow examples

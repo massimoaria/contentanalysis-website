@@ -1,0 +1,169 @@
+---
+title: "contentanalysis"
+subtitle: "Comprehensive Tools for Scientific Content Analysis in R"
+---
+
+## Overview
+
+**contentanalysis** is an R package that provides comprehensive tools for extracting and analyzing scientific content from PDF documents. It enables researchers to perform sophisticated content analysis, citation extraction, network visualization, and text mining on academic papers.
+
+## Key Features
+
+::: {.grid}
+
+::: {.g-col-6}
+### 📄 PDF Processing
+- Multi-column PDF support
+- Automatic section detection
+- Structure preservation
+- Text extraction with layout awareness
+:::
+
+::: {.g-col-6}
+### 📚 Citation Analysis
+- Multiple citation format detection
+- Automatic reference matching
+- Citation context extraction
+- CrossRef integration
+:::
+
+::: {.g-col-6}
+### 🕸️ Network Visualization
+- Interactive citation networks
+- Co-occurrence analysis
+- Section-based coloring
+- Hub citation detection
+:::
+
+::: {.g-col-6}
+### 📊 Text Analytics
+- Word frequency analysis
+- N-gram extraction
+- Readability indices
+- Distribution tracking
+:::
+
+:::
+
+## Quick Start
+
+### Installation
+
+```r
+# Install from GitHub
+# install.packages("devtools")
+devtools::install_github("massimoaria/contentanalysis")
+```
+
+### Basic Usage
+
+```r
+library(contentanalysis)
+
+# Import PDF with automatic section detection
+doc <- pdf2txt_auto("paper.pdf", n_columns = 2)
+
+# Comprehensive analysis with CrossRef integration
+analysis <- analyze_scientific_content(
+  text = doc,
+  doi = "10.1016/j.xxx.xxx",
+  mailto = "your@email.com"
+)
+
+# Create interactive citation network
+network <- create_citation_network(
+  analysis,
+  max_distance = 800,
+  min_connections = 2
+)
+```
+
+## Example Output
+
+The package provides rich analytical outputs:
+
+```{r, eval=FALSE}
+# Summary statistics
+analysis$summary
+
+# Citation extraction
+head(analysis$citations)
+
+# Word frequencies
+head(analysis$word_frequencies, 20)
+
+# Network statistics
+attr(network, "stats")
+```
+
+## Main Components
+
+### 1. Content Extraction
+
+Import PDFs and automatically detect document structure:
+
+- **pdf2txt_auto()**: Import with automatic section detection
+- Supports single, double, and triple-column layouts
+- Identifies Abstract, Introduction, Methods, Results, Discussion, etc.
+
+### 2. Citation Analysis
+
+Extract and analyze citations:
+
+- **analyze_scientific_content()**: Comprehensive content analysis
+- Detects narrative and parenthetical citations
+- Matches citations to references
+- Extracts citation contexts
+
+### 3. Network Visualization
+
+Visualize citation relationships:
+
+- **create_citation_network()**: Interactive network graphs
+- Shows co-occurrence patterns
+- Color-coded by document sections
+- Edge weights based on citation proximity
+
+### 4. Text Analytics
+
+Analyze document text:
+
+- **calculate_word_distribution()**: Track term usage
+- **calculate_readability_indices()**: Readability metrics
+- N-gram analysis
+- Lexical diversity measures
+
+## Use Cases
+
+The package is designed for:
+
+- **Systematic Literature Reviews**: Analyze citation patterns across multiple papers
+- **Content Analysis**: Extract and quantify key concepts and themes
+- **Bibliometric Studies**: Map citation networks and identify influential works
+- **Academic Writing Analysis**: Assess readability and citation practices
+- **Research Methodology**: Study how citations are deployed in scientific arguments
+
+## Getting Help
+
+- [Get Started Guide](get-started.qmd): Step-by-step introduction
+- [Reference Documentation](reference/): Detailed function documentation
+- [Tutorial](tutorial.qmd): Complete workflow examples
+- [GitHub Issues](https://github.com/yourusername/contentanalysis/issues): Report bugs or request features
+
+## Citation
+
+If you use contentanalysis in your research, please cite:
+
+```bibtex
+@Manual{contentanalysis,
+  title = {contentanalysis: Tools for Scientific Content Analysis},
+  author = {Your Name},
+  year = {2024},
+  note = {R package version 0.1.0},
+  url = {https://github.com/yourusername/contentanalysis}
+}
+```
+
+## License
+
+GPL-3 © 2024

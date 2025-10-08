@@ -1,0 +1,564 @@
+---
+title: "Citation Network Visualization"
+---
+
+## Overview
+
+The `create_citation_network()` function creates interactive visualizations showing how citations co-occur within documents. Citations appearing close together are connected, revealing patterns in how references are used and cited together.
+
+## Main Function
+
+### create_citation_network()
+
+Create an interactive citation co-occurrence network.
+
+**Usage**
+
+```r
+create_citation_network(
+  citation_analysis_results,
+  max_distance = 800,
+  min_connections = 2,
+  show_labels = TRUE
+)
+```
+
+**Arguments**
+
+- `citation_analysis_results`: Output from `analyze_scientific_content()`
+- `max_distance`: Maximum distance in characters between citations to create a connection
+- `min_connections`: Minimum number of connections required to include a node
+- `show_labels`: Logical. Whether to display citation labels on nodes
+
+**Value**
+
+An interactive `visNetwork` object with attributes:
+
+- `stats`: Network statistics including node count, edge count, distances, and section distribution
+
+## Basic Usage
+
+### Creating a Network
+
+```{r basic, eval=FALSE}
+library(contentanalysis)
+library(dplyr)
+
+# First, analyze the document
+doc <- pdf2txt_auto("paper.pdf", n_columns = 2)
+analysis <- analyze_scientific_content(
+  text = doc,
+  doi = "10.xxxx/xxxxx",
+  mailto = "your@email.com"
+)
+
+# Create network with default settings
+network <- create_citation_network(
+  citation_analysis_results = analysis,
+  max_distance = 800,
+  min_connections = 2,
+  show_labels = TRUE
+)
+
+# Display the network
+network
+```
+
+### Network Statistics
+
+Access detailed network statistics:
+
+```{r stats, eval=FALSE}
+# Get statistics
+stats <- attr(network, "stats")
+
+# Basic network info
+cat("Number of nodes:", stats$n_nodes, "\n")
+cat("Number of edges:", stats$n_edges, "\n")
+cat("Average distance:", round(stats$avg_distance), "characters\n")
+cat("Maximum distance:", stats$max_distance, "characters\n")
+
+# Section distribution
+print(stats$section_distribution)
+
+# Multi-section citations
+if (nrow(stats$multi_section_citations) > 0) {
+  cat("\nCitations appearing in multiple sections:\n")
+  print(stats$multi_section_citations)
+}
+```
+
+## Visual Elements
+
+### Node Features
+
+**Size**
+- Larger nodes have more connections
+- Size represents centrality in the citation network
+
+**Color**
+- Indicates primary section where citation appears
+- Default color scheme:
+  - Introduction: Light blue
+  - Methods: Light green
+  - Results: Light coral
+  - Discussion: Light yellow
+  - Abstract: Lavender
+
+**Border**
+- Thicker borders (3px): Citations in multiple sections
+- Standard borders (1px): Citations in single section
+
+### Edge Features
+
+**Thickness**
+- Thicker edges: Citations appearing closer together
+- Edge width inversely proportional to distance
+
+**Color**
+- Red: Very close citations (≤300 characters)
+- Blue: Moderate distance (≤600 characters)
+- Gray: Distant citations (>600 characters)
+
+## Customization
+
+### Adjusting Distance Threshold
+
+Control which citations are connected:
+
+```{r distance, eval=FALSE}
+# Very close citations only
+network_close <- create_citation_network(
+  analysis,
+  max_distance = 300,  # Within 300 characters
+  min_connections = 1,
+  show_labels = TRUE
+)
+
+# Moderate proximity
+network_medium <- create_citation_network(
+  analysis,
+  max_distance = 600,
+  min_connections = 2,
+  show_labels = TRUE
+)
+
+# Broad connections
+network_broad <- create_citation_network(
+  analysis,
+  max_distance = 1200,
+  min_connections = 2,
+  show_labels = TRUE
+)
+
+# Compare network sizes
+cat("Close:", attr(network_close, "stats")$n_edges, "edges\n")
+cat("Medium:", attr(network_medium, "stats")$n_edges, "edges\n")
+cat("Broad:", attr(network_broad, "stats")$n_edges, "edges\n")
+```
+
+### Filtering by Connections
+
+Focus on well-connected citations:
+
+```{r connections, eval=FALSE}
+# Include all connected citations
+network_all <- create_citation_network(
+  analysis,
+  max_distance = 800,
+  min_connections = 1
+)
+
+# Only "hub" citations (highly connected)
+network_hubs <- create_citation_network(
+  analysis,
+  max_distance = 800,
+  min_connections = 5,  # Must have 5+ connections
+  show_labels = TRUE
+)
+
+# Compare
+cat("All nodes:", attr(network_all, "stats")$n_nodes, "\n")
+cat("Hub nodes:", attr(network_hubs, "stats")$n_nodes, "\n")
+```
+
+### Label Display
+
+Control label visibility:
+
+```{r labels, eval=FALSE}
+# With labels (default for detailed inspection)
+network_labeled <- create_citation_network(
+  analysis,
+  show_labels = TRUE
+)
+
+# Without labels (cleaner for presentations)
+network_clean <- create_citation_network(
+  analysis,
+  show_labels = FALSE
+)
+```
+
+## Interpreting Networks
+
+### Identifying Patterns
+
+```{r patterns, eval=FALSE}
+# Get network statistics
+stats <- attr(network, "stats")
+
+# 1. Network density (how interconnected)
+n_possible_edges <- stats$n_nodes * (stats$n_nodes - 1) / 2
+density <- stats$n_edges / n_possible_edges
+cat("Network density:", round(density, 3), "\n")
+
+# 2. Find hub citations (top 25% by connections)
+hub_threshold <- quantile(stats$section_distribution$n, 0.75)
+hubs <- stats$section_distribution %>%
+  filter(n >= hub_threshold) %>%
+  arrange(desc(n))
+
+cat("\nHub citations:\n")
+print(hubs)
+
+# 3. Section-specific patterns
+section_summary <- stats$section_distribution %>%
+  group_by(section) %>%
+  summarise(
+    n_citations = n(),
+    avg_connections = mean(n),
+    .groups = "drop"
+  )
+
+print(section_summary)
+```
+
+### Citation Clusters
+
+Identify groups of related citations:
+
+```{r clusters, eval=FALSE}
+# Citations with very close connections
+close_pairs <- analysis$network_data %>%
+  filter(distance < 200) %>%
+  select(citation_from, citation_to, distance)
+
+cat("Very close citation pairs:", nrow(close_pairs), "\n")
+head(close_pairs)
+
+# Find citation communities (simple approach)
+# Citations that frequently co-occur
+citation_freq <- analysis$network_data %>%
+  count(citation_from, sort = TRUE)
+
+top_cooccurring <- head(citation_freq, 10)
+cat("\nMost frequently co-occurring citations:\n")
+print(top_cooccurring)
+```
+
+### Cross-Section Analysis
+
+Citations appearing in multiple sections:
+
+```{r cross_section, eval=FALSE}
+stats <- attr(network, "stats")
+
+if (nrow(stats$multi_section_citations) > 0) {
+  # Citations used across sections
+  multi_section <- stats$multi_section_citations %>%
+    arrange(desc(n_sections))
+  
+  cat("Citations in multiple sections:\n")
+  print(multi_section)
+  
+  # These are often seminal or foundational works
+  cat("\nThese citations appear in", 
+      unique(multi_section$n_sections), 
+      "different sections\n")
+}
+```
+
+## Advanced Analysis
+
+### Compare Networks Across Papers
+
+```{r compare, eval=FALSE}
+# Analyze multiple papers
+papers <- c("paper1.pdf", "paper2.pdf", "paper3.pdf")
+
+networks <- list()
+for (i in seq_along(papers)) {
+  doc <- pdf2txt_auto(papers[i], n_columns = 2)
+  analysis <- analyze_scientific_content(
+    doc,
+    doi = paste0("10.xxxx/", i),
+    mailto = "your@email.com"
+  )
+  networks[[i]] <- create_citation_network(analysis)
+}
+
+# Compare network characteristics
+comparison <- data.frame(
+  paper = papers,
+  nodes = sapply(networks, function(n) attr(n, "stats")$n_nodes),
+  edges = sapply(networks, function(n) attr(n, "stats")$n_edges),
+  avg_distance = sapply(networks, function(n) 
+    round(attr(n, "stats")$avg_distance))
+)
+
+print(comparison)
+
+# Calculate network densities
+comparison$density <- comparison$edges / 
+  (comparison$nodes * (comparison$nodes - 1) / 2)
+
+print(comparison)
+```
+
+### Network Metrics
+
+Calculate advanced network metrics:
+
+```{r metrics, eval=FALSE}
+library(igraph)
+
+# Convert to igraph object (if needed for advanced analysis)
+# Note: You'll need the raw network data
+edges <- analysis$network_data %>%
+  filter(distance <= 800) %>%
+  select(from = citation_from, to = citation_to, weight = distance)
+
+g <- graph_from_data_frame(edges, directed = FALSE)
+
+# Calculate metrics
+metrics <- data.frame(
+  citation = V(g)$name,
+  degree = degree(g),
+  betweenness = betweenness(g),
+  closeness = closeness(g)
+) %>%
+  arrange(desc(degree))
+
+cat("Top 10 citations by degree centrality:\n")
+print(head(metrics, 10))
+
+# Identify communities
+communities <- cluster_louvain(g)
+cat("\nNumber of communities:", length(communities), "\n")
+```
+
+### Temporal Network Analysis
+
+If years are available:
+
+```{r temporal, eval=FALSE}
+# Add year information to network
+citation_years <- analysis$citation_references_mapping %>%
+  select(citation_text_clean, cite_year) %>%
+  distinct()
+
+network_with_years <- analysis$network_data %>%
+  left_join(citation_years, by = c("citation_from" = "citation_text_clean")) %>%
+  rename(year_from = cite_year) %>%
+  left_join(citation_years, by = c("citation_to" = "citation_text_clean")) %>%
+  rename(year_to = cite_year)
+
+# Analyze co-citation patterns by year
+year_patterns <- network_with_years %>%
+  filter(!is.na(year_from), !is.na(year_to)) %>%
+  mutate(year_diff = abs(year_from - year_to)) %>%
+  group_by(year_diff) %>%
+  summarise(
+    n_pairs = n(),
+    avg_distance = mean(distance)
+  )
+
+cat("Co-citation patterns by year difference:\n")
+print(year_patterns)
+```
+
+## Export Network Data
+
+### Save Network Information
+
+```{r export, eval=FALSE}
+# Create export directory
+dir.create("network_analysis", showWarnings = FALSE)
+
+# 1. Network statistics
+stats <- attr(network, "stats")
+write.csv(stats$section_distribution,
+          "network_analysis/section_distribution.csv",
+          row.names = FALSE)
+
+if (nrow(stats$multi_section_citations) > 0) {
+  write.csv(stats$multi_section_citations,
+            "network_analysis/multi_section_citations.csv",
+            row.names = FALSE)
+}
+
+# 2. Edge list
+write.csv(analysis$network_data,
+          "network_analysis/edge_list.csv",
+          row.names = FALSE)
+
+# 3. Network summary
+summary_data <- data.frame(
+  metric = c("nodes", "edges", "density", "avg_distance", "max_distance"),
+  value = c(
+    stats$n_nodes,
+    stats$n_edges,
+    stats$n_edges / (stats$n_nodes * (stats$n_nodes - 1) / 2),
+    stats$avg_distance,
+    stats$max_distance
+  )
+)
+
+write.csv(summary_data,
+          "network_analysis/network_summary.csv",
+          row.names = FALSE)
+```
+
+### Save Interactive Network
+
+```{r save_network, eval=FALSE}
+# Save as HTML
+library(htmlwidgets)
+
+saveWidget(network, 
+           "network_analysis/citation_network.html",
+           selfcontained = TRUE)
+
+cat("Network saved to: network_analysis/citation_network.html\n")
+```
+
+## Use Cases
+
+### Use Case 1: Literature Review
+
+Identify citation patterns in review papers:
+
+```{r usecase1, eval=FALSE}
+# High connectivity expected
+network <- create_citation_network(
+  analysis,
+  max_distance = 1000,  # Broader connections
+  min_connections = 3
+)
+
+stats <- attr(network, "stats")
+
+# Check network properties
+cat("Network density:", 
+    round(stats$n_edges / (stats$n_nodes * (stats$n_nodes - 1) / 2), 3),
+    "\n")
+
+# Hub citations (synthesis points)
+hubs <- stats$section_distribution %>%
+  filter(n >= quantile(n, 0.75))
+
+cat("\nHub citations (potential synthesis points):\n")
+print(hubs)
+```
+
+### Use Case 2: Methods Paper
+
+Focus on methodological citations:
+
+```{r usecase2, eval=FALSE}
+# Filter to Methods section
+methods_citations <- analysis$citations %>%
+  filter(section == "Methods") %>%
+  pull(citation_text_clean)
+
+# Create network subset
+methods_network_data <- analysis$network_data %>%
+  filter(citation_from %in% methods_citations | 
+         citation_to %in% methods_citations)
+
+cat("Methods citations:", length(methods_citations), "\n")
+cat("Methods citation pairs:", nrow(methods_network_data), "\n")
+```
+
+### Use Case 3: Comparative Analysis
+
+Compare citation networks across studies:
+
+```{r usecase3, eval=FALSE}
+# Process multiple papers
+papers_info <- data.frame(
+  file = c("review.pdf", "empirical.pdf", "methods.pdf"),
+  type = c("review", "empirical", "methods")
+)
+
+network_comparison <- data.frame()
+
+for (i in 1:nrow(papers_info)) {
+  doc <- pdf2txt_auto(papers_info$file[i], n_columns = 2)
+  analysis <- analyze_scientific_content(doc, mailto = "your@email.com")
+  net <- create_citation_network(analysis)
+  stats <- attr(net, "stats")
+  
+  network_comparison <- rbind(network_comparison, data.frame(
+    paper = papers_info$file[i],
+    type = papers_info$type[i],
+    nodes = stats$n_nodes,
+    edges = stats$n_edges,
+    density = stats$n_edges / (stats$n_nodes * (stats$n_nodes - 1) / 2),
+    avg_distance = stats$avg_distance
+  ))
+}
+
+print(network_comparison)
+
+# Visualize comparison
+library(ggplot2)
+ggplot(network_comparison, aes(x = type, y = density, fill = type)) +
+  geom_col() +
+  labs(title = "Network Density by Paper Type",
+       x = "Paper Type", y = "Network Density") +
+  theme_minimal()
+```
+
+## Tips and Best Practices
+
+::: {.callout-tip}
+## Choosing Parameters
+
+**max_distance**:
+- 200-400: Very close citations (same paragraph)
+- 500-800: Moderate proximity (recommended)
+- 1000+: Broader connections (same section)
+
+**min_connections**:
+- 1: Include all connected citations
+- 2-3: Filter isolated pairs (recommended)
+- 5+: Focus on hub citations only
+:::
+
+::: {.callout-tip}
+## Interpretation
+
+Look for:
+- **Clusters**: Groups of related citations
+- **Hubs**: Frequently co-cited works
+- **Bridges**: Citations connecting different clusters
+- **Isolates**: Citations rarely co-cited
+:::
+
+::: {.callout-note}
+## Performance
+
+For large documents:
+- Start with higher `min_connections`
+- Use moderate `max_distance`
+- Consider section-specific networks
+- Save network as HTML for sharing
+:::
+
+## See Also
+
+- [Citation Analysis](citation-analysis.qmd): Extract and analyze citations
+- [Content Analysis](content-analysis.qmd): Main analysis function
+- [Tutorial](../tutorial.qmd): Complete workflow examples

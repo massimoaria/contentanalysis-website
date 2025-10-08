@@ -1,0 +1,1218 @@
+[
+  {
+    "objectID": "reference/text-analysis.html",
+    "href": "reference/text-analysis.html",
+    "title": "Text Analysis Functions",
+    "section": "",
+    "text": "The contentanalysis package provides comprehensive text analysis capabilities including word frequency analysis, n-gram extraction, and word distribution tracking across document sections.",
+    "crumbs": [
+      "Text Analysis",
+      "Text Analysis Functions"
+    ]
+  },
+  {
+    "objectID": "reference/text-analysis.html#overview",
+    "href": "reference/text-analysis.html#overview",
+    "title": "Text Analysis Functions",
+    "section": "",
+    "text": "The contentanalysis package provides comprehensive text analysis capabilities including word frequency analysis, n-gram extraction, and word distribution tracking across document sections.",
+    "crumbs": [
+      "Text Analysis",
+      "Text Analysis Functions"
+    ]
+  },
+  {
+    "objectID": "reference/text-analysis.html#word-frequency-analysis",
+    "href": "reference/text-analysis.html#word-frequency-analysis",
+    "title": "Text Analysis Functions",
+    "section": "Word Frequency Analysis",
+    "text": "Word Frequency Analysis\n\nAutomatic Extraction\nWord frequencies are automatically calculated during content analysis:\n\nlibrary(contentanalysis)\nlibrary(dplyr)\n\n# Analyze document\ndoc &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 2)\nanalysis &lt;- analyze_scientific_content(\n  text = doc,\n  remove_stopwords = TRUE\n)\n\n# View word frequencies\nhead(analysis$word_frequencies, 20)\n\n\n\nCustom Stopwords\nAdd domain-specific stopwords:\n\n# Define custom stopwords\ncustom_stops &lt;- c(\"however\", \"therefore\", \"thus\", \"moreover\",\n                  \"furthermore\", \"additionally\", \"specifically\",\n                  \"particularly\", \"generally\", \"typically\")\n\nanalysis &lt;- analyze_scientific_content(\n  text = doc,\n  custom_stopwords = custom_stops,\n  remove_stopwords = TRUE\n)\n\n# Compare top words\nhead(analysis$word_frequencies, 20)\n\n\n\nWord Frequency Analysis\n\n# Top 50 words\ntop_50 &lt;- head(analysis$word_frequencies, 50)\n\n# Visualize\nlibrary(ggplot2)\ntop_20 &lt;- head(analysis$word_frequencies, 20)\n\nggplot(top_20, aes(x = reorder(word, frequency), y = frequency)) +\n  geom_col(fill = \"steelblue\") +\n  coord_flip() +\n  labs(title = \"Top 20 Most Frequent Words\",\n       x = \"Word\", y = \"Frequency\") +\n  theme_minimal()\n\n# Word cloud\nlibrary(wordcloud)\nwordcloud(words = analysis$word_frequencies$word,\n          freq = analysis$word_frequencies$frequency,\n          max.words = 100,\n          colors = brewer.pal(8, \"Dark2\"))",
+    "crumbs": [
+      "Text Analysis",
+      "Text Analysis Functions"
+    ]
+  },
+  {
+    "objectID": "reference/text-analysis.html#n-gram-analysis",
+    "href": "reference/text-analysis.html#n-gram-analysis",
+    "title": "Text Analysis Functions",
+    "section": "N-gram Analysis",
+    "text": "N-gram Analysis\n\nExtracting N-grams\nN-grams are automatically extracted:\n\n# Configure n-gram range during analysis\nanalysis &lt;- analyze_scientific_content(\n  text = doc,\n  ngram_range = c(1, 3),  # Unigrams to trigrams\n  remove_stopwords = TRUE\n)\n\n# Access n-grams\nnames(analysis$ngrams)\n# [1] \"1gram\" \"2gram\" \"3gram\"\n\n# View bigrams\nhead(analysis$ngrams$`2gram`, 20)\n\n# View trigrams\nhead(analysis$ngrams$`3gram`, 20)\n\n\n\nN-gram Configurations\n\n# Only bigrams and trigrams\nanalysis_23 &lt;- analyze_scientific_content(\n  text = doc,\n  ngram_range = c(2, 3)\n)\n\n# Up to 4-grams\nanalysis_14 &lt;- analyze_scientific_content(\n  text = doc,\n  ngram_range = c(1, 4)\n)\n\n# Only bigrams\nanalysis_2 &lt;- analyze_scientific_content(\n  text = doc,\n  ngram_range = c(2, 2)\n)\n\n# Compare\ncat(\"Bigrams found:\", nrow(analysis_2$ngrams$`2gram`), \"\\n\")\ncat(\"Trigrams found:\", nrow(analysis_23$ngrams$`3gram`), \"\\n\")\ncat(\"4-grams found:\", nrow(analysis_14$ngrams$`4gram`), \"\\n\")\n\n\n\nAnalyzing N-grams\n\n# Most frequent bigrams\ntop_bigrams &lt;- head(analysis$ngrams$`2gram`, 20)\n\n# Visualize\nggplot(top_bigrams, aes(x = reorder(ngram, frequency), y = frequency)) +\n  geom_col(fill = \"darkgreen\") +\n  coord_flip() +\n  labs(title = \"Top 20 Most Frequent Bigrams\",\n       x = \"Bigram\", y = \"Frequency\") +\n  theme_minimal()\n\n# Filter by topic\nmethod_bigrams &lt;- analysis$ngrams$`2gram` %&gt;%\n  filter(grepl(\"model|method|algorithm|approach\", ngram, ignore.case = TRUE))\n\ncat(\"Method-related bigrams:\", nrow(method_bigrams), \"\\n\")\nhead(method_bigrams, 10)",
+    "crumbs": [
+      "Text Analysis",
+      "Text Analysis Functions"
+    ]
+  },
+  {
+    "objectID": "reference/text-analysis.html#word-distribution-analysis",
+    "href": "reference/text-analysis.html#word-distribution-analysis",
+    "title": "Text Analysis Functions",
+    "section": "Word Distribution Analysis",
+    "text": "Word Distribution Analysis\n\ncalculate_word_distribution()\nTrack how specific terms are distributed across the document.\nUsage\ncalculate_word_distribution(\n  text,\n  selected_words,\n  use_sections = TRUE,\n  n_segments = 10,\n  normalize = TRUE\n)\nArguments\n\ntext: Named list from pdf2txt_auto()\nselected_words: Character vector of terms to track\nuse_sections: Logical. Use document sections (TRUE) or equal segments (FALSE)\nn_segments: Number of segments if use_sections = FALSE\nnormalize: Logical. Normalize counts as percentages\n\n\n\nSection-Based Distribution\n\n# Define terms of interest\nterms &lt;- c(\"machine learning\", \"random forest\", \n           \"accuracy\", \"classification\", \"tree\")\n\n# Calculate distribution by section\ndist &lt;- calculate_word_distribution(\n  text = doc,\n  selected_words = terms,\n  use_sections = TRUE,\n  normalize = TRUE\n)\n\n# View results\ndist %&gt;%\n  select(segment_name, word, count, percentage) %&gt;%\n  arrange(segment_name, desc(percentage))\n\n# Summary statistics\ndist %&gt;%\n  group_by(word) %&gt;%\n  summarise(\n    total_count = sum(count),\n    max_section = segment_name[which.max(percentage)],\n    max_percentage = max(percentage)\n  ) %&gt;%\n  arrange(desc(total_count))\n\n\n\nSegment-Based Distribution\nFor uniform analysis across document:\n\n# Divide into equal segments\ndist_segments &lt;- calculate_word_distribution(\n  text = doc,\n  selected_words = terms,\n  use_sections = FALSE,\n  n_segments = 20\n)\n\n# Track term evolution\nterm_evolution &lt;- dist_segments %&gt;%\n  filter(word == \"machine learning\") %&gt;%\n  select(segment_name, segment_index, percentage)\n\nprint(term_evolution)\n\n\n\nComparing Terms\n\n# Compare usage patterns\nlibrary(tidyr)\n\ncomparison &lt;- dist %&gt;%\n  select(segment_name, word, percentage) %&gt;%\n  pivot_wider(names_from = word, values_from = percentage)\n\nprint(comparison)\n\n# Find section with highest term density\ndensity_by_section &lt;- dist %&gt;%\n  group_by(segment_name) %&gt;%\n  summarise(total_percentage = sum(percentage)) %&gt;%\n  arrange(desc(total_percentage))\n\ncat(\"Section with highest term density:\\n\")\nprint(head(density_by_section))",
+    "crumbs": [
+      "Text Analysis",
+      "Text Analysis Functions"
+    ]
+  },
+  {
+    "objectID": "reference/text-analysis.html#visualization-functions",
+    "href": "reference/text-analysis.html#visualization-functions",
+    "title": "Text Analysis Functions",
+    "section": "Visualization Functions",
+    "text": "Visualization Functions\n\nplot_word_distribution()\nCreate interactive visualizations of word distributions.\nUsage\nplot_word_distribution(\n  distribution_data,\n  plot_type = \"line\",\n  show_points = TRUE,\n  smooth = FALSE,\n  color_palette = NULL\n)\nArguments\n\ndistribution_data: Output from calculate_word_distribution()\nplot_type: “line”, “bar”, or “area”\nshow_points: Logical. Show data points on line plots\nsmooth: Logical. Add smoothed trend line\ncolor_palette: Custom color palette\n\n\n\nLine Plots\n\n# Basic line plot\nplot_word_distribution(\n  dist,\n  plot_type = \"line\",\n  show_points = TRUE\n)\n\n# With smoothing\nplot_word_distribution(\n  dist,\n  plot_type = \"line\",\n  show_points = TRUE,\n  smooth = TRUE\n)\n\n# Segment-based with smooth trends\nplot_word_distribution(\n  dist_segments,\n  plot_type = \"line\",\n  smooth = TRUE\n)\n\n\n\nBar Plots\n\n# Bar plot by section\nplot_word_distribution(\n  dist,\n  plot_type = \"bar\"\n)\n\n# Custom colors\ncustom_colors &lt;- c(\"#1f77b4\", \"#ff7f0e\", \"#2ca02c\", \"#d62728\", \"#9467bd\")\n\nplot_word_distribution(\n  dist,\n  plot_type = \"bar\",\n  color_palette = custom_colors\n)\n\n\n\nArea Plots\n\n# Area plot\nplot_word_distribution(\n  dist,\n  plot_type = \"area\"\n)\n\n# Stacked area for segment analysis\nplot_word_distribution(\n  dist_segments,\n  plot_type = \"area\"\n)",
+    "crumbs": [
+      "Text Analysis",
+      "Text Analysis Functions"
+    ]
+  },
+  {
+    "objectID": "reference/text-analysis.html#advanced-text-analysis",
+    "href": "reference/text-analysis.html#advanced-text-analysis",
+    "title": "Text Analysis Functions",
+    "section": "Advanced Text Analysis",
+    "text": "Advanced Text Analysis\n\nLexical Diversity\nMeasure vocabulary richness:\n\n# From analysis summary\nanalysis$summary$lexical_diversity\n\n# Calculate manually\nwords &lt;- tolower(unlist(strsplit(doc$Full_text, \"\\\\s+\")))\nwords_clean &lt;- words[!words %in% stopwords::stopwords(\"en\")]\n\nlexical_div &lt;- length(unique(words_clean)) / length(words_clean)\ncat(\"Lexical diversity:\", round(lexical_div, 3), \"\\n\")\n\n# By section\nsection_diversity &lt;- sapply(doc[names(doc) != \"Full_text\"], function(section_text) {\n  words &lt;- tolower(unlist(strsplit(section_text, \"\\\\s+\")))\n  words_clean &lt;- words[!words %in% stopwords::stopwords(\"en\")]\n  length(unique(words_clean)) / length(words_clean)\n})\n\nprint(sort(section_diversity, decreasing = TRUE))\n\n\n\nTerm Co-occurrence\nFind terms that appear together:\n\n# Extract bigrams with specific terms\nml_bigrams &lt;- analysis$ngrams$`2gram` %&gt;%\n  filter(grepl(\"machine|learning\", ngram, ignore.case = TRUE))\n\nprint(ml_bigrams)\n\n# Create co-occurrence matrix\nlibrary(quanteda)\nlibrary(quanteda.textstats)\n\ntokens &lt;- tokens(doc$Full_text, remove_punct = TRUE)\ntokens_lower &lt;- tokens_tolower(tokens)\n\n# Co-occurrence within 5-word window\nfcm &lt;- fcm(tokens_lower, context = \"window\", window = 5)\n\n# Top co-occurrences with \"machine\"\ntopfeatures(fcm[\"machine\", ], 20)\n\n\n\nKeyword Extraction\nIdentify key terms using TF-IDF:\n\n# Simple TF-IDF approach\nlibrary(tidytext)\n\n# Prepare data\ntext_df &lt;- data.frame(\n  section = names(doc)[names(doc) != \"Full_text\"],\n  text = unlist(doc[names(doc) != \"Full_text\"])\n)\n\n# Calculate TF-IDF\nwords_df &lt;- text_df %&gt;%\n  unnest_tokens(word, text) %&gt;%\n  count(section, word) %&gt;%\n  bind_tf_idf(word, section, n)\n\n# Top TF-IDF words per section\ntop_tfidf &lt;- words_df %&gt;%\n  group_by(section) %&gt;%\n  slice_max(tf_idf, n = 10) %&gt;%\n  ungroup()\n\n# Visualize\nggplot(top_tfidf, aes(x = reorder_within(word, tf_idf, section), \n                      y = tf_idf, fill = section)) +\n  geom_col(show.legend = FALSE) +\n  facet_wrap(~section, scales = \"free\") +\n  coord_flip() +\n  scale_x_reordered() +\n  labs(title = \"Top Terms by Section (TF-IDF)\",\n       x = NULL, y = \"TF-IDF\") +\n  theme_minimal()\n\n\n\nSentiment Analysis\nBasic sentiment scoring:\n\nlibrary(tidytext)\n\n# Get sentiment lexicon\nsentiments &lt;- get_sentiments(\"bing\")\n\n# Calculate sentiment by section\nsection_sentiment &lt;- text_df %&gt;%\n  unnest_tokens(word, text) %&gt;%\n  inner_join(sentiments, by = \"word\") %&gt;%\n  count(section, sentiment) %&gt;%\n  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %&gt;%\n  mutate(\n    sentiment_score = positive - negative,\n    sentiment_ratio = positive / (positive + negative)\n  )\n\nprint(section_sentiment)\n\n# Visualize\nggplot(section_sentiment, aes(x = section, y = sentiment_score, fill = section)) +\n  geom_col(show.legend = FALSE) +\n  labs(title = \"Sentiment Score by Section\",\n       x = \"Section\", y = \"Sentiment Score (Positive - Negative)\") +\n  theme_minimal() +\n  theme(axis.text.x = element_text(angle = 45, hjust = 1))",
+    "crumbs": [
+      "Text Analysis",
+      "Text Analysis Functions"
+    ]
+  },
+  {
+    "objectID": "reference/text-analysis.html#export-text-analysis",
+    "href": "reference/text-analysis.html#export-text-analysis",
+    "title": "Text Analysis Functions",
+    "section": "Export Text Analysis",
+    "text": "Export Text Analysis\n\n# Create export directory\ndir.create(\"text_analysis\", showWarnings = FALSE)\n\n# 1. Word frequencies\nwrite.csv(analysis$word_frequencies,\n          \"text_analysis/word_frequencies.csv\",\n          row.names = FALSE)\n\n# 2. N-grams\nfor (n in names(analysis$ngrams)) {\n  write.csv(analysis$ngrams[[n]],\n            paste0(\"text_analysis/\", n, \".csv\"),\n            row.names = FALSE)\n}\n\n# 3. Word distribution\nwrite.csv(dist,\n          \"text_analysis/word_distribution.csv\",\n          row.names = FALSE)\n\n# 4. Summary statistics\nsummary_stats &lt;- data.frame(\n  metric = c(\"total_words\", \"unique_words\", \"lexical_diversity\"),\n  value = c(\n    analysis$summary$total_words,\n    nrow(analysis$word_frequencies),\n    analysis$summary$lexical_diversity\n  )\n)\n\nwrite.csv(summary_stats,\n          \"text_analysis/summary_statistics.csv\",\n          row.names = FALSE)",
+    "crumbs": [
+      "Text Analysis",
+      "Text Analysis Functions"
+    ]
+  },
+  {
+    "objectID": "reference/text-analysis.html#tips-and-best-practices",
+    "href": "reference/text-analysis.html#tips-and-best-practices",
+    "title": "Text Analysis Functions",
+    "section": "Tips and Best Practices",
+    "text": "Tips and Best Practices\n\n\n\n\n\n\nStopword Management\n\n\n\n\nUse remove_stopwords = TRUE for cleaner analysis\nAdd domain-specific terms to custom_stopwords\nKeep some function words for n-gram analysis\nReview top words to identify missed stopwords\n\n\n\n\n\n\n\n\n\nN-gram Selection\n\n\n\n\nBigrams capture common phrases\nTrigrams identify technical terms\n4-grams useful for specific methodologies\nBalance between detail and interpretability\n\n\n\n\n\n\n\n\n\nWord Distribution\n\n\n\n\nUse sections for structural analysis\nUse segments for temporal evolution\nTrack 3-5 key terms for clarity\nNormalize for fair comparison",
+    "crumbs": [
+      "Text Analysis",
+      "Text Analysis Functions"
+    ]
+  },
+  {
+    "objectID": "reference/text-analysis.html#see-also",
+    "href": "reference/text-analysis.html#see-also",
+    "title": "Text Analysis Functions",
+    "section": "See Also",
+    "text": "See Also\n\nContent Analysis: Main analysis function\nReadability Metrics: Assess text complexity\nTutorial: Complete workflow examples",
+    "crumbs": [
+      "Text Analysis",
+      "Text Analysis Functions"
+    ]
+  },
+  {
+    "objectID": "reference/readability.html",
+    "href": "reference/readability.html",
+    "title": "Readability Metrics",
+    "section": "",
+    "text": "The calculate_readability_indices() function calculates various readability metrics to assess text complexity and accessibility. These metrics are valuable for evaluating scientific writing quality and comparing sections of academic papers.",
+    "crumbs": [
+      "Text Analysis",
+      "Readability Metrics"
+    ]
+  },
+  {
+    "objectID": "reference/readability.html#overview",
+    "href": "reference/readability.html#overview",
+    "title": "Readability Metrics",
+    "section": "",
+    "text": "The calculate_readability_indices() function calculates various readability metrics to assess text complexity and accessibility. These metrics are valuable for evaluating scientific writing quality and comparing sections of academic papers.",
+    "crumbs": [
+      "Text Analysis",
+      "Readability Metrics"
+    ]
+  },
+  {
+    "objectID": "reference/readability.html#main-function",
+    "href": "reference/readability.html#main-function",
+    "title": "Readability Metrics",
+    "section": "Main Function",
+    "text": "Main Function\n\ncalculate_readability_indices()\nCalculate multiple readability indices for text.\nUsage\ncalculate_readability_indices(\n  text,\n  detailed = FALSE\n)\nArguments\n\ntext: Character string containing the text to analyze\ndetailed: Logical. If TRUE, returns additional metrics and detailed statistics\n\nValue\nA data frame containing:\nBasic metrics (always returned): - flesch_reading_ease: Flesch Reading Ease (0-100, higher = easier) - flesch_kincaid_grade: Flesch-Kincaid Grade Level - gunning_fog: Gunning Fog Index - smog: SMOG (Simple Measure of Gobbledygook) Index - automated_readability: Automated Readability Index (ARI)\nAdditional metrics (if detailed = TRUE): - Word count statistics - Sentence statistics - Syllable counts - Complex word percentages",
+    "crumbs": [
+      "Text Analysis",
+      "Readability Metrics"
+    ]
+  },
+  {
+    "objectID": "reference/readability.html#basic-usage",
+    "href": "reference/readability.html#basic-usage",
+    "title": "Readability Metrics",
+    "section": "Basic Usage",
+    "text": "Basic Usage\n\nSingle Text Analysis\n\nlibrary(contentanalysis)\n\n# Import document\ndoc &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 2)\n\n# Calculate readability for full text\nreadability &lt;- calculate_readability_indices(\n  doc$Full_text,\n  detailed = FALSE\n)\n\nprint(readability)\n\nExample output:\n  flesch_reading_ease flesch_kincaid_grade gunning_fog smog automated_readability\n1              38.2                15.7        17.3  14.8                  16.2\n\n\nDetailed Analysis\n\n# Get detailed metrics\nreadability_detailed &lt;- calculate_readability_indices(\n  doc$Full_text,\n  detailed = TRUE\n)\n\nprint(readability_detailed)\n\n# Additional metrics include:\n# - total_words\n# - total_sentences\n# - total_syllables\n# - avg_words_per_sentence\n# - avg_syllables_per_word\n# - complex_word_count\n# - complex_word_percentage",
+    "crumbs": [
+      "Text Analysis",
+      "Readability Metrics"
+    ]
+  },
+  {
+    "objectID": "reference/readability.html#understanding-metrics",
+    "href": "reference/readability.html#understanding-metrics",
+    "title": "Readability Metrics",
+    "section": "Understanding Metrics",
+    "text": "Understanding Metrics\n\nFlesch Reading Ease\nScale: 0-100 (higher scores = easier to read)\n\n90-100: Very Easy (5th grade)\n80-90: Easy (6th grade)\n70-80: Fairly Easy (7th grade)\n60-70: Standard (8th-9th grade)\n50-60: Fairly Difficult (10th-12th grade)\n30-50: Difficult (College)\n0-30: Very Difficult (College graduate)\n\n\n# Interpret Flesch Reading Ease\ninterpret_flesch &lt;- function(score) {\n  if (score &gt;= 90) \"Very Easy\"\n  else if (score &gt;= 80) \"Easy\"\n  else if (score &gt;= 70) \"Fairly Easy\"\n  else if (score &gt;= 60) \"Standard\"\n  else if (score &gt;= 50) \"Fairly Difficult\"\n  else if (score &gt;= 30) \"Difficult\"\n  else \"Very Difficult\"\n}\n\nscore &lt;- readability$flesch_reading_ease\ncat(\"Reading ease:\", score, \"-\", interpret_flesch(score), \"\\n\")\n\n\n\nFlesch-Kincaid Grade Level\nIndicates the U.S. grade level needed to understand the text.\n\ngrade &lt;- readability$flesch_kincaid_grade\n\ncat(\"Grade level required:\", round(grade, 1), \"\\n\")\n\nif (grade &lt; 8) {\n  cat(\"Accessible to middle school students\\n\")\n} else if (grade &lt; 12) {\n  cat(\"High school reading level\\n\")\n} else if (grade &lt; 16) {\n  cat(\"College undergraduate level\\n\")\n} else {\n  cat(\"Graduate-level reading difficulty\\n\")\n}\n\n\n\nOther Indices\nGunning Fog Index - Estimates years of formal education needed - Similar interpretation to Flesch-Kincaid\nSMOG Index - Based on complex words (3+ syllables) - Conservative estimate of reading grade\nAutomated Readability Index (ARI) - Based on character counts - Corresponds to U.S. grade levels",
+    "crumbs": [
+      "Text Analysis",
+      "Readability Metrics"
+    ]
+  },
+  {
+    "objectID": "reference/readability.html#section-comparison",
+    "href": "reference/readability.html#section-comparison",
+    "title": "Readability Metrics",
+    "section": "Section Comparison",
+    "text": "Section Comparison\n\nCompare All Sections\n\n# Calculate readability for each section\nsections_to_analyze &lt;- c(\"Abstract\", \"Introduction\", \"Methods\", \n                        \"Results\", \"Discussion\")\n\nreadability_by_section &lt;- data.frame()\n\nfor (section in sections_to_analyze) {\n  if (section %in% names(doc)) {\n    metrics &lt;- calculate_readability_indices(doc[[section]], detailed = TRUE)\n    metrics$section &lt;- section\n    readability_by_section &lt;- rbind(readability_by_section, metrics)\n  }\n}\n\n# View results\nprint(readability_by_section)\n\n\n\nVisualization\n\nlibrary(ggplot2)\nlibrary(tidyr)\n\n# Prepare data for plotting\nplot_data &lt;- readability_by_section %&gt;%\n  select(section, flesch_reading_ease, flesch_kincaid_grade, \n         gunning_fog, smog, automated_readability) %&gt;%\n  pivot_longer(cols = -section, names_to = \"metric\", values_to = \"value\")\n\n# Create faceted plot\nggplot(plot_data, aes(x = section, y = value, fill = section)) +\n  geom_col(show.legend = FALSE) +\n  facet_wrap(~metric, scales = \"free_y\") +\n  labs(title = \"Readability Metrics by Section\",\n       x = \"Section\", y = \"Score\") +\n  theme_minimal() +\n  theme(axis.text.x = element_text(angle = 45, hjust = 1))\n\n# Compare Flesch Reading Ease across sections\nggplot(readability_by_section, \n       aes(x = reorder(section, flesch_reading_ease), \n           y = flesch_reading_ease, fill = section)) +\n  geom_col(show.legend = FALSE) +\n  coord_flip() +\n  labs(title = \"Flesch Reading Ease by Section\",\n       subtitle = \"Higher scores indicate easier readability\",\n       x = \"Section\", y = \"Flesch Reading Ease\") +\n  theme_minimal()\n\n\n\nStatistical Comparison\n\nlibrary(dplyr)\n\n# Summary statistics\nsummary_stats &lt;- readability_by_section %&gt;%\n  summarise(\n    avg_ease = mean(flesch_reading_ease),\n    avg_grade = mean(flesch_kincaid_grade),\n    most_difficult = section[which.min(flesch_reading_ease)],\n    easiest = section[which.max(flesch_reading_ease)]\n  )\n\nprint(summary_stats)\n\n# Section rankings\nrankings &lt;- readability_by_section %&gt;%\n  select(section, flesch_reading_ease, flesch_kincaid_grade) %&gt;%\n  arrange(desc(flesch_reading_ease))\n\ncat(\"\\nSections ranked by readability (easiest to hardest):\\n\")\nprint(rankings)",
+    "crumbs": [
+      "Text Analysis",
+      "Readability Metrics"
+    ]
+  },
+  {
+    "objectID": "reference/readability.html#advanced-analysis",
+    "href": "reference/readability.html#advanced-analysis",
+    "title": "Readability Metrics",
+    "section": "Advanced Analysis",
+    "text": "Advanced Analysis\n\nWord Complexity Analysis\n\n# Analyze word complexity if detailed = TRUE\ndetailed_metrics &lt;- readability_by_section %&gt;%\n  select(section, avg_words_per_sentence, avg_syllables_per_word, \n         complex_word_percentage)\n\nprint(detailed_metrics)\n\n# Visualize complexity components\nggplot(detailed_metrics, \n       aes(x = avg_words_per_sentence, y = complex_word_percentage, \n           color = section, size = avg_syllables_per_word)) +\n  geom_point(alpha = 0.7) +\n  labs(title = \"Text Complexity Components\",\n       x = \"Average Words per Sentence\",\n       y = \"Complex Word Percentage (%)\",\n       size = \"Avg Syllables per Word\") +\n  theme_minimal()\n\n\n\nSentence Length Analysis\n\n# Compare sentence lengths across sections\nsentence_analysis &lt;- readability_by_section %&gt;%\n  select(section, total_sentences, total_words, avg_words_per_sentence) %&gt;%\n  arrange(desc(avg_words_per_sentence))\n\nprint(sentence_analysis)\n\n# Identify verbose sections\nverbose_threshold &lt;- mean(sentence_analysis$avg_words_per_sentence) + \n                    sd(sentence_analysis$avg_words_per_sentence)\n\nverbose_sections &lt;- sentence_analysis %&gt;%\n  filter(avg_words_per_sentence &gt; verbose_threshold)\n\nif (nrow(verbose_sections) &gt; 0) {\n  cat(\"\\nVerbose sections (long sentences):\\n\")\n  print(verbose_sections)\n}\n\n\n\nTime-Series Analysis\nTrack readability across document segments:\n\n# Divide document into segments\nn_segments &lt;- 20\nfull_text &lt;- doc$Full_text\ntext_length &lt;- nchar(full_text)\nsegment_size &lt;- text_length / n_segments\n\nsegment_readability &lt;- data.frame()\n\nfor (i in 1:n_segments) {\n  start_pos &lt;- (i - 1) * segment_size + 1\n  end_pos &lt;- min(i * segment_size, text_length)\n  segment_text &lt;- substr(full_text, start_pos, end_pos)\n  \n  metrics &lt;- calculate_readability_indices(segment_text, detailed = FALSE)\n  metrics$segment &lt;- i\n  segment_readability &lt;- rbind(segment_readability, metrics)\n}\n\n# Plot trend\nggplot(segment_readability, aes(x = segment, y = flesch_reading_ease)) +\n  geom_line(color = \"steelblue\", size = 1) +\n  geom_point(color = \"steelblue\", size = 2) +\n  geom_smooth(method = \"loess\", se = TRUE, alpha = 0.2) +\n  labs(title = \"Readability Throughout Document\",\n       x = \"Document Segment\", y = \"Flesch Reading Ease\") +\n  theme_minimal()",
+    "crumbs": [
+      "Text Analysis",
+      "Readability Metrics"
+    ]
+  },
+  {
+    "objectID": "reference/readability.html#comparative-studies",
+    "href": "reference/readability.html#comparative-studies",
+    "title": "Readability Metrics",
+    "section": "Comparative Studies",
+    "text": "Comparative Studies\n\nCompare Multiple Papers\n\n# Analyze multiple papers\npapers &lt;- c(\"paper1.pdf\", \"paper2.pdf\", \"paper3.pdf\")\npaper_names &lt;- c(\"Paper A\", \"Paper B\", \"Paper C\")\n\ncomparison &lt;- data.frame()\n\nfor (i in seq_along(papers)) {\n  doc &lt;- pdf2txt_auto(papers[i], n_columns = 2)\n  metrics &lt;- calculate_readability_indices(doc$Full_text, detailed = TRUE)\n  metrics$paper &lt;- paper_names[i]\n  comparison &lt;- rbind(comparison, metrics)\n}\n\n# Compare papers\nprint(comparison)\n\n# Visualize\nggplot(comparison, aes(x = paper, y = flesch_reading_ease, fill = paper)) +\n  geom_col(show.legend = FALSE) +\n  labs(title = \"Readability Comparison Across Papers\",\n       x = \"Paper\", y = \"Flesch Reading Ease\") +\n  theme_minimal()\n\n\n\nBenchmarking\nCompare against discipline standards:\n\n# Define discipline benchmarks (example values)\nbenchmarks &lt;- data.frame(\n  discipline = c(\"Medicine\", \"Computer Science\", \"Social Sciences\", \n                 \"Humanities\", \"Natural Sciences\"),\n  typical_fre = c(35, 42, 48, 52, 38),\n  typical_fkg = c(16, 14, 13, 12, 15)\n)\n\n# Compare paper to benchmarks\npaper_metrics &lt;- calculate_readability_indices(doc$Full_text)\npaper_fre &lt;- paper_metrics$flesch_reading_ease\npaper_fkg &lt;- paper_metrics$flesch_kincaid_grade\n\n# Find closest discipline\nbenchmarks$fre_diff &lt;- abs(benchmarks$typical_fre - paper_fre)\nclosest &lt;- benchmarks[which.min(benchmarks$fre_diff), ]\n\ncat(\"Your paper's readability is closest to:\", closest$discipline, \"\\n\")\ncat(\"Your FRE:\", paper_fre, \"vs typical:\", closest$typical_fre, \"\\n\")",
+    "crumbs": [
+      "Text Analysis",
+      "Readability Metrics"
+    ]
+  },
+  {
+    "objectID": "reference/readability.html#export-readability-data",
+    "href": "reference/readability.html#export-readability-data",
+    "title": "Readability Metrics",
+    "section": "Export Readability Data",
+    "text": "Export Readability Data\n\n# Create export directory\ndir.create(\"readability_analysis\", showWarnings = FALSE)\n\n# 1. Section readability\nwrite.csv(readability_by_section,\n          \"readability_analysis/section_readability.csv\",\n          row.names = FALSE)\n\n# 2. Segment readability (if calculated)\nif (exists(\"segment_readability\")) {\n  write.csv(segment_readability,\n            \"readability_analysis/segment_readability.csv\",\n            row.names = FALSE)\n}\n\n# 3. Summary report\nsummary_report &lt;- data.frame(\n  metric = c(\"Overall Flesch Reading Ease\",\n             \"Overall Grade Level\",\n             \"Most Readable Section\",\n             \"Least Readable Section\"),\n  value = c(\n    readability$flesch_reading_ease,\n    readability$flesch_kincaid_grade,\n    summary_stats$easiest,\n    summary_stats$most_difficult\n  )\n)\n\nwrite.csv(summary_report,\n          \"readability_analysis/summary_report.csv\",\n          row.names = FALSE)",
+    "crumbs": [
+      "Text Analysis",
+      "Readability Metrics"
+    ]
+  },
+  {
+    "objectID": "reference/readability.html#interpretation-guidelines",
+    "href": "reference/readability.html#interpretation-guidelines",
+    "title": "Readability Metrics",
+    "section": "Interpretation Guidelines",
+    "text": "Interpretation Guidelines\n\nAcademic Writing Standards\n\n# Evaluate against academic standards\nevaluate_academic_readability &lt;- function(fre, fkg) {\n  cat(\"\\n=== Readability Assessment ===\\n\\n\")\n  \n  # Flesch Reading Ease\n  cat(\"Flesch Reading Ease:\", round(fre, 1), \"\\n\")\n  if (fre &lt; 30) {\n    cat(\"✓ Appropriate for academic/professional audience\\n\")\n  } else if (fre &lt; 50) {\n    cat(\"✓ Standard academic difficulty\\n\")\n  } else {\n    cat(\"⚠ May be too simple for academic publication\\n\")\n  }\n  \n  # Grade Level\n  cat(\"\\nGrade Level:\", round(fkg, 1), \"\\n\")\n  if (fkg &gt;= 14) {\n    cat(\"✓ College/graduate level appropriate\\n\")\n  } else if (fkg &gt;= 12) {\n    cat(\"~ Upper undergraduate level\\n\")\n  } else {\n    cat(\"⚠ Below typical academic standard\\n\")\n  }\n  \n  # Recommendations\n  cat(\"\\nRecommendations:\\n\")\n  if (fre &gt; 50) {\n    cat(\"- Consider using more technical vocabulary\\n\")\n    cat(\"- Increase sentence complexity where appropriate\\n\")\n  }\n  if (fkg &lt; 12) {\n    cat(\"- Add more complex sentence structures\\n\")\n    cat(\"- Incorporate domain-specific terminology\\n\")\n  }\n  if (fre &lt; 25 || fkg &gt; 18) {\n    cat(\"- Consider breaking up very long sentences\\n\")\n    cat(\"- Ensure clarity is not sacrificed for complexity\\n\")\n  }\n}\n\n# Apply to your document\nmetrics &lt;- calculate_readability_indices(doc$Full_text)\nevaluate_academic_readability(metrics$flesch_reading_ease, \n                              metrics$flesch_kincaid_grade)",
+    "crumbs": [
+      "Text Analysis",
+      "Readability Metrics"
+    ]
+  },
+  {
+    "objectID": "reference/readability.html#tips-and-best-practices",
+    "href": "reference/readability.html#tips-and-best-practices",
+    "title": "Readability Metrics",
+    "section": "Tips and Best Practices",
+    "text": "Tips and Best Practices\n\n\n\n\n\n\nInterpreting Results\n\n\n\n\nContext matters: Technical papers naturally score lower\nSection differences: Methods often harder than Discussion\nAudience consideration: Adjust expectations by field\nBalance: Clarity vs. necessary complexity\n\n\n\n\n\n\n\n\n\nImproving Readability\n\n\n\nTo improve scores while maintaining rigor:\n\nBreak long sentences into shorter ones\nUse active voice when possible\nDefine technical terms clearly\nVary sentence length and structure\nUse transitional phrases effectively\n\n\n\n\n\n\n\n\n\nAcademic Standards\n\n\n\nTypical academic papers:\n\nFRE: 30-50 (Difficult to Fairly Difficult)\nFK Grade: 13-16 (College to Graduate level)\nGunning Fog: 14-18\n\nLower scores aren’t always better for academic writing!",
+    "crumbs": [
+      "Text Analysis",
+      "Readability Metrics"
+    ]
+  },
+  {
+    "objectID": "reference/readability.html#see-also",
+    "href": "reference/readability.html#see-also",
+    "title": "Readability Metrics",
+    "section": "See Also",
+    "text": "See Also\n\nText Analysis: Word frequency and n-grams\nContent Analysis: Comprehensive analysis\nTutorial: Complete workflow examples",
+    "crumbs": [
+      "Text Analysis",
+      "Readability Metrics"
+    ]
+  },
+  {
+    "objectID": "reference/content-analysis.html",
+    "href": "reference/content-analysis.html",
+    "title": "Content Analysis",
+    "section": "",
+    "text": "The analyze_scientific_content() function performs comprehensive analysis of scientific documents, including citation extraction, reference matching, text analytics, and network analysis.",
+    "crumbs": [
+      "Core Functions",
+      "Content Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/content-analysis.html#overview",
+    "href": "reference/content-analysis.html#overview",
+    "title": "Content Analysis",
+    "section": "",
+    "text": "The analyze_scientific_content() function performs comprehensive analysis of scientific documents, including citation extraction, reference matching, text analytics, and network analysis.",
+    "crumbs": [
+      "Core Functions",
+      "Content Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/content-analysis.html#main-function",
+    "href": "reference/content-analysis.html#main-function",
+    "title": "Content Analysis",
+    "section": "Main Function",
+    "text": "Main Function\n\nanalyze_scientific_content()\nPerform comprehensive content analysis with CrossRef integration.\nUsage\nanalyze_scientific_content(\n  text,\n  doi = NULL,\n  mailto = NULL,\n  window_size = 10,\n  remove_stopwords = TRUE,\n  custom_stopwords = NULL,\n  ngram_range = c(1, 3),\n  use_sections_for_citations = TRUE\n)\nArguments\n\ntext: Named list from pdf2txt_auto() containing document text\ndoi: Character string. DOI of the document (optional but recommended)\nmailto: Character string. Email for CrossRef API access (required if using DOI)\nwindow_size: Integer. Number of words before/after citations to extract\nremove_stopwords: Logical. Remove common English stopwords\ncustom_stopwords: Character vector. Additional stopwords to remove\nngram_range: Numeric vector of length 2. Range of n-grams to extract (e.g., c(1,3) for unigrams to trigrams)\nuse_sections_for_citations: Logical. Include section information in citation analysis\n\nValue\nA list containing:\n\ntext_analytics: Summary statistics about the text\ncitations: Data frame of extracted citations\ncitation_contexts: Citation contexts with surrounding text\ncitation_metrics: Citation statistics by section\ncitation_references_mapping: Matched citations and references\nparsed_references: Parsed reference entries\nword_frequencies: Word frequency table\nngrams: N-gram frequency lists\nnetwork_data: Citation co-occurrence data\nsection_colors: Color mapping for sections\nsummary: Overall summary statistics",
+    "crumbs": [
+      "Core Functions",
+      "Content Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/content-analysis.html#basic-usage",
+    "href": "reference/content-analysis.html#basic-usage",
+    "title": "Content Analysis",
+    "section": "Basic Usage",
+    "text": "Basic Usage\n\nSimple Analysis\nAnalyze without CrossRef integration:\n\nlibrary(contentanalysis)\n\n# Import document\ndoc &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 2)\n\n# Basic analysis\nanalysis &lt;- analyze_scientific_content(\n  text = doc,\n  window_size = 10,\n  remove_stopwords = TRUE\n)\n\n# View summary\nprint(analysis$summary)\n\n\n\nWith CrossRef Integration\nEnhanced analysis with automatic reference matching:\n\n# Analysis with DOI (recommended)\nanalysis &lt;- analyze_scientific_content(\n  text = doc,\n  doi = \"10.1016/j.mlwa.2021.100094\",\n  mailto = \"your@email.com\",\n  window_size = 10,\n  remove_stopwords = TRUE,\n  ngram_range = c(1, 3)\n)\n\n# Check reference matching quality\nmatching_rate &lt;- analysis$summary$references_matched / \n                 analysis$summary$citations_extracted\ncat(\"Matching rate:\", round(matching_rate * 100, 1), \"%\\n\")",
+    "crumbs": [
+      "Core Functions",
+      "Content Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/content-analysis.html#understanding-results",
+    "href": "reference/content-analysis.html#understanding-results",
+    "title": "Content Analysis",
+    "section": "Understanding Results",
+    "text": "Understanding Results\n\nSummary Statistics\nThe summary provides key metrics:\n\nanalysis$summary\n\n# Example output:\n# $total_words: 5234\n# $citations_extracted: 42\n# $narrative_citations: 18\n# $parenthetical_citations: 24\n# $references_matched: 38\n# $lexical_diversity: 0.421\n# $citation_density: 8.03 (citations per 1000 words)\n\n\n\nText Analytics\nBasic text statistics:\n\nanalysis$text_analytics\n\n# Includes:\n# - Total words\n# - Unique words\n# - Lexical diversity\n# - Average word length\n# - Sentence count (if available)\n\n\n\nCitation Extraction\nView extracted citations:\n\nlibrary(dplyr)\n\n# All citations\nhead(analysis$citations)\n\n# Citation types\ntable(analysis$citations$citation_type)\n#  narrative parenthetical \n#        18            24\n\n# Citations by section\nanalysis$citation_metrics$section_distribution\n\n\n\nCitation Contexts\nAccess text surrounding citations:\n\n# View citation contexts\ncontexts &lt;- analysis$citation_contexts %&gt;%\n  select(citation_text_clean, section, words_before, words_after)\n\nhead(contexts, 3)\n\n# Example:\n# citation_text_clean    section       words_before              words_after\n# \"Breiman (2001)\"       Introduction  \"as shown by\"             \"the method provides\"\n# \"(Smith & Jones 2020)\" Methods       \"following the approach\"  \"we implemented the\"",
+    "crumbs": [
+      "Core Functions",
+      "Content Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/content-analysis.html#advanced-usage",
+    "href": "reference/content-analysis.html#advanced-usage",
+    "title": "Content Analysis",
+    "section": "Advanced Usage",
+    "text": "Advanced Usage\n\nCustom Stopwords\nAdd domain-specific stopwords:\n\n# Define custom stopwords\ncustom_stops &lt;- c(\"however\", \"therefore\", \"thus\", \"moreover\", \n                  \"furthermore\", \"additionally\", \"specifically\")\n\nanalysis &lt;- analyze_scientific_content(\n  text = doc,\n  doi = \"10.xxxx/xxxxx\",\n  mailto = \"your@email.com\",\n  custom_stopwords = custom_stops,\n  remove_stopwords = TRUE\n)\n\n# Compare with default\ntop_words_custom &lt;- head(analysis$word_frequencies$word, 20)\n\n\n\nAdjusting Citation Window\nControl context extraction:\n\n# Narrow window for focused context\nanalysis_narrow &lt;- analyze_scientific_content(\n  text = doc,\n  window_size = 5,  # 5 words before/after\n  doi = \"10.xxxx/xxxxx\",\n  mailto = \"your@email.com\"\n)\n\n# Wide window for broader context\nanalysis_wide &lt;- analyze_scientific_content(\n  text = doc,\n  window_size = 20,  # 20 words before/after\n  doi = \"10.xxxx/xxxxx\",\n  mailto = \"your@email.com\"\n)\n\n# Compare context lengths\nmean(nchar(analysis_narrow$citation_contexts$words_before))\nmean(nchar(analysis_wide$citation_contexts$words_before))\n\n\n\nN-gram Configuration\nExtract different n-gram ranges:\n\n# Only unigrams and bigrams\nanalysis_12 &lt;- analyze_scientific_content(\n  text = doc,\n  ngram_range = c(1, 2)\n)\n\n# Up to 4-grams\nanalysis_14 &lt;- analyze_scientific_content(\n  text = doc,\n  ngram_range = c(1, 4)\n)\n\n# Only bigrams and trigrams\nanalysis_23 &lt;- analyze_scientific_content(\n  text = doc,\n  ngram_range = c(2, 3)\n)\n\n# View results\nhead(analysis_14$ngrams$`4gram`, 10)",
+    "crumbs": [
+      "Core Functions",
+      "Content Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/content-analysis.html#working-with-results",
+    "href": "reference/content-analysis.html#working-with-results",
+    "title": "Content Analysis",
+    "section": "Working with Results",
+    "text": "Working with Results\n\nCitation Analysis Workflow\n\n# 1. Find citations to specific author\nbreiman_cites &lt;- analysis$citation_references_mapping %&gt;%\n  filter(grepl(\"Breiman\", ref_authors, ignore.case = TRUE))\n\nnrow(breiman_cites)\n\n# 2. Citations in Introduction\nintro_cites &lt;- analysis$citations %&gt;%\n  filter(section == \"Introduction\")\n\n# 3. Most cited references\ncite_counts &lt;- analysis$citation_references_mapping %&gt;%\n  count(ref_full_text, sort = TRUE)\n\nhead(cite_counts, 10)\n\n# 4. Narrative vs parenthetical by section\ncitation_types_by_section &lt;- analysis$citations %&gt;%\n  group_by(section, citation_type) %&gt;%\n  summarise(count = n(), .groups = \"drop\")\n\nprint(citation_types_by_section)\n\n\n\nText Analysis Workflow\n\n# 1. Most frequent words\ntop_20_words &lt;- head(analysis$word_frequencies, 20)\n\n# 2. Domain-specific terms (e.g., methods)\nmethod_terms &lt;- analysis$word_frequencies %&gt;%\n  filter(grepl(\"model|algorithm|method|approach\", word))\n\nhead(method_terms, 10)\n\n# 3. Most common bigrams\ntop_bigrams &lt;- head(analysis$ngrams$`2gram`, 15)\n\n# 4. Technical trigrams\ntech_trigrams &lt;- analysis$ngrams$`3gram` %&gt;%\n  filter(frequency &gt; 2)\n\nhead(tech_trigrams)\n\n\n\nReference Matching Quality\nAssess matching quality:\n\n# View matching diagnostics\nprint_matching_diagnostics(analysis)\n\n# Confidence distribution\ntable(analysis$citation_references_mapping$match_confidence)\n\n# High confidence matches\nhigh_conf &lt;- analysis$citation_references_mapping %&gt;%\n  filter(match_confidence == \"high\")\n\ncat(\"High confidence matches:\", nrow(high_conf), \"\\n\")\n\n# Low confidence matches (may need review)\nlow_conf &lt;- analysis$citation_references_mapping %&gt;%\n  filter(match_confidence == \"low\")\n\nif (nrow(low_conf) &gt; 0) {\n  cat(\"Low confidence matches requiring review:\\n\")\n  print(low_conf %&gt;% select(citation_text_clean, ref_full_text))\n}",
+    "crumbs": [
+      "Core Functions",
+      "Content Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/content-analysis.html#export-and-reporting",
+    "href": "reference/content-analysis.html#export-and-reporting",
+    "title": "Content Analysis",
+    "section": "Export and Reporting",
+    "text": "Export and Reporting\n\nExport Analysis Results\n\n# Create output directory\ndir.create(\"analysis_output\", showWarnings = FALSE)\n\n# Export main results\nwrite.csv(analysis$citations, \n          \"analysis_output/citations.csv\", \n          row.names = FALSE)\n\nwrite.csv(analysis$citation_references_mapping,\n          \"analysis_output/matched_references.csv\",\n          row.names = FALSE)\n\nwrite.csv(analysis$word_frequencies,\n          \"analysis_output/word_frequencies.csv\",\n          row.names = FALSE)\n\nwrite.csv(analysis$citation_contexts,\n          \"analysis_output/citation_contexts.csv\",\n          row.names = FALSE)\n\n# Export n-grams\nfor (n in names(analysis$ngrams)) {\n  write.csv(analysis$ngrams[[n]],\n            paste0(\"analysis_output/\", n, \".csv\"),\n            row.names = FALSE)\n}\n\n\n\nGenerate Report\n\n# Create summary report\nreport &lt;- list(\n  document_info = list(\n    doi = \"10.xxxx/xxxxx\",\n    total_words = analysis$summary$total_words,\n    sections = names(doc)[names(doc) != \"Full_text\"]\n  ),\n  citation_stats = analysis$summary[grep(\"citation\", names(analysis$summary))],\n  top_words = head(analysis$word_frequencies, 10),\n  top_bigrams = head(analysis$ngrams$`2gram`, 10),\n  section_citation_counts = analysis$citation_metrics$section_distribution\n)\n\n# Save as JSON\nlibrary(jsonlite)\nwrite_json(report, \"analysis_output/summary_report.json\", \n           pretty = TRUE, auto_unbox = TRUE)",
+    "crumbs": [
+      "Core Functions",
+      "Content Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/content-analysis.html#batch-processing",
+    "href": "reference/content-analysis.html#batch-processing",
+    "title": "Content Analysis",
+    "section": "Batch Processing",
+    "text": "Batch Processing\nProcess multiple documents:\n\n# Define papers to process\npapers &lt;- data.frame(\n  file = c(\"paper1.pdf\", \"paper2.pdf\", \"paper3.pdf\"),\n  doi = c(\"10.1000/1\", \"10.1000/2\", \"10.1000/3\"),\n  stringsAsFactors = FALSE\n)\n\n# Process all\nresults &lt;- list()\nfor (i in 1:nrow(papers)) {\n  cat(\"Processing:\", papers$file[i], \"\\n\")\n  \n  doc &lt;- pdf2txt_auto(papers$file[i], n_columns = 2)\n  results[[i]] &lt;- analyze_scientific_content(\n    text = doc,\n    doi = papers$doi[i],\n    mailto = \"your@email.com\"\n  )\n  \n  Sys.sleep(1)  # Be polite to CrossRef API\n}\n\nnames(results) &lt;- papers$file\n\n# Compare results\ncomparison &lt;- data.frame(\n  file = papers$file,\n  words = sapply(results, function(r) r$summary$total_words),\n  citations = sapply(results, function(r) r$summary$citations_extracted),\n  matched = sapply(results, function(r) r$summary$references_matched),\n  diversity = sapply(results, function(r) r$summary$lexical_diversity)\n)\n\nprint(comparison)",
+    "crumbs": [
+      "Core Functions",
+      "Content Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/content-analysis.html#tips-and-best-practices",
+    "href": "reference/content-analysis.html#tips-and-best-practices",
+    "title": "Content Analysis",
+    "section": "Tips and Best Practices",
+    "text": "Tips and Best Practices\n\n\n\n\n\n\nDOI and Email\n\n\n\nAlways provide DOI and email when possible:\n\nEnables automatic CrossRef reference matching\nDramatically improves citation-reference linking\nProvides metadata about the document\nEmail should be valid (CrossRef policy)\n\n\n\n\n\n\n\n\n\nWindow Size\n\n\n\nChoose window size based on your needs:\n\nSmall (5-7): Focused analysis, immediate context\nMedium (8-12): Balanced approach (recommended)\nLarge (15-20): Broader context, sentence-level analysis\n\n\n\n\n\n\n\n\n\nCrossRef API\n\n\n\nBe respectful of CrossRef API:\n\nUse valid email in mailto\nAdd delays between requests in batch processing\nConsider rate limits for large-scale analysis\nCache results when possible",
+    "crumbs": [
+      "Core Functions",
+      "Content Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/content-analysis.html#see-also",
+    "href": "reference/content-analysis.html#see-also",
+    "title": "Content Analysis",
+    "section": "See Also",
+    "text": "See Also\n\nCitation Analysis: Deep dive into citation features\nNetwork Visualization: Create citation networks\nText Analysis: Advanced text analytics\nTutorial: Complete workflow examples",
+    "crumbs": [
+      "Core Functions",
+      "Content Analysis"
+    ]
+  },
+  {
+    "objectID": "project-overview.html",
+    "href": "project-overview.html",
+    "title": "",
+    "section": "",
+    "text": "Code"
+  },
+  {
+    "objectID": "project-overview.html#complete-file-list",
+    "href": "project-overview.html#complete-file-list",
+    "title": "",
+    "section": "📦 Complete File List",
+    "text": "📦 Complete File List\nThis project contains all files needed for a professional Quarto website for the contentanalysis R package.\n\nConfiguration Files\n\n_quarto.yml - Main Quarto configuration (navigation, theme, format)\n.gitignore - Git ignore rules\n\n\n\nContent Pages\n\nindex.qmd - Homepage with features and quick start\nget-started.qmd - Installation and basic usage guide\ntutorial.qmd - Complete end-to-end tutorial\nabout.qmd - About page with project information\n\n\n\nReference Documentation (reference/)\n\npdf-import.qmd - PDF import functions documentation\ncontent-analysis.qmd - Main analysis function documentation\ncitation-analysis.qmd - Citation extraction and analysis\nnetwork-viz.qmd - Network visualization documentation\ntext-analysis.qmd - Text analysis functions\nreadability.qmd - Readability metrics documentation\n\n\n\nStyling\n\ncustom.scss - Custom theme SCSS (colors, typography, components)\nstyles.css - Additional CSS styles (hero sections, cards, etc.)\n\n\n\nDeployment\n\ndeploy.sh - Automated deployment script\nREADME.md - Repository documentation\nSETUP_INSTRUCTIONS.md - Complete setup guide"
+  },
+  {
+    "objectID": "project-overview.html#website-structure",
+    "href": "project-overview.html#website-structure",
+    "title": "",
+    "section": "🎯 Website Structure",
+    "text": "🎯 Website Structure\nHomepage (index.qmd)\n├── Get Started (get-started.qmd)\n│   ├── Installation\n│   ├── Your First Analysis\n│   ├── Common Workflows\n│   └── Troubleshooting\n│\n├── Reference Documentation\n│   ├── PDF Import (reference/pdf-import.qmd)\n│   ├── Content Analysis (reference/content-analysis.qmd)\n│   ├── Citation Analysis (reference/citation-analysis.qmd)\n│   ├── Network Visualization (reference/network-viz.qmd)\n│   ├── Text Analysis (reference/text-analysis.qmd)\n│   └── Readability Metrics (reference/readability.qmd)\n│\n├── Tutorial (tutorial.qmd)\n│   ├── Step 1-10: Complete Workflow\n│   ├── Advanced Examples\n│   └── Batch Processing\n│\n└── About (about.qmd)\n    ├── Project Information\n    ├── Contributing Guidelines\n    ├── Citation\n    └── Contact"
+  },
+  {
+    "objectID": "project-overview.html#design-features",
+    "href": "project-overview.html#design-features",
+    "title": "",
+    "section": "🎨 Design Features",
+    "text": "🎨 Design Features\n\nTheme & Colors\n\nPrimary Color: #2c3e50 (dark blue-grey)\nSecondary Color: #3498db (bright blue)\nSuccess: #27ae60 (green)\nWarning: #f39c12 (orange)\nDanger: #e74c3c (red)\n\n\n\nTypography\n\nHeaders: Segoe UI / Roboto\nBody: Segoe UI / Roboto\nCode: Source Code Pro / Monaco\n\n\n\nVisual Elements\n\nHero section with gradient\nFeature cards with hover effects\nColor-coded callout boxes\nInteractive code examples\nResponsive grid layouts\nPublication-ready figures"
+  },
+  {
+    "objectID": "project-overview.html#content-highlights",
+    "href": "project-overview.html#content-highlights",
+    "title": "",
+    "section": "📊 Content Highlights",
+    "text": "📊 Content Highlights\n\nHomepage Features\n\nPackage overview with key features\nQuick start code example\nInstallation instructions\nLinks to documentation sections\nCitation information\n\n\n\nGet Started Guide\n\nInstallation steps\nFirst analysis walkthrough\nCommon workflows (4 examples)\nBatch processing example\nTroubleshooting section\n\n\n\nReference Documentation\nEach function page includes: - Function signature and arguments - Usage examples from the vignette - Advanced use cases - Tips and best practices - Common issues and solutions - Cross-references to related functions\n\n\nComplete Tutorial\n\n10-step workflow from PDF to final report\nReal example with code and outputs\nVisualization examples\nExport and reporting\nBatch processing guide"
+  },
+  {
+    "objectID": "project-overview.html#key-features",
+    "href": "project-overview.html#key-features",
+    "title": "",
+    "section": "🚀 Key Features",
+    "text": "🚀 Key Features\n\nFor Users\n\nClear Navigation: Easy access to all documentation\nSearchable Content: Built-in search functionality\nCode Examples: Real, executable examples throughout\nInteractive Elements: Dynamic plots and networks\nMobile Responsive: Works on all devices\n\n\n\nFor Developers\n\nEasy to Update: Simple .qmd file editing\nAutomated Deployment: One-command deployment script\nVersion Control: Full Git integration\nCustomizable: Modular SCSS and CSS\nWell Documented: Comments and instructions throughout"
+  },
+  {
+    "objectID": "project-overview.html#content-strategy",
+    "href": "project-overview.html#content-strategy",
+    "title": "",
+    "section": "📝 Content Strategy",
+    "text": "📝 Content Strategy\n\nDocumentation Hierarchy\n\nQuick Start → Get users up and running fast\nReference → Detailed function documentation\nTutorial → Complete workflows and examples\nAbout → Project context and community\n\n\n\nCode Examples\n\nAll examples use the same paper from the vignette\nExamples build on each other progressively\nReal outputs shown where possible\nComments explain key steps\n\n\n\nVisual Aids\n\nSyntax highlighting for all code\nOutput examples formatted clearly\nCallout boxes for important notes\nStep numbers in tutorials\nIcons for different content types"
+  },
+  {
+    "objectID": "project-overview.html#technical-stack",
+    "href": "project-overview.html#technical-stack",
+    "title": "",
+    "section": "🛠️ Technical Stack",
+    "text": "🛠️ Technical Stack\n\nCore Technologies\n\nQuarto (1.3+): Static site generator\nR (4.0+): Code execution\nGit: Version control\nGitHub Pages: Hosting\n\n\n\nDependencies\n\nBootstrap (via Quarto theme)\nvisNetwork (for interactive networks)\nggplot2 (for visualizations)\ndplyr/tidyr (for data manipulation)"
+  },
+  {
+    "objectID": "project-overview.html#deployment-workflow",
+    "href": "project-overview.html#deployment-workflow",
+    "title": "",
+    "section": "📦 Deployment Workflow",
+    "text": "📦 Deployment Workflow\nEdit .qmd files\n     ↓\nquarto preview (test locally)\n     ↓\nquarto render (build site)\n     ↓\ngit commit & push\n     ↓\nGitHub Pages auto-deploys\n     ↓\nLive website updated"
+  },
+  {
+    "objectID": "project-overview.html#learning-resources",
+    "href": "project-overview.html#learning-resources",
+    "title": "",
+    "section": "🎓 Learning Resources",
+    "text": "🎓 Learning Resources\nThe website includes:\n\nFor Beginners\n\nInstallation guide\nBasic usage examples\nStep-by-step tutorial\nTroubleshooting help\n\n\n\nFor Advanced Users\n\nComplete function reference\nAdvanced examples\nBatch processing\nNetwork analysis\nCustom configurations\n\n\n\nFor Contributors\n\nContributing guidelines\nCode of conduct\nGitHub workflow\nIssue templates"
+  },
+  {
+    "objectID": "project-overview.html#analytics-metrics",
+    "href": "project-overview.html#analytics-metrics",
+    "title": "",
+    "section": "📈 Analytics & Metrics",
+    "text": "📈 Analytics & Metrics\nConsider adding (optional): - Google Analytics for usage tracking - GitHub stars/forks display - Download statistics - Citation count"
+  },
+  {
+    "objectID": "project-overview.html#maintenance-plan",
+    "href": "project-overview.html#maintenance-plan",
+    "title": "",
+    "section": "🔄 Maintenance Plan",
+    "text": "🔄 Maintenance Plan\n\nRegular Updates\n\nKeep examples up-to-date with package versions\nAdd new features as package develops\nUpdate troubleshooting based on user issues\nRefresh screenshots and outputs\n\n\n\nCommunity Engagement\n\nRespond to GitHub issues\nAccept pull requests\nUpdate FAQ based on questions\nShowcase user examples"
+  },
+  {
+    "objectID": "project-overview.html#success-metrics",
+    "href": "project-overview.html#success-metrics",
+    "title": "",
+    "section": "🎯 Success Metrics",
+    "text": "🎯 Success Metrics\nWebsite effectiveness measured by: - GitHub stars and forks - User engagement (time on site) - Documentation clarity (fewer support issues) - Community contributions - Package downloads"
+  },
+  {
+    "objectID": "project-overview.html#unique-features",
+    "href": "project-overview.html#unique-features",
+    "title": "",
+    "section": "🌟 Unique Features",
+    "text": "🌟 Unique Features\nWhat makes this website stand out:\n\nReal Examples: All examples use actual paper from package\nProgressive Learning: From basic to advanced systematically\nVisual Networks: Interactive citation networks\nBatch Processing: Real-world multi-paper workflows\nComplete Workflow: End-to-end research workflow\nPublication Ready: High-quality figures and exports"
+  },
+  {
+    "objectID": "project-overview.html#support-channels",
+    "href": "project-overview.html#support-channels",
+    "title": "",
+    "section": "📞 Support Channels",
+    "text": "📞 Support Channels\n\nDocumentation: Website reference pages\nTutorial: Step-by-step guide\nGitHub Issues: Bug reports and features\nEmail: Direct contact (in About page)"
+  },
+  {
+    "objectID": "project-overview.html#best-practices-implemented",
+    "href": "project-overview.html#best-practices-implemented",
+    "title": "",
+    "section": "🔐 Best Practices Implemented",
+    "text": "🔐 Best Practices Implemented\n\nSemantic HTML structure\nAccessible navigation\nMobile-first responsive design\nFast loading times\nClean URLs\nSEO-friendly content\nCross-browser compatibility\nVersion control integration"
+  },
+  {
+    "objectID": "project-overview.html#customization-options",
+    "href": "project-overview.html#customization-options",
+    "title": "",
+    "section": "🎨 Customization Options",
+    "text": "🎨 Customization Options\nEasy to customize: - Colors via custom.scss - Layouts via _quarto.yml - Styles via styles.css - Content via .qmd files - Navigation via YAML config"
+  },
+  {
+    "objectID": "project-overview.html#quality-checklist",
+    "href": "project-overview.html#quality-checklist",
+    "title": "",
+    "section": "✅ Quality Checklist",
+    "text": "✅ Quality Checklist\n\nAll pages render correctly\nNavigation works on all devices\nCode examples are executable\nLinks are functional\nImages load properly\nResponsive design works\nAccessibility standards met\nSEO optimized\nFast loading times\nCross-browser compatible"
+  },
+  {
+    "objectID": "project-overview.html#next-steps",
+    "href": "project-overview.html#next-steps",
+    "title": "",
+    "section": "🚀 Next Steps",
+    "text": "🚀 Next Steps\nAfter deployment:\n\nAnnounce: Share on social media, R communities\nMonitor: Watch for user feedback and issues\nUpdate: Keep content fresh and current\nEngage: Respond to community contributions\nImprove: Iterate based on user needs"
+  },
+  {
+    "objectID": "project-overview.html#quick-deployment-checklist",
+    "href": "project-overview.html#quick-deployment-checklist",
+    "title": "",
+    "section": "📋 Quick Deployment Checklist",
+    "text": "📋 Quick Deployment Checklist\nBefore deploying:\n\nUpdate all yourusername placeholders\nAdd logo.png (optional)\nTest all pages locally\nCheck all links work\nVerify code examples\nReview README\nConfigure GitHub repository\nEnable GitHub Pages\nTest live deployment\nShare the URL!\n\n\nWebsite URL: https://yourusername.github.io/contentanalysis\nRepository: https://github.com/yourusername/contentanalysis\nPackage: https://github.com/massimoaria/contentanalysis\n\nThis website provides comprehensive documentation for the contentanalysis R package, making it easy for researchers to extract and analyze scientific content from PDF documents."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "contentanalysis",
+    "section": "",
+    "text": "contentanalysis is an R package that provides comprehensive tools for extracting and analyzing scientific content from PDF documents. It enables researchers to perform sophisticated content analysis, citation extraction, network visualization, and text mining on academic papers."
+  },
+  {
+    "objectID": "index.html#overview",
+    "href": "index.html#overview",
+    "title": "contentanalysis",
+    "section": "",
+    "text": "contentanalysis is an R package that provides comprehensive tools for extracting and analyzing scientific content from PDF documents. It enables researchers to perform sophisticated content analysis, citation extraction, network visualization, and text mining on academic papers."
+  },
+  {
+    "objectID": "index.html#key-features",
+    "href": "index.html#key-features",
+    "title": "contentanalysis",
+    "section": "Key Features",
+    "text": "Key Features\n\n\n📄 PDF Processing\n\nMulti-column PDF support\nAutomatic section detection\nStructure preservation\nText extraction with layout awareness\n\n\n\n📚 Citation Analysis\n\nMultiple citation format detection\nAutomatic reference matching\nCitation context extraction\nCrossRef integration\n\n\n\n🕸️ Network Visualization\n\nInteractive citation networks\nCo-occurrence analysis\nSection-based coloring\nHub citation detection\n\n\n\n📊 Text Analytics\n\nWord frequency analysis\nN-gram extraction\nReadability indices\nDistribution tracking"
+  },
+  {
+    "objectID": "index.html#quick-start",
+    "href": "index.html#quick-start",
+    "title": "contentanalysis",
+    "section": "Quick Start",
+    "text": "Quick Start\n\nInstallation\n# Install from GitHub\n# install.packages(\"devtools\")\ndevtools::install_github(\"massimoaria/contentanalysis\")\n\n\nBasic Usage\nlibrary(contentanalysis)\n\n# Import PDF with automatic section detection\ndoc &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 2)\n\n# Comprehensive analysis with CrossRef integration\nanalysis &lt;- analyze_scientific_content(\n  text = doc,\n  doi = \"10.1016/j.xxx.xxx\",\n  mailto = \"your@email.com\"\n)\n\n# Create interactive citation network\nnetwork &lt;- create_citation_network(\n  analysis,\n  max_distance = 800,\n  min_connections = 2\n)"
+  },
+  {
+    "objectID": "index.html#example-output",
+    "href": "index.html#example-output",
+    "title": "contentanalysis",
+    "section": "Example Output",
+    "text": "Example Output\nThe package provides rich analytical outputs:\n\n# Summary statistics\nanalysis$summary\n\n# Citation extraction\nhead(analysis$citations)\n\n# Word frequencies\nhead(analysis$word_frequencies, 20)\n\n# Network statistics\nattr(network, \"stats\")"
+  },
+  {
+    "objectID": "index.html#main-components",
+    "href": "index.html#main-components",
+    "title": "contentanalysis",
+    "section": "Main Components",
+    "text": "Main Components\n\n1. Content Extraction\nImport PDFs and automatically detect document structure:\n\npdf2txt_auto(): Import with automatic section detection\nSupports single, double, and triple-column layouts\nIdentifies Abstract, Introduction, Methods, Results, Discussion, etc.\n\n\n\n2. Citation Analysis\nExtract and analyze citations:\n\nanalyze_scientific_content(): Comprehensive content analysis\nDetects narrative and parenthetical citations\nMatches citations to references\nExtracts citation contexts\n\n\n\n3. Network Visualization\nVisualize citation relationships:\n\ncreate_citation_network(): Interactive network graphs\nShows co-occurrence patterns\nColor-coded by document sections\nEdge weights based on citation proximity\n\n\n\n4. Text Analytics\nAnalyze document text:\n\ncalculate_word_distribution(): Track term usage\ncalculate_readability_indices(): Readability metrics\nN-gram analysis\nLexical diversity measures"
+  },
+  {
+    "objectID": "index.html#use-cases",
+    "href": "index.html#use-cases",
+    "title": "contentanalysis",
+    "section": "Use Cases",
+    "text": "Use Cases\nThe package is designed for:\n\nSystematic Literature Reviews: Analyze citation patterns across multiple papers\nContent Analysis: Extract and quantify key concepts and themes\nBibliometric Studies: Map citation networks and identify influential works\nAcademic Writing Analysis: Assess readability and citation practices\nResearch Methodology: Study how citations are deployed in scientific arguments"
+  },
+  {
+    "objectID": "index.html#getting-help",
+    "href": "index.html#getting-help",
+    "title": "contentanalysis",
+    "section": "Getting Help",
+    "text": "Getting Help\n\nGet Started Guide: Step-by-step introduction\nReference Documentation: Detailed function documentation\nTutorial: Complete workflow examples\nGitHub Issues: Report bugs or request features"
+  },
+  {
+    "objectID": "index.html#citation",
+    "href": "index.html#citation",
+    "title": "contentanalysis",
+    "section": "Citation",
+    "text": "Citation\nIf you use contentanalysis in your research, please cite:\n@Manual{contentanalysis,\n  title = {contentanalysis: Tools for Scientific Content Analysis},\n  author = {Your Name},\n  year = {2024},\n  note = {R package version 0.1.0},\n  url = {https://github.com/yourusername/contentanalysis}\n}"
+  },
+  {
+    "objectID": "index.html#license",
+    "href": "index.html#license",
+    "title": "contentanalysis",
+    "section": "License",
+    "text": "License\nGPL-3 © 2024"
+  },
+  {
+    "objectID": "tutorial.html",
+    "href": "tutorial.html",
+    "title": "Complete Tutorial",
+    "section": "",
+    "text": "This tutorial provides a complete workflow for analyzing scientific papers using the contentanalysis package. We’ll work through a real example, from PDF import to final visualizations and reporting."
+  },
+  {
+    "objectID": "tutorial.html#introduction",
+    "href": "tutorial.html#introduction",
+    "title": "Complete Tutorial",
+    "section": "",
+    "text": "This tutorial provides a complete workflow for analyzing scientific papers using the contentanalysis package. We’ll work through a real example, from PDF import to final visualizations and reporting."
+  },
+  {
+    "objectID": "tutorial.html#setup",
+    "href": "tutorial.html#setup",
+    "title": "Complete Tutorial",
+    "section": "Setup",
+    "text": "Setup\n\nInstall Required Packages\n\n# Install contentanalysis\ndevtools::install_github(\"massimoaria/contentanalysis\")\n\n# Install supporting packages\ninstall.packages(c(\"dplyr\", \"ggplot2\", \"tidyr\", \"knitr\"))\n\n# Load libraries\nlibrary(contentanalysis)\nlibrary(dplyr)\nlibrary(ggplot2)\nlibrary(tidyr)"
+  },
+  {
+    "objectID": "tutorial.html#step-1-obtain-sample-paper",
+    "href": "tutorial.html#step-1-obtain-sample-paper",
+    "title": "Complete Tutorial",
+    "section": "Step 1: Obtain Sample Paper",
+    "text": "Step 1: Obtain Sample Paper\nWe’ll use an open-access paper on Machine Learning:\n\n# Download example paper\npaper_url &lt;- \"https://raw.githubusercontent.com/massimoaria/contentanalysis/master/inst/examples/example_paper.pdf\"\ndownload.file(paper_url, destfile = \"example_paper.pdf\", mode = \"wb\")\n\n# Verify download\nfile.exists(\"example_paper.pdf\")\n\n\n\n\n\n\n\nUsing Your Own Papers\n\n\n\nReplace the URL with your own PDF file path. Ensure the PDF is text-based (not a scanned image)."
+  },
+  {
+    "objectID": "tutorial.html#step-2-import-and-inspect-pdf",
+    "href": "tutorial.html#step-2-import-and-inspect-pdf",
+    "title": "Complete Tutorial",
+    "section": "Step 2: Import and Inspect PDF",
+    "text": "Step 2: Import and Inspect PDF\n\nImport with Section Detection\n\n# Import PDF with automatic section detection\ndoc &lt;- pdf2txt_auto(\n  \"example_paper.pdf\",\n  n_columns = 2,          # Two-column layout\n  sections = TRUE         # Detect sections\n)\n\n# Check detected sections\ncat(\"Detected sections:\\n\")\nprint(names(doc))\n\n# Preview Abstract\ncat(\"\\n=== Abstract Preview ===\\n\")\ncat(substr(doc$Abstract, 1, 500), \"...\\n\")\n\n\n\nVerify Section Quality\n\n# Check section word counts\nsection_lengths &lt;- sapply(doc[names(doc) != \"Full_text\"], function(x) {\n  length(strsplit(x, \"\\\\s+\")[[1]])\n})\n\nsection_df &lt;- data.frame(\n  section = names(section_lengths),\n  words = section_lengths\n) %&gt;%\n  arrange(desc(words))\n\nprint(section_df)\n\n# Visualize section lengths\nggplot(section_df, aes(x = reorder(section, words), y = words, fill = section)) +\n  geom_col(show.legend = FALSE) +\n  coord_flip() +\n  labs(title = \"Word Count by Section\",\n       x = \"Section\", y = \"Number of Words\") +\n  theme_minimal()"
+  },
+  {
+    "objectID": "tutorial.html#step-3-comprehensive-content-analysis",
+    "href": "tutorial.html#step-3-comprehensive-content-analysis",
+    "title": "Complete Tutorial",
+    "section": "Step 3: Comprehensive Content Analysis",
+    "text": "Step 3: Comprehensive Content Analysis\n\nMain Analysis\n\n# Perform comprehensive analysis\nanalysis &lt;- analyze_scientific_content(\n  text = doc,\n  doi = \"10.1016/j.mlwa.2021.100094\",  # Paper's DOI\n  mailto = \"your@email.com\",            # Your email for CrossRef\n  window_size = 10,                     # Context window\n  remove_stopwords = TRUE,              # Remove common words\n  ngram_range = c(1, 3),               # Unigrams to trigrams\n  use_sections_for_citations = TRUE\n)\n\n# View summary\nprint(analysis$summary)\n\n\n\nInterpret Summary Statistics\n\n# Extract key metrics\ntotal_words &lt;- analysis$summary$total_words\ncitations &lt;- analysis$summary$citations_extracted\ndensity &lt;- analysis$summary$citation_density\ndiversity &lt;- analysis$summary$lexical_diversity\n\ncat(\"Document Statistics:\\n\")\ncat(\"===================\\n\")\ncat(sprintf(\"Total words: %d\\n\", total_words))\ncat(sprintf(\"Citations: %d\\n\", citations))\ncat(sprintf(\"Citation density: %.2f per 1000 words\\n\", density))\ncat(sprintf(\"Lexical diversity: %.3f\\n\", diversity))\n\n# Assess citation intensity\nif (density &lt; 5) {\n  cat(\"\\n→ Low citation density (typical for theoretical papers)\\n\")\n} else if (density &lt; 15) {\n  cat(\"\\n→ Moderate citation density (standard empirical paper)\\n\")\n} else {\n  cat(\"\\n→ High citation density (review paper or methods paper)\\n\")\n}"
+  },
+  {
+    "objectID": "tutorial.html#step-4-citation-analysis",
+    "href": "tutorial.html#step-4-citation-analysis",
+    "title": "Complete Tutorial",
+    "section": "Step 4: Citation Analysis",
+    "text": "Step 4: Citation Analysis\n\nExtract and Explore Citations\n\n# View first citations\nhead(analysis$citations, 10)\n\n# Citation types\ncitation_summary &lt;- analysis$citations %&gt;%\n  group_by(citation_type) %&gt;%\n  summarise(count = n(), .groups = \"drop\") %&gt;%\n  mutate(percentage = round(count / sum(count) * 100, 1))\n\nprint(citation_summary)\n\n# Visualize\nggplot(citation_summary, aes(x = citation_type, y = count, fill = citation_type)) +\n  geom_col(show.legend = FALSE) +\n  geom_text(aes(label = paste0(count, \" (\", percentage, \"%)\")), \n            vjust = -0.5) +\n  labs(title = \"Citation Types\",\n       x = \"Type\", y = \"Count\") +\n  theme_minimal()\n\n\n\nCitations by Section\n\n# Citation distribution across sections\nsection_citations &lt;- analysis$citations %&gt;%\n  count(section, sort = TRUE)\n\nprint(section_citations)\n\n# Visualize\nggplot(section_citations, aes(x = reorder(section, n), y = n, fill = section)) +\n  geom_col(show.legend = FALSE) +\n  coord_flip() +\n  labs(title = \"Citations by Section\",\n       x = \"Section\", y = \"Number of Citations\") +\n  theme_minimal()\n\n\n\nMost Cited References\n\n# Top 10 most cited references\ntop_cited &lt;- analysis$citation_references_mapping %&gt;%\n  count(ref_full_text, sort = TRUE) %&gt;%\n  head(10) %&gt;%\n  mutate(ref_short = substr(ref_full_text, 1, 60))\n\nprint(top_cited)\n\n# Visualize\nggplot(top_cited, aes(x = reorder(ref_short, n), y = n)) +\n  geom_col(fill = \"steelblue\") +\n  coord_flip() +\n  labs(title = \"Top 10 Most Cited References\",\n       x = NULL, y = \"Citation Count\") +\n  theme_minimal()\n\n\n\nCitation Contexts\n\n# Examine citation contexts\ncontexts_sample &lt;- analysis$citation_contexts %&gt;%\n  select(citation_text_clean, section, words_before, words_after) %&gt;%\n  head(5)\n\nprint(contexts_sample)\n\n# Find method citations\nmethod_citations &lt;- analysis$citation_contexts %&gt;%\n  filter(grepl(\"method|approach|algorithm|technique\", \n               paste(words_before, words_after), \n               ignore.case = TRUE)) %&gt;%\n  select(citation_text_clean, section, words_before, words_after)\n\ncat(\"\\nMethod-related citations found:\", nrow(method_citations), \"\\n\")\nhead(method_citations)"
+  },
+  {
+    "objectID": "tutorial.html#step-5-network-visualization",
+    "href": "tutorial.html#step-5-network-visualization",
+    "title": "Complete Tutorial",
+    "section": "Step 5: Network Visualization",
+    "text": "Step 5: Network Visualization\n\nCreate Citation Network\n\n# Create interactive network\nnetwork &lt;- create_citation_network(\n  citation_analysis_results = analysis,\n  max_distance = 800,\n  min_connections = 2,\n  show_labels = TRUE\n)\n\n# Display network\nnetwork\n\n\n\nAnalyze Network Statistics\n\n# Get network statistics\nstats &lt;- attr(network, \"stats\")\n\ncat(\"Network Statistics:\\n\")\ncat(\"===================\\n\")\ncat(\"Nodes:\", stats$n_nodes, \"\\n\")\ncat(\"Edges:\", stats$n_edges, \"\\n\")\ncat(\"Avg distance:\", round(stats$avg_distance), \"characters\\n\")\ncat(\"Max distance:\", stats$max_distance, \"characters\\n\")\n\n# Network density\ndensity &lt;- stats$n_edges / (stats$n_nodes * (stats$n_nodes - 1) / 2)\ncat(\"Network density:\", round(density, 3), \"\\n\")\n\n# Section distribution\nprint(stats$section_distribution)\n\n# Hub citations\nhub_threshold &lt;- quantile(stats$section_distribution$n, 0.75)\nhubs &lt;- stats$section_distribution %&gt;%\n  filter(n &gt;= hub_threshold) %&gt;%\n  arrange(desc(n))\n\ncat(\"\\nHub citations (top 25%):\\n\")\nprint(hubs)\n\n\n\nExport Network\n\nlibrary(htmlwidgets)\n\n# Save as standalone HTML\nsaveWidget(network, \n           \"citation_network.html\",\n           selfcontained = TRUE,\n           title = \"Citation Network\")\n\ncat(\"Network saved to: citation_network.html\\n\")"
+  },
+  {
+    "objectID": "tutorial.html#step-6-text-analysis",
+    "href": "tutorial.html#step-6-text-analysis",
+    "title": "Complete Tutorial",
+    "section": "Step 6: Text Analysis",
+    "text": "Step 6: Text Analysis\n\nWord Frequency Analysis\n\n# Top 30 words\ntop_words &lt;- head(analysis$word_frequencies, 30)\nprint(top_words)\n\n# Visualize top 20\ntop_20 &lt;- head(analysis$word_frequencies, 20)\n\nggplot(top_20, aes(x = reorder(word, frequency), y = frequency)) +\n  geom_col(fill = \"darkgreen\") +\n  coord_flip() +\n  labs(title = \"Top 20 Most Frequent Words\",\n       x = \"Word\", y = \"Frequency\") +\n  theme_minimal()\n\n\n\nN-gram Analysis\n\n# Most common bigrams\ntop_bigrams &lt;- head(analysis$ngrams$`2gram`, 15)\nprint(top_bigrams)\n\n# Most common trigrams\ntop_trigrams &lt;- head(analysis$ngrams$`3gram`, 10)\nprint(top_trigrams)\n\n# Visualize bigrams\nggplot(top_bigrams, aes(x = reorder(ngram, frequency), y = frequency)) +\n  geom_col(fill = \"coral\") +\n  coord_flip() +\n  labs(title = \"Top 15 Bigrams\",\n       x = \"Bigram\", y = \"Frequency\") +\n  theme_minimal()\n\n\n\nWord Distribution Tracking\n\n# Define key terms to track\nkey_terms &lt;- c(\"machine learning\", \"random forest\", \"accuracy\", \n               \"classification\", \"model\")\n\n# Calculate distribution\ndist &lt;- calculate_word_distribution(\n  text = doc,\n  selected_words = key_terms,\n  use_sections = TRUE,\n  normalize = TRUE\n)\n\n# View results\nprint(dist)\n\n# Interactive visualization\nplot_word_distribution(\n  dist,\n  plot_type = \"line\",\n  show_points = TRUE,\n  smooth = TRUE\n)"
+  },
+  {
+    "objectID": "tutorial.html#step-7-readability-assessment",
+    "href": "tutorial.html#step-7-readability-assessment",
+    "title": "Complete Tutorial",
+    "section": "Step 7: Readability Assessment",
+    "text": "Step 7: Readability Assessment\n\nOverall Readability\n\n# Calculate readability for full text\nreadability &lt;- calculate_readability_indices(\n  doc$Full_text,\n  detailed = TRUE\n)\n\nprint(readability)\n\n# Interpret\ncat(\"\\nInterpretation:\\n\")\ncat(\"Flesch Reading Ease:\", readability$flesch_reading_ease, \"\\n\")\nif (readability$flesch_reading_ease &lt; 30) {\n  cat(\"→ Very difficult (graduate level)\\n\")\n} else if (readability$flesch_reading_ease &lt; 50) {\n  cat(\"→ Difficult (college level)\\n\")\n} else {\n  cat(\"→ Fairly difficult (high school to college)\\n\")\n}\n\ncat(\"\\nGrade Level:\", round(readability$flesch_kincaid_grade, 1), \"\\n\")\n\n\n\nCompare Sections\n\n# Calculate for each section\nsections &lt;- c(\"Abstract\", \"Introduction\", \"Methods\", \"Results\", \"Discussion\")\nsection_readability &lt;- data.frame()\n\nfor (section in sections) {\n  if (section %in% names(doc)) {\n    metrics &lt;- calculate_readability_indices(doc[[section]], detailed = FALSE)\n    metrics$section &lt;- section\n    section_readability &lt;- rbind(section_readability, metrics)\n  }\n}\n\nprint(section_readability)\n\n# Visualize\nggplot(section_readability, \n       aes(x = reorder(section, flesch_reading_ease), \n           y = flesch_reading_ease, fill = section)) +\n  geom_col(show.legend = FALSE) +\n  coord_flip() +\n  labs(title = \"Readability by Section\",\n       subtitle = \"Higher scores = easier to read\",\n       x = \"Section\", y = \"Flesch Reading Ease\") +\n  theme_minimal()"
+  },
+  {
+    "objectID": "tutorial.html#step-8-comprehensive-reporting",
+    "href": "tutorial.html#step-8-comprehensive-reporting",
+    "title": "Complete Tutorial",
+    "section": "Step 8: Comprehensive Reporting",
+    "text": "Step 8: Comprehensive Reporting\n\nCreate Summary Report\n\n# Compile comprehensive report\nreport &lt;- list(\n  document_info = list(\n    doi = \"10.1016/j.mlwa.2021.100094\",\n    total_words = analysis$summary$total_words,\n    sections = names(doc)[names(doc) != \"Full_text\"]\n  ),\n  \n  citation_metrics = list(\n    total_citations = analysis$summary$citations_extracted,\n    narrative = analysis$summary$narrative_citations,\n    parenthetical = analysis$summary$parenthetical_citations,\n    matched = analysis$summary$references_matched,\n    density = analysis$summary$citation_density\n  ),\n  \n  text_metrics = list(\n    lexical_diversity = analysis$summary$lexical_diversity,\n    top_10_words = head(analysis$word_frequencies$word, 10),\n    top_10_bigrams = head(analysis$ngrams$`2gram`$ngram, 10)\n  ),\n  \n  readability = list(\n    flesch_reading_ease = readability$flesch_reading_ease,\n    grade_level = readability$flesch_kincaid_grade,\n    gunning_fog = readability$gunning_fog\n  ),\n  \n  network_stats = list(\n    nodes = stats$n_nodes,\n    edges = stats$n_edges,\n    density = stats$n_edges / (stats$n_nodes * (stats$n_nodes - 1) / 2)\n  )\n)\n\n# Print report\ncat(\"COMPREHENSIVE ANALYSIS REPORT\\n\")\ncat(\"=============================\\n\\n\")\n\ncat(\"DOCUMENT INFORMATION\\n\")\ncat(\"DOI:\", report$document_info$doi, \"\\n\")\ncat(\"Total words:\", report$document_info$total_words, \"\\n\")\ncat(\"Sections:\", paste(report$document_info$sections, collapse = \", \"), \"\\n\\n\")\n\ncat(\"CITATION METRICS\\n\")\ncat(\"Total citations:\", report$citation_metrics$total_citations, \"\\n\")\ncat(\"Citation density:\", round(report$citation_metrics$density, 2), \"per 1000 words\\n\")\ncat(\"Match rate:\", round(report$citation_metrics$matched / report$citation_metrics$total_citations * 100, 1), \"%\\n\\n\")\n\ncat(\"TEXT METRICS\\n\")\ncat(\"Lexical diversity:\", round(report$text_metrics$lexical_diversity, 3), \"\\n\")\ncat(\"Top words:\", paste(head(report$text_metrics$top_10_words, 5), collapse = \", \"), \"\\n\\n\")\n\ncat(\"READABILITY\\n\")\ncat(\"Reading ease:\", round(report$readability$flesch_reading_ease, 1), \"\\n\")\ncat(\"Grade level:\", round(report$readability$grade_level, 1), \"\\n\\n\")\n\ncat(\"NETWORK STATISTICS\\n\")\ncat(\"Citation nodes:\", report$network_stats$nodes, \"\\n\")\ncat(\"Connections:\", report$network_stats$edges, \"\\n\")\ncat(\"Density:\", round(report$network_stats$density, 3), \"\\n\")\n\n\n\nExport All Results\n\n# Create output directory\ndir.create(\"analysis_output\", showWarnings = FALSE)\n\n# 1. Citations\nwrite.csv(analysis$citations, \n          \"analysis_output/citations.csv\", \n          row.names = FALSE)\n\n# 2. Matched references\nwrite.csv(analysis$citation_references_mapping,\n          \"analysis_output/matched_references.csv\",\n          row.names = FALSE)\n\n# 3. Word frequencies\nwrite.csv(analysis$word_frequencies,\n          \"analysis_output/word_frequencies.csv\",\n          row.names = FALSE)\n\n# 4. Bigrams\nwrite.csv(analysis$ngrams$`2gram`,\n          \"analysis_output/bigrams.csv\",\n          row.names = FALSE)\n\n# 5. Trigrams\nwrite.csv(analysis$ngrams$`3gram`,\n          \"analysis_output/trigrams.csv\",\n          row.names = FALSE)\n\n# 6. Network statistics\nwrite.csv(stats$section_distribution,\n          \"analysis_output/network_stats.csv\",\n          row.names = FALSE)\n\n# 7. Readability by section\nwrite.csv(section_readability,\n          \"analysis_output/readability.csv\",\n          row.names = FALSE)\n\n# 8. Summary report as JSON\nlibrary(jsonlite)\nwrite_json(report, \n           \"analysis_output/summary_report.json\",\n           pretty = TRUE, \n           auto_unbox = TRUE)\n\ncat(\"All results exported to: analysis_output/\\n\")"
+  },
+  {
+    "objectID": "tutorial.html#step-9-advanced-visualizations",
+    "href": "tutorial.html#step-9-advanced-visualizations",
+    "title": "Complete Tutorial",
+    "section": "Step 9: Advanced Visualizations",
+    "text": "Step 9: Advanced Visualizations\n\nCreate Publication-Ready Figures\n\nlibrary(patchwork)\n\n# Figure 1: Overview\np1 &lt;- ggplot(section_df, aes(x = reorder(section, words), y = words)) +\n  geom_col(fill = \"steelblue\") +\n  coord_flip() +\n  labs(title = \"A) Document Structure\", x = NULL, y = \"Words\") +\n  theme_minimal()\n\np2 &lt;- ggplot(citation_summary, aes(x = citation_type, y = count, fill = citation_type)) +\n  geom_col(show.legend = FALSE) +\n  labs(title = \"B) Citation Types\", x = NULL, y = \"Count\") +\n  theme_minimal()\n\n# Combine\ncombined &lt;- p1 + p2\nprint(combined)\n\nggsave(\"analysis_output/figure1_overview.png\", \n       combined, width = 10, height = 5, dpi = 300)\n\n# Figure 2: Text analysis\np3 &lt;- ggplot(head(top_words, 15), \n             aes(x = reorder(word, frequency), y = frequency)) +\n  geom_col(fill = \"darkgreen\") +\n  coord_flip() +\n  labs(title = \"A) Top Words\", x = NULL, y = \"Frequency\") +\n  theme_minimal()\n\np4 &lt;- ggplot(section_readability, \n             aes(x = reorder(section, flesch_reading_ease), \n                 y = flesch_reading_ease)) +\n  geom_col(fill = \"coral\") +\n  coord_flip() +\n  labs(title = \"B) Readability\", x = NULL, y = \"FRE Score\") +\n  theme_minimal()\n\ncombined2 &lt;- p3 + p4\nprint(combined2)\n\nggsave(\"analysis_output/figure2_text_analysis.png\",\n       combined2, width = 10, height = 5, dpi = 300)"
+  },
+  {
+    "objectID": "tutorial.html#step-10-batch-processing",
+    "href": "tutorial.html#step-10-batch-processing",
+    "title": "Complete Tutorial",
+    "section": "Step 10: Batch Processing",
+    "text": "Step 10: Batch Processing\n\nAnalyze Multiple Papers\n\n# Define papers to analyze\npapers_df &lt;- data.frame(\n  file = c(\"paper1.pdf\", \"paper2.pdf\", \"paper3.pdf\"),\n  doi = c(\"10.xxxx/1\", \"10.xxxx/2\", \"10.xxxx/3\"),\n  name = c(\"Paper A\", \"Paper B\", \"Paper C\"),\n  stringsAsFactors = FALSE\n)\n\n# Process all papers\nall_results &lt;- list()\nall_networks &lt;- list()\n\nfor (i in 1:nrow(papers_df)) {\n  cat(\"\\nProcessing:\", papers_df$name[i], \"\\n\")\n  \n  # Import\n  doc &lt;- pdf2txt_auto(papers_df$file[i], n_columns = 2)\n  \n  # Analyze\n  all_results[[i]] &lt;- analyze_scientific_content(\n    text = doc,\n    doi = papers_df$doi[i],\n    mailto = \"your@email.com\"\n  )\n  \n  # Network\n  all_networks[[i]] &lt;- create_citation_network(\n    all_results[[i]],\n    max_distance = 800,\n    min_connections = 2\n  )\n  \n  Sys.sleep(1)  # Be polite to CrossRef API\n}\n\nnames(all_results) &lt;- papers_df$name\nnames(all_networks) &lt;- papers_df$name\n\n# Compare papers\ncomparison &lt;- data.frame(\n  paper = papers_df$name,\n  words = sapply(all_results, function(r) r$summary$total_words),\n  citations = sapply(all_results, function(r) r$summary$citations_extracted),\n  density = sapply(all_results, function(r) r$summary$citation_density),\n  diversity = sapply(all_results, function(r) r$summary$lexical_diversity),\n  network_nodes = sapply(all_networks, function(n) attr(n, \"stats\")$n_nodes),\n  network_edges = sapply(all_networks, function(n) attr(n, \"stats\")$n_edges)\n)\n\nprint(comparison)\n\n# Visualize comparison\ncomparison_long &lt;- comparison %&gt;%\n  select(paper, citations, density, diversity) %&gt;%\n  pivot_longer(cols = -paper, names_to = \"metric\", values_to = \"value\")\n\nggplot(comparison_long, aes(x = paper, y = value, fill = paper)) +\n  geom_col(show.legend = FALSE) +\n  facet_wrap(~metric, scales = \"free_y\") +\n  labs(title = \"Comparison Across Papers\",\n       x = NULL, y = \"Value\") +\n  theme_minimal() +\n  theme(axis.text.x = element_text(angle = 45, hjust = 1))"
+  },
+  {
+    "objectID": "tutorial.html#conclusion",
+    "href": "tutorial.html#conclusion",
+    "title": "Complete Tutorial",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis tutorial covered the complete workflow:\n\n✓ PDF import with section detection\n✓ Comprehensive content analysis\n✓ Citation extraction and matching\n✓ Interactive network visualization\n✓ Text analysis and n-grams\n✓ Readability assessment\n✓ Comprehensive reporting\n✓ Data export\n✓ Publication-ready figures\n✓ Batch processing"
+  },
+  {
+    "objectID": "tutorial.html#next-steps",
+    "href": "tutorial.html#next-steps",
+    "title": "Complete Tutorial",
+    "section": "Next Steps",
+    "text": "Next Steps\n\nExplore Reference Documentation for detailed function information\nTry the analysis on your own papers\nCustomize visualizations for your needs\nIntegrate into your research workflow"
+  },
+  {
+    "objectID": "tutorial.html#resources",
+    "href": "tutorial.html#resources",
+    "title": "Complete Tutorial",
+    "section": "Resources",
+    "text": "Resources\n\nGitHub Repository\nIssue Tracker\nGet Started Guide"
+  },
+  {
+    "objectID": "tutorial.html#troubleshooting",
+    "href": "tutorial.html#troubleshooting",
+    "title": "Complete Tutorial",
+    "section": "Troubleshooting",
+    "text": "Troubleshooting\n\nCommon Issues\nPDF Import Problems\n# Try different column settings\ndoc1 &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 1)\ndoc2 &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 2)\n# Compare which works better\nLow Citation Matching\n# Ensure DOI and email are provided\n# Check References section was extracted\nnames(doc)  # Should include \"References\"\nNetwork Not Displaying\n# Adjust parameters\nnetwork &lt;- create_citation_network(\n  analysis,\n  max_distance = 1000,  # Increase\n  min_connections = 1    # Decrease\n)\nFor more help, see the Get Started troubleshooting section."
+  },
+  {
+    "objectID": "get-started.html",
+    "href": "get-started.html",
+    "title": "Get Started",
+    "section": "",
+    "text": "Install the development version from GitHub:\n\n# Install devtools if not already installed\nif (!require(\"devtools\")) install.packages(\"devtools\")\n\n# Install contentanalysis\ndevtools::install_github(\"massimoaria/contentanalysis\")\n\nLoad the package:\n\nlibrary(contentanalysis)\nlibrary(dplyr)"
+  },
+  {
+    "objectID": "get-started.html#installation",
+    "href": "get-started.html#installation",
+    "title": "Get Started",
+    "section": "",
+    "text": "Install the development version from GitHub:\n\n# Install devtools if not already installed\nif (!require(\"devtools\")) install.packages(\"devtools\")\n\n# Install contentanalysis\ndevtools::install_github(\"massimoaria/contentanalysis\")\n\nLoad the package:\n\nlibrary(contentanalysis)\nlibrary(dplyr)"
+  },
+  {
+    "objectID": "get-started.html#your-first-analysis",
+    "href": "get-started.html#your-first-analysis",
+    "title": "Get Started",
+    "section": "Your First Analysis",
+    "text": "Your First Analysis\n\nStep 1: Download an Example Paper\nWe’ll use an open-access paper on Machine Learning:\n\n# Download example paper\npaper_url &lt;- \"https://raw.githubusercontent.com/massimoaria/contentanalysis/master/inst/examples/example_paper.pdf\"\ndownload.file(paper_url, destfile = \"example_paper.pdf\", mode = \"wb\")\n\n\n\nStep 2: Import the PDF\nImport with automatic section detection:\n\n# Import PDF with automatic section detection\ndoc &lt;- pdf2txt_auto(\"example_paper.pdf\", n_columns = 2)\n\n# Check detected sections\nnames(doc)\n\nExpected output:\n[1] \"Full_text\"    \"Abstract\"     \"Introduction\" \"Methods\"     \n[5] \"Results\"      \"Discussion\"   \"References\"\n\n\nStep 3: Analyze the Content\nPerform comprehensive analysis with CrossRef integration:\n\nanalysis &lt;- analyze_scientific_content(\n  text = doc,\n  doi = \"10.1016/j.mlwa.2021.100094\",\n  mailto = \"your@email.com\",\n  window_size = 10,\n  remove_stopwords = TRUE,\n  ngram_range = c(1, 3)\n)\n\n\n\n\n\n\n\nCrossRef Integration\n\n\n\nProviding a DOI and email enables automatic reference matching through CrossRef. This significantly improves citation-reference matching accuracy.\n\n\n\n\nStep 4: Explore the Results\nView summary statistics:\n\nanalysis$summary\n\nExample output:\n$total_words\n[1] 5234\n\n$citations_extracted\n[1] 42\n\n$narrative_citations\n[1] 18\n\n$parenthetical_citations\n[1] 24\n\n$references_matched\n[1] 38\n\n$lexical_diversity\n[1] 0.421\n\n$citation_density\n[1] 8.03"
+  },
+  {
+    "objectID": "get-started.html#common-workflows",
+    "href": "get-started.html#common-workflows",
+    "title": "Get Started",
+    "section": "Common Workflows",
+    "text": "Common Workflows\n\nWorkflow 1: Citation Analysis\nExtract and analyze citations:\n\n# View all citations\nhead(analysis$citations)\n\n# Count by type\ntable(analysis$citations$citation_type)\n\n# Find citations in specific section\nintro_citations &lt;- analysis$citations %&gt;%\n  filter(section == \"Introduction\")\n\nnrow(intro_citations)\n\n\n\nWorkflow 2: Text Analysis\nAnalyze word usage:\n\n# Top words\nhead(analysis$word_frequencies, 20)\n\n# Bigrams\nhead(analysis$ngrams$`2gram`, 10)\n\n# Track specific terms\nterms &lt;- c(\"machine learning\", \"random forest\", \"accuracy\")\n\ndist &lt;- calculate_word_distribution(\n  text = doc,\n  selected_words = terms,\n  use_sections = TRUE\n)\n\n# Visualize\nplot_word_distribution(dist, plot_type = \"line\")\n\n\n\nWorkflow 3: Network Visualization\nCreate citation networks:\n\n# Create network\nnetwork &lt;- create_citation_network(\n  analysis,\n  max_distance = 800,\n  min_connections = 2,\n  show_labels = TRUE\n)\n\n# Display\nnetwork\n\n# View statistics\nstats &lt;- attr(network, \"stats\")\nprint(stats$section_distribution)\n\n\n\nWorkflow 4: Readability Assessment\nCalculate readability metrics:\n\n# Full document readability\nreadability &lt;- calculate_readability_indices(\n  doc$Full_text,\n  detailed = TRUE\n)\n\nprint(readability)\n\n# Compare sections\nsections &lt;- c(\"Abstract\", \"Introduction\", \"Methods\", \"Discussion\")\nreadability_by_section &lt;- lapply(sections, function(s) {\n  calculate_readability_indices(doc[[s]], detailed = FALSE)\n})\nnames(readability_by_section) &lt;- sections\n\ndo.call(rbind, readability_by_section)"
+  },
+  {
+    "objectID": "get-started.html#export-results",
+    "href": "get-started.html#export-results",
+    "title": "Get Started",
+    "section": "Export Results",
+    "text": "Export Results\nSave your analysis results:\n\n# Export citations\nwrite.csv(analysis$citations, \n          \"citations.csv\", \n          row.names = FALSE)\n\n# Export matched references\nwrite.csv(analysis$citation_references_mapping, \n          \"matched_citations.csv\", \n          row.names = FALSE)\n\n# Export word frequencies\nwrite.csv(analysis$word_frequencies, \n          \"word_frequencies.csv\", \n          row.names = FALSE)"
+  },
+  {
+    "objectID": "get-started.html#processing-multiple-papers",
+    "href": "get-started.html#processing-multiple-papers",
+    "title": "Get Started",
+    "section": "Processing Multiple Papers",
+    "text": "Processing Multiple Papers\nBatch process multiple documents:\n\n# List of papers and DOIs\npapers &lt;- c(\"paper1.pdf\", \"paper2.pdf\", \"paper3.pdf\")\ndois &lt;- c(\"10.xxxx/1\", \"10.xxxx/2\", \"10.xxxx/3\")\n\n# Process all papers\nresults &lt;- lapply(seq_along(papers), function(i) {\n  doc &lt;- pdf2txt_auto(papers[i], n_columns = 2)\n  analyze_scientific_content(\n    doc, \n    doi = dois[i],\n    mailto = \"your@email.com\"\n  )\n})\n\n# Extract citation counts\ncitation_counts &lt;- sapply(results, function(x) {\n  x$summary$citations_extracted\n})\nnames(citation_counts) &lt;- papers\n\nprint(citation_counts)"
+  },
+  {
+    "objectID": "get-started.html#next-steps",
+    "href": "get-started.html#next-steps",
+    "title": "Get Started",
+    "section": "Next Steps",
+    "text": "Next Steps\nNow that you’re familiar with the basics, explore:\n\nReference Documentation for detailed function descriptions\nTutorial for complete workflow examples\nCitation Analysis for advanced citation techniques\nNetwork Visualization for network analysis"
+  },
+  {
+    "objectID": "get-started.html#troubleshooting",
+    "href": "get-started.html#troubleshooting",
+    "title": "Get Started",
+    "section": "Troubleshooting",
+    "text": "Troubleshooting\n\nCommon Issues\nPDF won’t import\n\nEnsure the PDF is text-based, not scanned images\nTry different n_columns values (1, 2, or 3)\nCheck that the file path is correct\n\nCitations not detected\n\nVerify the paper uses standard citation formats\nCheck if sections are properly detected with names(doc)\nTry adjusting window_size parameter\n\nLow reference matching\n\nProvide a DOI for CrossRef integration\nEnsure your email is valid for CrossRef API\nCheck that the References section was properly extracted\n\nNetwork won’t display\n\nEnsure there are enough citations (min_connections)\nTry adjusting max_distance parameter\nCheck that citations were successfully extracted\n\n\n\n\n\n\n\nNeed Help?\n\n\n\nIf you encounter issues not covered here, please open an issue on GitHub."
+  },
+  {
+    "objectID": "get-started.html#additional-resources",
+    "href": "get-started.html#additional-resources",
+    "title": "Get Started",
+    "section": "Additional Resources",
+    "text": "Additional Resources\n\nPackage Vignette: Detailed examples\nGitHub Repository: Source code\nIssue Tracker: Report bugs"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "contentanalysis is an R package designed to facilitate comprehensive analysis of scientific literature. It provides researchers with powerful tools to extract, analyze, and visualize content from PDF documents, with a particular focus on citation analysis and text mining."
+  },
+  {
+    "objectID": "about.html#about-contentanalysis",
+    "href": "about.html#about-contentanalysis",
+    "title": "About",
+    "section": "",
+    "text": "contentanalysis is an R package designed to facilitate comprehensive analysis of scientific literature. It provides researchers with powerful tools to extract, analyze, and visualize content from PDF documents, with a particular focus on citation analysis and text mining."
+  },
+  {
+    "objectID": "about.html#key-features",
+    "href": "about.html#key-features",
+    "title": "About",
+    "section": "Key Features",
+    "text": "Key Features\n\nPDF Processing\n\nMulti-column layout support (1, 2, or 3 columns)\nAutomatic section detection (Abstract, Introduction, Methods, Results, Discussion, etc.)\nStructure preservation during text extraction\nHandles complex academic paper layouts\n\n\n\nCitation Analysis\n\nDetects multiple citation formats (narrative and parenthetical)\nExtracts citation contexts with configurable window sizes\nAutomatic reference matching via CrossRef API\nCitation network visualization\nCo-citation analysis\n\n\n\nText Analytics\n\nWord frequency analysis with stopword removal\nN-gram extraction (bigrams, trigrams, etc.)\nWord distribution tracking across document sections\nReadability metrics (Flesch Reading Ease, Flesch-Kincaid, etc.)\nLexical diversity measures\n\n\n\nVisualization\n\nInteractive citation networks with visNetwork\nWord distribution plots (line, bar, area)\nCustomizable color schemes and layouts\nPublication-ready figures"
+  },
+  {
+    "objectID": "about.html#use-cases",
+    "href": "about.html#use-cases",
+    "title": "About",
+    "section": "Use Cases",
+    "text": "Use Cases\nThe package is designed for:\n\nSystematic Literature Reviews: Analyze citation patterns and content across multiple papers\nBibliometric Studies: Map citation networks and identify influential works\nContent Analysis Research: Extract and quantify themes, concepts, and terminology\nAcademic Writing Assessment: Evaluate readability and citation practices\nResearch Methodology: Study how citations are deployed in scientific arguments"
+  },
+  {
+    "objectID": "about.html#development",
+    "href": "about.html#development",
+    "title": "About",
+    "section": "Development",
+    "text": "Development\n\nAuthor\nMassimo Aria, Ph.D.\nDepartment of Economics and Statistics\nUniversity of Naples Federico II\n\n\nRelated Projects\n\nbibliometrix: R tool for comprehensive science mapping analysis\nTALL: Text Analysis with Large Language models\n\n\n\nTechnology Stack\ncontentanalysis is built using:\n\nR: Statistical computing environment\npdftools: PDF text extraction\nrcrossref: CrossRef API integration\nvisNetwork: Interactive network visualization\nquanteda: Text analysis and natural language processing\ndplyr/tidyr: Data manipulation"
+  },
+  {
+    "objectID": "about.html#contributing",
+    "href": "about.html#contributing",
+    "title": "About",
+    "section": "Contributing",
+    "text": "Contributing\nWe welcome contributions! Here’s how you can help:\n\nReport Bugs\nIf you find a bug, please open an issue with:\n\nA clear description of the problem\nReproducible example\nYour R version and operating system\nPackage version\n\n\n\nSuggest Features\nHave an idea for improvement? Open an issue describing:\n\nThe feature you’d like to see\nWhy it would be useful\nExample use cases\n\n\n\nSubmit Pull Requests\n\nFork the repository\nCreate a feature branch (git checkout -b feature/amazing-feature)\nCommit your changes (git commit -m 'Add amazing feature')\nPush to the branch (git push origin feature/amazing-feature)\nOpen a Pull Request\n\n\n\nCode of Conduct\nPlease note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms."
+  },
+  {
+    "objectID": "about.html#citation",
+    "href": "about.html#citation",
+    "title": "About",
+    "section": "Citation",
+    "text": "Citation\nIf you use contentanalysis in your research, please cite:\n@Manual{contentanalysis,\n  title = {contentanalysis: Comprehensive Tools for Scientific Content Analysis},\n  author = {Massimo Aria},\n  year = {2024},\n  note = {R package version 0.1.0},\n  url = {https://github.com/massimoaria/contentanalysis}\n}"
+  },
+  {
+    "objectID": "about.html#license",
+    "href": "about.html#license",
+    "title": "About",
+    "section": "License",
+    "text": "License\nThis package is free and open source software, licensed under GPL-3.\nGPL-3 License\n\nCopyright (c) 2024 Massimo Aria\n\nThis program is free software: you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version 3 of the License, or\n(at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\nGNU General Public License for more details."
+  },
+  {
+    "objectID": "about.html#acknowledgments",
+    "href": "about.html#acknowledgments",
+    "title": "About",
+    "section": "Acknowledgments",
+    "text": "Acknowledgments\nSpecial thanks to:\n\nThe R Core Team for the R language\nContributors to all dependent packages\nThe open science community\nUsers who provide feedback and suggestions"
+  },
+  {
+    "objectID": "about.html#contact",
+    "href": "about.html#contact",
+    "title": "About",
+    "section": "Contact",
+    "text": "Contact\n\nGitHub: github.com/massimoaria/contentanalysis\nIssues: github.com/massimoaria/contentanalysis/issues\nWebsite: https://massimoaria.github.io/contentanalysis"
+  },
+  {
+    "objectID": "about.html#version-history",
+    "href": "about.html#version-history",
+    "title": "About",
+    "section": "Version History",
+    "text": "Version History\n\nVersion 0.1.0 (Current)\nInitial release featuring:\n\nPDF import with automatic section detection\nComprehensive citation analysis\nCrossRef integration for reference matching\nInteractive network visualization\nText analysis and n-gram extraction\nReadability metrics\nWord distribution tracking\nBatch processing capabilities"
+  },
+  {
+    "objectID": "about.html#frequently-asked-questions",
+    "href": "about.html#frequently-asked-questions",
+    "title": "About",
+    "section": "Frequently Asked Questions",
+    "text": "Frequently Asked Questions\n\nInstallation\nQ: How do I install the package?\ndevtools::install_github(\"massimoaria/contentanalysis\")\nQ: What R version is required?\nR &gt;= 4.0.0 is recommended.\n\n\nUsage\nQ: Can I analyze scanned PDFs?\nNo, the package requires text-based PDFs. Scanned documents need OCR processing first.\nQ: Do I need a DOI for analysis?\nNo, but providing a DOI enables automatic reference matching via CrossRef, which significantly improves citation-reference linking.\nQ: Is an internet connection required?\nOnly if you use the CrossRef integration features. Local analysis works offline.\nQ: Can I analyze multiple papers at once?\nYes! See the Tutorial for batch processing examples.\n\n\nTechnical\nQ: Why are some citations not detected?\nCitation detection works best with standard formats (APA, MLA, Chicago). Non-standard or poorly formatted citations may be missed.\nQ: How accurate is the section detection?\nVery accurate for standard academic papers with clear section headers. Custom keywords can be provided for non-standard formats.\nQ: Can I customize the network visualization?\nYes, through the max_distance, min_connections, and show_labels parameters."
+  },
+  {
+    "objectID": "about.html#support",
+    "href": "about.html#support",
+    "title": "About",
+    "section": "Support",
+    "text": "Support\nFor support:\n\nCheck the documentation\nRead the tutorial\nSearch existing issues\nOpen a new issue if needed"
+  },
+  {
+    "objectID": "about.html#roadmap",
+    "href": "about.html#roadmap",
+    "title": "About",
+    "section": "Roadmap",
+    "text": "Roadmap\nPlanned features for future releases:\n\nEnhanced PDF layout detection\nAdditional readability metrics\nSupport for more citation styles\nAdvanced network analysis metrics\nIntegration with bibliographic databases\nBatch analysis reporting tools\nMachine learning-based classification\n\nStay tuned for updates!\n\nLast updated: 2024"
+  },
+  {
+    "objectID": "reference/network-viz.html",
+    "href": "reference/network-viz.html",
+    "title": "Citation Network Visualization",
+    "section": "",
+    "text": "The create_citation_network() function creates interactive visualizations showing how citations co-occur within documents. Citations appearing close together are connected, revealing patterns in how references are used and cited together.",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Network Visualization"
+    ]
+  },
+  {
+    "objectID": "reference/network-viz.html#overview",
+    "href": "reference/network-viz.html#overview",
+    "title": "Citation Network Visualization",
+    "section": "",
+    "text": "The create_citation_network() function creates interactive visualizations showing how citations co-occur within documents. Citations appearing close together are connected, revealing patterns in how references are used and cited together.",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Network Visualization"
+    ]
+  },
+  {
+    "objectID": "reference/network-viz.html#main-function",
+    "href": "reference/network-viz.html#main-function",
+    "title": "Citation Network Visualization",
+    "section": "Main Function",
+    "text": "Main Function\n\ncreate_citation_network()\nCreate an interactive citation co-occurrence network.\nUsage\ncreate_citation_network(\n  citation_analysis_results,\n  max_distance = 800,\n  min_connections = 2,\n  show_labels = TRUE\n)\nArguments\n\ncitation_analysis_results: Output from analyze_scientific_content()\nmax_distance: Maximum distance in characters between citations to create a connection\nmin_connections: Minimum number of connections required to include a node\nshow_labels: Logical. Whether to display citation labels on nodes\n\nValue\nAn interactive visNetwork object with attributes:\n\nstats: Network statistics including node count, edge count, distances, and section distribution",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Network Visualization"
+    ]
+  },
+  {
+    "objectID": "reference/network-viz.html#basic-usage",
+    "href": "reference/network-viz.html#basic-usage",
+    "title": "Citation Network Visualization",
+    "section": "Basic Usage",
+    "text": "Basic Usage\n\nCreating a Network\n\nlibrary(contentanalysis)\nlibrary(dplyr)\n\n# First, analyze the document\ndoc &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 2)\nanalysis &lt;- analyze_scientific_content(\n  text = doc,\n  doi = \"10.xxxx/xxxxx\",\n  mailto = \"your@email.com\"\n)\n\n# Create network with default settings\nnetwork &lt;- create_citation_network(\n  citation_analysis_results = analysis,\n  max_distance = 800,\n  min_connections = 2,\n  show_labels = TRUE\n)\n\n# Display the network\nnetwork\n\n\n\nNetwork Statistics\nAccess detailed network statistics:\n\n# Get statistics\nstats &lt;- attr(network, \"stats\")\n\n# Basic network info\ncat(\"Number of nodes:\", stats$n_nodes, \"\\n\")\ncat(\"Number of edges:\", stats$n_edges, \"\\n\")\ncat(\"Average distance:\", round(stats$avg_distance), \"characters\\n\")\ncat(\"Maximum distance:\", stats$max_distance, \"characters\\n\")\n\n# Section distribution\nprint(stats$section_distribution)\n\n# Multi-section citations\nif (nrow(stats$multi_section_citations) &gt; 0) {\n  cat(\"\\nCitations appearing in multiple sections:\\n\")\n  print(stats$multi_section_citations)\n}",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Network Visualization"
+    ]
+  },
+  {
+    "objectID": "reference/network-viz.html#visual-elements",
+    "href": "reference/network-viz.html#visual-elements",
+    "title": "Citation Network Visualization",
+    "section": "Visual Elements",
+    "text": "Visual Elements\n\nNode Features\nSize - Larger nodes have more connections - Size represents centrality in the citation network\nColor - Indicates primary section where citation appears - Default color scheme: - Introduction: Light blue - Methods: Light green - Results: Light coral - Discussion: Light yellow - Abstract: Lavender\nBorder - Thicker borders (3px): Citations in multiple sections - Standard borders (1px): Citations in single section\n\n\nEdge Features\nThickness - Thicker edges: Citations appearing closer together - Edge width inversely proportional to distance\nColor - Red: Very close citations (≤300 characters) - Blue: Moderate distance (≤600 characters) - Gray: Distant citations (&gt;600 characters)",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Network Visualization"
+    ]
+  },
+  {
+    "objectID": "reference/network-viz.html#customization",
+    "href": "reference/network-viz.html#customization",
+    "title": "Citation Network Visualization",
+    "section": "Customization",
+    "text": "Customization\n\nAdjusting Distance Threshold\nControl which citations are connected:\n\n# Very close citations only\nnetwork_close &lt;- create_citation_network(\n  analysis,\n  max_distance = 300,  # Within 300 characters\n  min_connections = 1,\n  show_labels = TRUE\n)\n\n# Moderate proximity\nnetwork_medium &lt;- create_citation_network(\n  analysis,\n  max_distance = 600,\n  min_connections = 2,\n  show_labels = TRUE\n)\n\n# Broad connections\nnetwork_broad &lt;- create_citation_network(\n  analysis,\n  max_distance = 1200,\n  min_connections = 2,\n  show_labels = TRUE\n)\n\n# Compare network sizes\ncat(\"Close:\", attr(network_close, \"stats\")$n_edges, \"edges\\n\")\ncat(\"Medium:\", attr(network_medium, \"stats\")$n_edges, \"edges\\n\")\ncat(\"Broad:\", attr(network_broad, \"stats\")$n_edges, \"edges\\n\")\n\n\n\nFiltering by Connections\nFocus on well-connected citations:\n\n# Include all connected citations\nnetwork_all &lt;- create_citation_network(\n  analysis,\n  max_distance = 800,\n  min_connections = 1\n)\n\n# Only \"hub\" citations (highly connected)\nnetwork_hubs &lt;- create_citation_network(\n  analysis,\n  max_distance = 800,\n  min_connections = 5,  # Must have 5+ connections\n  show_labels = TRUE\n)\n\n# Compare\ncat(\"All nodes:\", attr(network_all, \"stats\")$n_nodes, \"\\n\")\ncat(\"Hub nodes:\", attr(network_hubs, \"stats\")$n_nodes, \"\\n\")\n\n\n\nLabel Display\nControl label visibility:\n\n# With labels (default for detailed inspection)\nnetwork_labeled &lt;- create_citation_network(\n  analysis,\n  show_labels = TRUE\n)\n\n# Without labels (cleaner for presentations)\nnetwork_clean &lt;- create_citation_network(\n  analysis,\n  show_labels = FALSE\n)",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Network Visualization"
+    ]
+  },
+  {
+    "objectID": "reference/network-viz.html#interpreting-networks",
+    "href": "reference/network-viz.html#interpreting-networks",
+    "title": "Citation Network Visualization",
+    "section": "Interpreting Networks",
+    "text": "Interpreting Networks\n\nIdentifying Patterns\n\n# Get network statistics\nstats &lt;- attr(network, \"stats\")\n\n# 1. Network density (how interconnected)\nn_possible_edges &lt;- stats$n_nodes * (stats$n_nodes - 1) / 2\ndensity &lt;- stats$n_edges / n_possible_edges\ncat(\"Network density:\", round(density, 3), \"\\n\")\n\n# 2. Find hub citations (top 25% by connections)\nhub_threshold &lt;- quantile(stats$section_distribution$n, 0.75)\nhubs &lt;- stats$section_distribution %&gt;%\n  filter(n &gt;= hub_threshold) %&gt;%\n  arrange(desc(n))\n\ncat(\"\\nHub citations:\\n\")\nprint(hubs)\n\n# 3. Section-specific patterns\nsection_summary &lt;- stats$section_distribution %&gt;%\n  group_by(section) %&gt;%\n  summarise(\n    n_citations = n(),\n    avg_connections = mean(n),\n    .groups = \"drop\"\n  )\n\nprint(section_summary)\n\n\n\nCitation Clusters\nIdentify groups of related citations:\n\n# Citations with very close connections\nclose_pairs &lt;- analysis$network_data %&gt;%\n  filter(distance &lt; 200) %&gt;%\n  select(citation_from, citation_to, distance)\n\ncat(\"Very close citation pairs:\", nrow(close_pairs), \"\\n\")\nhead(close_pairs)\n\n# Find citation communities (simple approach)\n# Citations that frequently co-occur\ncitation_freq &lt;- analysis$network_data %&gt;%\n  count(citation_from, sort = TRUE)\n\ntop_cooccurring &lt;- head(citation_freq, 10)\ncat(\"\\nMost frequently co-occurring citations:\\n\")\nprint(top_cooccurring)\n\n\n\nCross-Section Analysis\nCitations appearing in multiple sections:\n\nstats &lt;- attr(network, \"stats\")\n\nif (nrow(stats$multi_section_citations) &gt; 0) {\n  # Citations used across sections\n  multi_section &lt;- stats$multi_section_citations %&gt;%\n    arrange(desc(n_sections))\n  \n  cat(\"Citations in multiple sections:\\n\")\n  print(multi_section)\n  \n  # These are often seminal or foundational works\n  cat(\"\\nThese citations appear in\", \n      unique(multi_section$n_sections), \n      \"different sections\\n\")\n}",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Network Visualization"
+    ]
+  },
+  {
+    "objectID": "reference/network-viz.html#advanced-analysis",
+    "href": "reference/network-viz.html#advanced-analysis",
+    "title": "Citation Network Visualization",
+    "section": "Advanced Analysis",
+    "text": "Advanced Analysis\n\nCompare Networks Across Papers\n\n# Analyze multiple papers\npapers &lt;- c(\"paper1.pdf\", \"paper2.pdf\", \"paper3.pdf\")\n\nnetworks &lt;- list()\nfor (i in seq_along(papers)) {\n  doc &lt;- pdf2txt_auto(papers[i], n_columns = 2)\n  analysis &lt;- analyze_scientific_content(\n    doc,\n    doi = paste0(\"10.xxxx/\", i),\n    mailto = \"your@email.com\"\n  )\n  networks[[i]] &lt;- create_citation_network(analysis)\n}\n\n# Compare network characteristics\ncomparison &lt;- data.frame(\n  paper = papers,\n  nodes = sapply(networks, function(n) attr(n, \"stats\")$n_nodes),\n  edges = sapply(networks, function(n) attr(n, \"stats\")$n_edges),\n  avg_distance = sapply(networks, function(n) \n    round(attr(n, \"stats\")$avg_distance))\n)\n\nprint(comparison)\n\n# Calculate network densities\ncomparison$density &lt;- comparison$edges / \n  (comparison$nodes * (comparison$nodes - 1) / 2)\n\nprint(comparison)\n\n\n\nNetwork Metrics\nCalculate advanced network metrics:\n\nlibrary(igraph)\n\n# Convert to igraph object (if needed for advanced analysis)\n# Note: You'll need the raw network data\nedges &lt;- analysis$network_data %&gt;%\n  filter(distance &lt;= 800) %&gt;%\n  select(from = citation_from, to = citation_to, weight = distance)\n\ng &lt;- graph_from_data_frame(edges, directed = FALSE)\n\n# Calculate metrics\nmetrics &lt;- data.frame(\n  citation = V(g)$name,\n  degree = degree(g),\n  betweenness = betweenness(g),\n  closeness = closeness(g)\n) %&gt;%\n  arrange(desc(degree))\n\ncat(\"Top 10 citations by degree centrality:\\n\")\nprint(head(metrics, 10))\n\n# Identify communities\ncommunities &lt;- cluster_louvain(g)\ncat(\"\\nNumber of communities:\", length(communities), \"\\n\")\n\n\n\nTemporal Network Analysis\nIf years are available:\n\n# Add year information to network\ncitation_years &lt;- analysis$citation_references_mapping %&gt;%\n  select(citation_text_clean, cite_year) %&gt;%\n  distinct()\n\nnetwork_with_years &lt;- analysis$network_data %&gt;%\n  left_join(citation_years, by = c(\"citation_from\" = \"citation_text_clean\")) %&gt;%\n  rename(year_from = cite_year) %&gt;%\n  left_join(citation_years, by = c(\"citation_to\" = \"citation_text_clean\")) %&gt;%\n  rename(year_to = cite_year)\n\n# Analyze co-citation patterns by year\nyear_patterns &lt;- network_with_years %&gt;%\n  filter(!is.na(year_from), !is.na(year_to)) %&gt;%\n  mutate(year_diff = abs(year_from - year_to)) %&gt;%\n  group_by(year_diff) %&gt;%\n  summarise(\n    n_pairs = n(),\n    avg_distance = mean(distance)\n  )\n\ncat(\"Co-citation patterns by year difference:\\n\")\nprint(year_patterns)",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Network Visualization"
+    ]
+  },
+  {
+    "objectID": "reference/network-viz.html#export-network-data",
+    "href": "reference/network-viz.html#export-network-data",
+    "title": "Citation Network Visualization",
+    "section": "Export Network Data",
+    "text": "Export Network Data\n\nSave Network Information\n\n# Create export directory\ndir.create(\"network_analysis\", showWarnings = FALSE)\n\n# 1. Network statistics\nstats &lt;- attr(network, \"stats\")\nwrite.csv(stats$section_distribution,\n          \"network_analysis/section_distribution.csv\",\n          row.names = FALSE)\n\nif (nrow(stats$multi_section_citations) &gt; 0) {\n  write.csv(stats$multi_section_citations,\n            \"network_analysis/multi_section_citations.csv\",\n            row.names = FALSE)\n}\n\n# 2. Edge list\nwrite.csv(analysis$network_data,\n          \"network_analysis/edge_list.csv\",\n          row.names = FALSE)\n\n# 3. Network summary\nsummary_data &lt;- data.frame(\n  metric = c(\"nodes\", \"edges\", \"density\", \"avg_distance\", \"max_distance\"),\n  value = c(\n    stats$n_nodes,\n    stats$n_edges,\n    stats$n_edges / (stats$n_nodes * (stats$n_nodes - 1) / 2),\n    stats$avg_distance,\n    stats$max_distance\n  )\n)\n\nwrite.csv(summary_data,\n          \"network_analysis/network_summary.csv\",\n          row.names = FALSE)\n\n\n\nSave Interactive Network\n\n# Save as HTML\nlibrary(htmlwidgets)\n\nsaveWidget(network, \n           \"network_analysis/citation_network.html\",\n           selfcontained = TRUE)\n\ncat(\"Network saved to: network_analysis/citation_network.html\\n\")",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Network Visualization"
+    ]
+  },
+  {
+    "objectID": "reference/network-viz.html#use-cases",
+    "href": "reference/network-viz.html#use-cases",
+    "title": "Citation Network Visualization",
+    "section": "Use Cases",
+    "text": "Use Cases\n\nUse Case 1: Literature Review\nIdentify citation patterns in review papers:\n\n# High connectivity expected\nnetwork &lt;- create_citation_network(\n  analysis,\n  max_distance = 1000,  # Broader connections\n  min_connections = 3\n)\n\nstats &lt;- attr(network, \"stats\")\n\n# Check network properties\ncat(\"Network density:\", \n    round(stats$n_edges / (stats$n_nodes * (stats$n_nodes - 1) / 2), 3),\n    \"\\n\")\n\n# Hub citations (synthesis points)\nhubs &lt;- stats$section_distribution %&gt;%\n  filter(n &gt;= quantile(n, 0.75))\n\ncat(\"\\nHub citations (potential synthesis points):\\n\")\nprint(hubs)\n\n\n\nUse Case 2: Methods Paper\nFocus on methodological citations:\n\n# Filter to Methods section\nmethods_citations &lt;- analysis$citations %&gt;%\n  filter(section == \"Methods\") %&gt;%\n  pull(citation_text_clean)\n\n# Create network subset\nmethods_network_data &lt;- analysis$network_data %&gt;%\n  filter(citation_from %in% methods_citations | \n         citation_to %in% methods_citations)\n\ncat(\"Methods citations:\", length(methods_citations), \"\\n\")\ncat(\"Methods citation pairs:\", nrow(methods_network_data), \"\\n\")\n\n\n\nUse Case 3: Comparative Analysis\nCompare citation networks across studies:\n\n# Process multiple papers\npapers_info &lt;- data.frame(\n  file = c(\"review.pdf\", \"empirical.pdf\", \"methods.pdf\"),\n  type = c(\"review\", \"empirical\", \"methods\")\n)\n\nnetwork_comparison &lt;- data.frame()\n\nfor (i in 1:nrow(papers_info)) {\n  doc &lt;- pdf2txt_auto(papers_info$file[i], n_columns = 2)\n  analysis &lt;- analyze_scientific_content(doc, mailto = \"your@email.com\")\n  net &lt;- create_citation_network(analysis)\n  stats &lt;- attr(net, \"stats\")\n  \n  network_comparison &lt;- rbind(network_comparison, data.frame(\n    paper = papers_info$file[i],\n    type = papers_info$type[i],\n    nodes = stats$n_nodes,\n    edges = stats$n_edges,\n    density = stats$n_edges / (stats$n_nodes * (stats$n_nodes - 1) / 2),\n    avg_distance = stats$avg_distance\n  ))\n}\n\nprint(network_comparison)\n\n# Visualize comparison\nlibrary(ggplot2)\nggplot(network_comparison, aes(x = type, y = density, fill = type)) +\n  geom_col() +\n  labs(title = \"Network Density by Paper Type\",\n       x = \"Paper Type\", y = \"Network Density\") +\n  theme_minimal()",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Network Visualization"
+    ]
+  },
+  {
+    "objectID": "reference/network-viz.html#tips-and-best-practices",
+    "href": "reference/network-viz.html#tips-and-best-practices",
+    "title": "Citation Network Visualization",
+    "section": "Tips and Best Practices",
+    "text": "Tips and Best Practices\n\n\n\n\n\n\nChoosing Parameters\n\n\n\nmax_distance: - 200-400: Very close citations (same paragraph) - 500-800: Moderate proximity (recommended) - 1000+: Broader connections (same section)\nmin_connections: - 1: Include all connected citations - 2-3: Filter isolated pairs (recommended) - 5+: Focus on hub citations only\n\n\n\n\n\n\n\n\nInterpretation\n\n\n\nLook for: - Clusters: Groups of related citations - Hubs: Frequently co-cited works - Bridges: Citations connecting different clusters - Isolates: Citations rarely co-cited\n\n\n\n\n\n\n\n\nPerformance\n\n\n\nFor large documents: - Start with higher min_connections - Use moderate max_distance - Consider section-specific networks - Save network as HTML for sharing",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Network Visualization"
+    ]
+  },
+  {
+    "objectID": "reference/network-viz.html#see-also",
+    "href": "reference/network-viz.html#see-also",
+    "title": "Citation Network Visualization",
+    "section": "See Also",
+    "text": "See Also\n\nCitation Analysis: Extract and analyze citations\nContent Analysis: Main analysis function\nTutorial: Complete workflow examples",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Network Visualization"
+    ]
+  },
+  {
+    "objectID": "reference/citation-analysis.html",
+    "href": "reference/citation-analysis.html",
+    "title": "Citation Analysis",
+    "section": "",
+    "text": "The contentanalysis package provides sophisticated tools for extracting, analyzing, and matching citations in scientific documents. It detects multiple citation formats, extracts contextual information, and automatically matches citations to references using CrossRef.",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/citation-analysis.html#overview",
+    "href": "reference/citation-analysis.html#overview",
+    "title": "Citation Analysis",
+    "section": "",
+    "text": "The contentanalysis package provides sophisticated tools for extracting, analyzing, and matching citations in scientific documents. It detects multiple citation formats, extracts contextual information, and automatically matches citations to references using CrossRef.",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/citation-analysis.html#citation-detection",
+    "href": "reference/citation-analysis.html#citation-detection",
+    "title": "Citation Analysis",
+    "section": "Citation Detection",
+    "text": "Citation Detection\n\nSupported Citation Formats\nThe package detects two main citation types:\nNarrative Citations - Author is part of the sentence - Examples: “Smith (2020) showed…”, “According to Jones et al. (2019)…”\nParenthetical Citations - Author in parentheses - Examples: “(Smith, 2020)”, “(Jones et al., 2019; Brown, 2021)”\n\n\nCitation Patterns\n\nlibrary(contentanalysis)\nlibrary(dplyr)\n\n# After analysis\ndoc &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 2)\nanalysis &lt;- analyze_scientific_content(\n  text = doc,\n  doi = \"10.xxxx/xxxxx\",\n  mailto = \"your@email.com\"\n)\n\n# View citation types\ntable(analysis$citations$citation_type)\n\n# Example distribution:\n#   narrative parenthetical \n#        18            24\n\n# View sample citations\nanalysis$citations %&gt;%\n  select(citation_text, citation_type, section) %&gt;%\n  head(10)",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/citation-analysis.html#citation-extraction",
+    "href": "reference/citation-analysis.html#citation-extraction",
+    "title": "Citation Analysis",
+    "section": "Citation Extraction",
+    "text": "Citation Extraction\n\nBasic Citation Information\nEach citation includes:\n\n# Citation data structure\nstr(analysis$citations)\n\n# Key fields:\n# - citation_text: Raw citation text\n# - citation_text_clean: Cleaned version\n# - citation_type: narrative or parenthetical\n# - section: Document section where found\n# - position: Character position in document\n\n\n\nCitation by Section\nAnalyze citation patterns across sections:\n\n# Citations per section\nsection_counts &lt;- analysis$citations %&gt;%\n  count(section, sort = TRUE)\n\nprint(section_counts)\n\n# Example output:\n#   section       n\n#   Discussion   12\n#   Introduction 10\n#   Methods       8\n#   Results       7\n#   Abstract      5\n\n# Citation types by section\nsection_types &lt;- analysis$citations %&gt;%\n  group_by(section, citation_type) %&gt;%\n  summarise(count = n(), .groups = \"drop\") %&gt;%\n  tidyr::pivot_wider(names_from = citation_type, values_from = count)\n\nprint(section_types)\n\n\n\nCitation Density\nCalculate citation intensity:\n\n# Overall citation density (per 1000 words)\nanalysis$summary$citation_density\n\n# Citation density by section\nsection_words &lt;- sapply(doc[names(doc) != \"Full_text\"], function(x) {\n  length(strsplit(x, \"\\\\s+\")[[1]])\n})\n\nsection_citation_counts &lt;- analysis$citations %&gt;%\n  count(section)\n\ndensity_by_section &lt;- section_citation_counts %&gt;%\n  mutate(\n    words = section_words[section],\n    density = (n / words) * 1000\n  ) %&gt;%\n  arrange(desc(density))\n\nprint(density_by_section)",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/citation-analysis.html#citation-contexts",
+    "href": "reference/citation-analysis.html#citation-contexts",
+    "title": "Citation Analysis",
+    "section": "Citation Contexts",
+    "text": "Citation Contexts\n\nExtracting Context\nAccess text surrounding citations:\n\n# View citation contexts\ncontexts &lt;- analysis$citation_contexts %&gt;%\n  select(citation_text_clean, section, words_before, words_after)\n\nhead(contexts, 5)\n\n# Example:\n# citation_text_clean  section  words_before                  words_after\n# \"Breiman (2001)\"     Methods  \"as shown by the method of\"   \"provides excellent results\"\n\n\n\nAnalyzing Citation Usage\nExamine how citations are used:\n\n# Find citations with specific context patterns\n\n# Method citations\nmethod_citations &lt;- analysis$citation_contexts %&gt;%\n  filter(grepl(\"method|approach|technique|algorithm\", \n               paste(words_before, words_after), \n               ignore.case = TRUE))\n\ncat(\"Method-related citations:\", nrow(method_citations), \"\\n\")\n\n# Supporting citations\nsupport_citations &lt;- analysis$citation_contexts %&gt;%\n  filter(grepl(\"shown|demonstrated|found|reported\", \n               words_before, \n               ignore.case = TRUE))\n\ncat(\"Supporting evidence citations:\", nrow(support_citations), \"\\n\")\n\n# Contrasting citations\ncontrast_citations &lt;- analysis$citation_contexts %&gt;%\n  filter(grepl(\"however|unlike|contrary|different\", \n               words_before, \n               ignore.case = TRUE))\n\ncat(\"Contrasting citations:\", nrow(contrast_citations), \"\\n\")\n\n\n\nContext Length Analysis\n\n# Average context length\nanalysis$citation_contexts %&gt;%\n  mutate(\n    before_length = sapply(strsplit(words_before, \"\\\\s+\"), length),\n    after_length = sapply(strsplit(words_after, \"\\\\s+\"), length)\n  ) %&gt;%\n  summarise(\n    avg_before = mean(before_length),\n    avg_after = mean(after_length)\n  )",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/citation-analysis.html#reference-matching",
+    "href": "reference/citation-analysis.html#reference-matching",
+    "title": "Citation Analysis",
+    "section": "Reference Matching",
+    "text": "Reference Matching\n\nAutomatic Matching\nCitations are automatically matched to references:\n\n# View matched citations\nmatched &lt;- analysis$citation_references_mapping %&gt;%\n  select(citation_text_clean, cite_author, cite_year,\n         ref_full_text, match_confidence)\n\nhead(matched, 10)\n\n# Match quality distribution\ntable(matched$match_confidence)\n\n# High confidence matches\nhigh_conf_rate &lt;- mean(matched$match_confidence == \"high\")\ncat(\"High confidence rate:\", round(high_conf_rate * 100, 1), \"%\\n\")\n\n\n\nMatching Diagnostics\nAssess matching quality:\n\n# Print diagnostics\nprint_matching_diagnostics(analysis)\n\n# Custom diagnostic\nmatching_stats &lt;- analysis$citation_references_mapping %&gt;%\n  group_by(match_confidence) %&gt;%\n  summarise(\n    count = n(),\n    avg_year_match = mean(!is.na(cite_year) & \n                          cite_year == ref_year, na.rm = TRUE)\n  )\n\nprint(matching_stats)\n\n\n\nUnmatched Citations\nIdentify citations without matches:\n\n# Find unmatched citations\nall_citations &lt;- analysis$citations$citation_text_clean\nmatched_citations &lt;- unique(analysis$citation_references_mapping$citation_text_clean)\n\nunmatched &lt;- setdiff(all_citations, matched_citations)\n\ncat(\"Unmatched citations:\", length(unmatched), \"\\n\")\ncat(\"Match rate:\", \n    round((1 - length(unmatched)/length(all_citations)) * 100, 1), \n    \"%\\n\")\n\n# View unmatched\nif (length(unmatched) &gt; 0) {\n  cat(\"\\nUnmatched citations:\\n\")\n  print(head(unmatched, 10))\n}",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/citation-analysis.html#advanced-analysis",
+    "href": "reference/citation-analysis.html#advanced-analysis",
+    "title": "Citation Analysis",
+    "section": "Advanced Analysis",
+    "text": "Advanced Analysis\n\nMost Cited References\nIdentify frequently cited works:\n\n# Citation frequency\ncite_freq &lt;- analysis$citation_references_mapping %&gt;%\n  count(ref_full_text, sort = TRUE)\n\n# Top 10 most cited\ntop_cited &lt;- head(cite_freq, 10)\nprint(top_cited)\n\n# Visualize\nlibrary(ggplot2)\nggplot(top_cited, aes(x = reorder(substr(ref_full_text, 1, 50), n), y = n)) +\n  geom_col(fill = \"steelblue\") +\n  coord_flip() +\n  labs(title = \"Top 10 Most Cited References\",\n       x = \"Reference\", y = \"Citation Count\") +\n  theme_minimal()\n\n\n\nCitation Networks\nAnalyze co-citation patterns:\n\n# Citations that appear together\nnetwork_data &lt;- analysis$network_data\n\n# Most frequently co-cited pairs\ntop_pairs &lt;- network_data %&gt;%\n  arrange(distance) %&gt;%\n  head(20)\n\nprint(top_pairs %&gt;% select(citation_from, citation_to, distance))\n\n# Average co-occurrence distance\nmean_distance &lt;- mean(network_data$distance)\ncat(\"Average distance between co-cited references:\", \n    round(mean_distance), \"characters\\n\")\n\n\n\nAuthor Analysis\nExtract author information:\n\n# Parse authors from citations\nextract_first_author &lt;- function(cite) {\n  # Simple extraction (customize as needed)\n  gsub(\"\\\\s*\\\\(.*\\\\)\", \"\", cite) %&gt;%\n    gsub(\"\\\\s*et al\\\\..*\", \"\", .) %&gt;%\n    trimws()\n}\n\ncitation_authors &lt;- analysis$citations %&gt;%\n  mutate(first_author = extract_first_author(citation_text_clean))\n\n# Most cited first authors\nauthor_counts &lt;- citation_authors %&gt;%\n  count(first_author, sort = TRUE)\n\nhead(author_counts, 15)\n\n\n\nTemporal Analysis\nAnalyze citation years:\n\n# Extract years from matched citations\nyear_data &lt;- analysis$citation_references_mapping %&gt;%\n  filter(!is.na(cite_year)) %&gt;%\n  count(cite_year) %&gt;%\n  arrange(cite_year)\n\n# Visualize\nggplot(year_data, aes(x = cite_year, y = n)) +\n  geom_line(color = \"steelblue\", size = 1) +\n  geom_point(color = \"steelblue\", size = 2) +\n  labs(title = \"Citations by Publication Year\",\n       x = \"Year\", y = \"Number of Citations\") +\n  theme_minimal()\n\n# Recent vs older citations\ncurrent_year &lt;- as.numeric(format(Sys.Date(), \"%Y\"))\nrecent_threshold &lt;- current_year - 5\n\nrecent_vs_old &lt;- analysis$citation_references_mapping %&gt;%\n  filter(!is.na(cite_year)) %&gt;%\n  mutate(period = ifelse(cite_year &gt;= recent_threshold, \"Recent\", \"Older\")) %&gt;%\n  count(period)\n\nprint(recent_vs_old)",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/citation-analysis.html#citation-metrics",
+    "href": "reference/citation-analysis.html#citation-metrics",
+    "title": "Citation Analysis",
+    "section": "Citation Metrics",
+    "text": "Citation Metrics\n\nCalculate Citation Metrics\n\n# Comprehensive citation metrics\nmetrics &lt;- list(\n  total_citations = nrow(analysis$citations),\n  unique_references = length(unique(\n    analysis$citation_references_mapping$ref_full_text\n  )),\n  narrative_citations = sum(analysis$citations$citation_type == \"narrative\"),\n  parenthetical_citations = sum(analysis$citations$citation_type == \"parenthetical\"),\n  matched_rate = nrow(analysis$citation_references_mapping) / \n                 nrow(analysis$citations),\n  citation_density = analysis$summary$citation_density,\n  avg_citations_per_section = mean(table(analysis$citations$section)),\n  sections_with_citations = length(unique(analysis$citations$section))\n)\n\n# Print metrics\ncat(\"Citation Analysis Metrics:\\n\")\ncat(\"==========================\\n\")\nfor (name in names(metrics)) {\n  cat(sprintf(\"%-30s: %.2f\\n\", name, metrics[[name]]))\n}\n\n\n\nSection-Specific Metrics\n\n# Detailed section metrics\nsection_metrics &lt;- analysis$citations %&gt;%\n  group_by(section) %&gt;%\n  summarise(\n    total_citations = n(),\n    narrative = sum(citation_type == \"narrative\"),\n    parenthetical = sum(citation_type == \"parenthetical\"),\n    narrative_pct = round(narrative / total_citations * 100, 1)\n  ) %&gt;%\n  arrange(desc(total_citations))\n\nprint(section_metrics)",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/citation-analysis.html#export-citation-data",
+    "href": "reference/citation-analysis.html#export-citation-data",
+    "title": "Citation Analysis",
+    "section": "Export Citation Data",
+    "text": "Export Citation Data\n\nExport Functions\n\n# Create export directory\ndir.create(\"citation_analysis\", showWarnings = FALSE)\n\n# 1. All citations\nwrite.csv(analysis$citations,\n          \"citation_analysis/all_citations.csv\",\n          row.names = FALSE)\n\n# 2. Matched citations with references\nwrite.csv(analysis$citation_references_mapping,\n          \"citation_analysis/matched_citations.csv\",\n          row.names = FALSE)\n\n# 3. Citation contexts\nwrite.csv(analysis$citation_contexts,\n          \"citation_analysis/citation_contexts.csv\",\n          row.names = FALSE)\n\n# 4. Citation metrics\nmetrics_df &lt;- data.frame(\n  metric = names(metrics),\n  value = unlist(metrics)\n)\nwrite.csv(metrics_df,\n          \"citation_analysis/metrics.csv\",\n          row.names = FALSE)\n\n# 5. Section distribution\nwrite.csv(section_metrics,\n          \"citation_analysis/section_metrics.csv\",\n          row.names = FALSE)",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/citation-analysis.html#case-studies",
+    "href": "reference/citation-analysis.html#case-studies",
+    "title": "Citation Analysis",
+    "section": "Case Studies",
+    "text": "Case Studies\n\nCase Study 1: Literature Review Paper\nAnalyzing citation patterns in a literature review:\n\n# High citation density expected\nif (analysis$summary$citation_density &gt; 15) {\n  cat(\"High citation density detected - consistent with review paper\\n\")\n}\n\n# Introduction should have many citations\nintro_citations &lt;- analysis$citations %&gt;%\n  filter(section == \"Introduction\") %&gt;%\n  nrow()\n\ncat(\"Introduction citations:\", intro_citations, \"\\n\")\n\n# Check for seminal works (older citations)\nold_citations &lt;- analysis$citation_references_mapping %&gt;%\n  filter(!is.na(cite_year), cite_year &lt; 2000) %&gt;%\n  nrow()\n\ncat(\"Pre-2000 citations:\", old_citations, \"\\n\")\n\n\n\nCase Study 2: Methods Paper\nAnalyzing a methodology-focused paper:\n\n# Methods section should have substantial citations\nmethods_citations &lt;- analysis$citations %&gt;%\n  filter(section == \"Methods\") %&gt;%\n  nrow()\n\nmethods_pct &lt;- methods_citations / nrow(analysis$citations) * 100\n\ncat(\"Methods citations:\", methods_citations, \n    \"(\", round(methods_pct, 1), \"%)\\n\")\n\n# Look for method-related terms in contexts\nmethod_contexts &lt;- analysis$citation_contexts %&gt;%\n  filter(section == \"Methods\",\n         grepl(\"algorithm|procedure|technique|approach\", \n               paste(words_before, words_after),\n               ignore.case = TRUE))\n\ncat(\"Method-related citation contexts:\", nrow(method_contexts), \"\\n\")",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/citation-analysis.html#tips-and-best-practices",
+    "href": "reference/citation-analysis.html#tips-and-best-practices",
+    "title": "Citation Analysis",
+    "section": "Tips and Best Practices",
+    "text": "Tips and Best Practices\n\n\n\n\n\n\nImproving Match Rates\n\n\n\nTo improve citation-reference matching:\n\nAlways provide DOI: Enables CrossRef integration\nCheck Reference section: Ensure it was properly extracted\nReview low-confidence matches: May need manual verification\nStandard formats: Works best with standard citation styles\n\n\n\n\n\n\n\n\n\nContext Window\n\n\n\nChoose appropriate window size:\n\nNarrow (5-7 words): For focused analysis\nMedium (10-12 words): Good balance (recommended)\nWide (15-20 words): For sentence-level context\n\n\n\n\n\n\n\n\n\nCitation Format Variations\n\n\n\nBe aware of:\n\nDifferent citation styles (APA, MLA, Chicago, etc.)\nNon-standard formats may be missed\nMultiple citations in one parenthesis\nIn-text references vs. bibliography citations",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/citation-analysis.html#see-also",
+    "href": "reference/citation-analysis.html#see-also",
+    "title": "Citation Analysis",
+    "section": "See Also",
+    "text": "See Also\n\nContent Analysis: Main analysis function\nNetwork Visualization: Visualize citation networks\nTutorial: Complete workflow examples",
+    "crumbs": [
+      "Citation Analysis",
+      "Citation Analysis"
+    ]
+  },
+  {
+    "objectID": "reference/pdf-import.html",
+    "href": "reference/pdf-import.html",
+    "title": "PDF Import Functions",
+    "section": "",
+    "text": "The PDF import functions handle the extraction of text from PDF documents while preserving document structure. The package provides automatic section detection and supports various column layouts commonly found in academic papers.",
+    "crumbs": [
+      "Core Functions",
+      "PDF Import Functions"
+    ]
+  },
+  {
+    "objectID": "reference/pdf-import.html#overview",
+    "href": "reference/pdf-import.html#overview",
+    "title": "PDF Import Functions",
+    "section": "",
+    "text": "The PDF import functions handle the extraction of text from PDF documents while preserving document structure. The package provides automatic section detection and supports various column layouts commonly found in academic papers.",
+    "crumbs": [
+      "Core Functions",
+      "PDF Import Functions"
+    ]
+  },
+  {
+    "objectID": "reference/pdf-import.html#main-function",
+    "href": "reference/pdf-import.html#main-function",
+    "title": "PDF Import Functions",
+    "section": "Main Function",
+    "text": "Main Function\n\npdf2txt_auto()\nImport PDF with automatic section detection and multi-column support.\nUsage\npdf2txt_auto(\n  file_path,\n  n_columns = 1,\n  sections = TRUE,\n  section_keywords = NULL\n)\nArguments\n\nfile_path: Character string. Path to the PDF file\nn_columns: Integer. Number of columns in the PDF layout (1, 2, or 3)\nsections: Logical. Whether to split text into sections\nsection_keywords: Character vector. Custom keywords for section detection\n\nValue\nA named list containing:\n\nFull_text: The complete document text\nSection-specific text (e.g., Abstract, Introduction, Methods, etc.)",
+    "crumbs": [
+      "Core Functions",
+      "PDF Import Functions"
+    ]
+  },
+  {
+    "objectID": "reference/pdf-import.html#examples",
+    "href": "reference/pdf-import.html#examples",
+    "title": "PDF Import Functions",
+    "section": "Examples",
+    "text": "Examples\n\nBasic Import\nImport a simple single-column PDF:\n\nlibrary(contentanalysis)\n\n# Single column PDF\ndoc &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 1)\n\n# Check structure\nnames(doc)\nstr(doc, max.level = 1)\n\n\n\nMulti-Column PDFs\nMost academic papers use two-column layouts:\n\n# Two-column layout (most common)\ndoc &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 2)\n\n# Three-column layout (less common)\ndoc_three &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 3)\n\n\n\nSection Detection\nThe function automatically detects common academic sections:\n\n# With automatic section detection (default)\ndoc &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 2, sections = TRUE)\n\n# View detected sections\nnames(doc)\n# [1] \"Full_text\"    \"Abstract\"     \"Introduction\" \"Methods\"     \n# [5] \"Results\"      \"Discussion\"   \"References\"\n\n# Access specific sections\ncat(doc$Abstract)\ncat(doc$Introduction)\n\n\n\nWithout Section Splitting\nExtract text without section detection:\n\n# Get only full text\ntext_only &lt;- pdf2txt_auto(\"paper.pdf\", sections = FALSE)\n\n# Result is a list with only Full_text\nnames(text_only)\n# [1] \"Full_text\"\n\n\n\nCustom Section Keywords\nDefine custom keywords for section detection:\n\n# Custom section keywords\nmy_keywords &lt;- list(\n  Background = c(\"background\", \"literature review\"),\n  Methodology = c(\"methodology\", \"experimental design\"),\n  Findings = c(\"findings\", \"observations\"),\n  Conclusions = c(\"conclusions\", \"summary\")\n)\n\ndoc &lt;- pdf2txt_auto(\n  \"paper.pdf\",\n  n_columns = 2,\n  sections = TRUE,\n  section_keywords = my_keywords\n)\n\nnames(doc)",
+    "crumbs": [
+      "Core Functions",
+      "PDF Import Functions"
+    ]
+  },
+  {
+    "objectID": "reference/pdf-import.html#working-with-results",
+    "href": "reference/pdf-import.html#working-with-results",
+    "title": "PDF Import Functions",
+    "section": "Working with Results",
+    "text": "Working with Results\n\nAccessing Section Content\n\n# Get word count per section\nsection_lengths &lt;- sapply(doc[names(doc) != \"Full_text\"], function(x) {\n  length(strsplit(x, \"\\\\s+\")[[1]])\n})\n\nprint(section_lengths)\n\n# Example output:\n#    Abstract Introduction      Methods      Results   Discussion   References \n#         234         1052          876         1342          945          523\n\n\n\nChecking Section Quality\n\n# Check if important sections were detected\nrequired_sections &lt;- c(\"Abstract\", \"Introduction\", \"Methods\", \"Results\")\ndetected &lt;- required_sections %in% names(doc)\nnames(detected) &lt;- required_sections\n\nprint(detected)\n\n# Identify missing sections\nmissing &lt;- required_sections[!detected]\nif (length(missing) &gt; 0) {\n  cat(\"Warning: Missing sections:\", paste(missing, collapse = \", \"), \"\\n\")\n}\n\n\n\nPreview Section Content\n\n# Preview first 500 characters of each section\npreview_sections &lt;- function(doc, n_chars = 500) {\n  sections &lt;- names(doc)[names(doc) != \"Full_text\"]\n  \n  for (section in sections) {\n    cat(\"\\n===\", section, \"===\\n\")\n    cat(substr(doc[[section]], 1, n_chars), \"...\\n\")\n  }\n}\n\npreview_sections(doc)",
+    "crumbs": [
+      "Core Functions",
+      "PDF Import Functions"
+    ]
+  },
+  {
+    "objectID": "reference/pdf-import.html#common-use-cases",
+    "href": "reference/pdf-import.html#common-use-cases",
+    "title": "PDF Import Functions",
+    "section": "Common Use Cases",
+    "text": "Common Use Cases\n\nUse Case 1: Prepare for Analysis\n\n# Import PDF\ndoc &lt;- pdf2txt_auto(\"example_paper.pdf\", n_columns = 2)\n\n# Verify sections were detected\nif (!\"Introduction\" %in% names(doc)) {\n  warning(\"Introduction not detected - check section keywords\")\n}\n\n# Pass to analysis\nanalysis &lt;- analyze_scientific_content(\n  text = doc,\n  doi = \"10.xxxx/xxxxx\",\n  mailto = \"your@email.com\"\n)\n\n\n\nUse Case 2: Extract Specific Sections\n\n# Import multiple papers and extract only Methods\npapers &lt;- c(\"paper1.pdf\", \"paper2.pdf\", \"paper3.pdf\")\n\nmethods_sections &lt;- lapply(papers, function(p) {\n  doc &lt;- pdf2txt_auto(p, n_columns = 2)\n  doc$Methods\n})\n\nnames(methods_sections) &lt;- papers\n\n# Analyze methods section lengths\nmethods_lengths &lt;- sapply(methods_sections, function(m) {\n  if (!is.null(m)) {\n    length(strsplit(m, \"\\\\s+\")[[1]])\n  } else {\n    NA\n  }\n})\n\nprint(methods_lengths)\n\n\n\nUse Case 3: Batch Processing\n\n# Process multiple papers with different layouts\nprocess_paper &lt;- function(file, columns = 2) {\n  tryCatch({\n    doc &lt;- pdf2txt_auto(file, n_columns = columns)\n    list(\n      success = TRUE,\n      sections = names(doc),\n      word_count = length(strsplit(doc$Full_text, \"\\\\s+\")[[1]]),\n      doc = doc\n    )\n  }, error = function(e) {\n    list(\n      success = FALSE,\n      error = e$message,\n      doc = NULL\n    )\n  })\n}\n\n# Process all PDFs in directory\npdf_files &lt;- list.files(pattern = \"\\\\.pdf$\")\nresults &lt;- lapply(pdf_files, process_paper)\nnames(results) &lt;- pdf_files\n\n# Check success rate\nsuccess_rate &lt;- mean(sapply(results, function(r) r$success))\ncat(\"Successfully processed:\", success_rate * 100, \"%\\n\")",
+    "crumbs": [
+      "Core Functions",
+      "PDF Import Functions"
+    ]
+  },
+  {
+    "objectID": "reference/pdf-import.html#tips-and-best-practices",
+    "href": "reference/pdf-import.html#tips-and-best-practices",
+    "title": "PDF Import Functions",
+    "section": "Tips and Best Practices",
+    "text": "Tips and Best Practices\n\n\n\n\n\n\nColumn Detection\n\n\n\n\nStart with n_columns = 2: Most academic papers use two columns\nIf text appears jumbled, try different column values\nSingle-column: theses, reports, preprints\nTwo-column: journal articles, conference papers\nThree-column: some conference proceedings\n\n\n\n\n\n\n\n\n\nSection Detection\n\n\n\n\nWorks best with clearly formatted section headers\nCase-insensitive matching\nHandles common variations (e.g., “METHODS”, “Methods”, “Methodology”)\nCustom keywords useful for non-standard formats\n\n\n\n\n\n\n\n\n\nLimitations\n\n\n\n\nRequires text-based PDFs (not scanned images)\nComplex layouts may affect text extraction\nTables and figures may disrupt text flow\nSome formatting is lost in plain text conversion",
+    "crumbs": [
+      "Core Functions",
+      "PDF Import Functions"
+    ]
+  },
+  {
+    "objectID": "reference/pdf-import.html#troubleshooting",
+    "href": "reference/pdf-import.html#troubleshooting",
+    "title": "PDF Import Functions",
+    "section": "Troubleshooting",
+    "text": "Troubleshooting\n\nProblem: Garbled or Jumbled Text\nSolution: Adjust the n_columns parameter\n\n# Try different column settings\ndoc_1col &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 1)\ndoc_2col &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 2)\ndoc_3col &lt;- pdf2txt_auto(\"paper.pdf\", n_columns = 3)\n\n# Compare results\nsapply(list(doc_1col, doc_2col, doc_3col), function(d) {\n  substr(d$Full_text, 1, 200)\n})\n\n\n\nProblem: Sections Not Detected\nSolution: Check section headers and use custom keywords\n\n# Import without sections to see raw text\ndoc_raw &lt;- pdf2txt_auto(\"paper.pdf\", sections = FALSE)\n\n# Search for section markers\nsection_markers &lt;- c(\"abstract\", \"introduction\", \"methods\", \n                     \"results\", \"discussion\", \"conclusion\")\n\npositions &lt;- sapply(section_markers, function(marker) {\n  gregexpr(marker, doc_raw$Full_text, ignore.case = TRUE)[[1]][1]\n})\n\nprint(positions[positions &gt; 0])\n\n\n\nProblem: Missing References Section\nSolution: References may be in a separate section or differently named\n\n# Check all detected sections\nnames(doc)\n\n# References might be under different names\npossible_refs &lt;- c(\"References\", \"Bibliography\", \"Works Cited\", \"Literature\")\nref_section &lt;- intersect(names(doc), possible_refs)\n\nif (length(ref_section) &gt; 0) {\n  references &lt;- doc[[ref_section]]\n} else {\n  cat(\"References section not found automatically\\n\")\n}",
+    "crumbs": [
+      "Core Functions",
+      "PDF Import Functions"
+    ]
+  },
+  {
+    "objectID": "reference/pdf-import.html#see-also",
+    "href": "reference/pdf-import.html#see-also",
+    "title": "PDF Import Functions",
+    "section": "See Also",
+    "text": "See Also\n\nContent Analysis: Analyze imported documents\nCitation Analysis: Extract citations from text\nTutorial: Complete workflow examples",
+    "crumbs": [
+      "Core Functions",
+      "PDF Import Functions"
+    ]
+  }
+]

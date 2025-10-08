@@ -1,0 +1,81 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "contentanalysis"
+  description: "Comprehensive Tools for Scientific Content Analysis in R"
+  site-url: https://yourusername.github.io/contentanalysis
+  repo-url: https://github.com/yourusername/contentanalysis
+  repo-actions: [edit, issue]
+  
+  navbar:
+    background: primary
+    logo: logo.png
+    left:
+      - text: "Home"
+        file: index.qmd
+      - text: "Get Started"
+        file: get-started.qmd
+      - text: "Reference"
+        menu:
+          - text: "PDF Import"
+            file: reference/pdf-import.qmd
+          - text: "Content Analysis"
+            file: reference/content-analysis.qmd
+          - text: "Citation Analysis"
+            file: reference/citation-analysis.qmd
+          - text: "Network Visualization"
+            file: reference/network-viz.qmd
+          - text: "Text Analysis"
+            file: reference/text-analysis.qmd
+          - text: "Readability Metrics"
+            file: reference/readability.qmd
+      - text: "Tutorial"
+        file: tutorial.qmd
+      - text: "About"
+        file: about.qmd
+    right:
+      - icon: github
+        href: https://github.com/yourusername/contentanalysis
+
+  sidebar:
+    - title: "Reference"
+      style: "docked"
+      background: light
+      contents:
+        - section: "Core Functions"
+          contents:
+            - reference/pdf-import.qmd
+            - reference/content-analysis.qmd
+        - section: "Citation Analysis"
+          contents:
+            - reference/citation-analysis.qmd
+            - reference/network-viz.qmd
+        - section: "Text Analysis"
+          contents:
+            - reference/text-analysis.qmd
+            - reference/readability.qmd
+
+  page-footer:
+    left: "Built with [Quarto](https://quarto.org/)"
+    right: 
+      - text: "License: GPL-3"
+      - text: "© 2024"
+
+format:
+  html:
+    theme: 
+      light: [cosmo, custom.scss]
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    code-tools: true
+    code-copy: true
+    highlight-style: github
+
+execute:
+  freeze: auto
+  warning: false
+  message: false

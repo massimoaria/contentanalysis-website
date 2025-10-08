@@ -1,0 +1,299 @@
+/*-- scss:defaults --*/
+
+// Color palette
+$primary: #2c3e50;
+$secondary: #3498db;
+$success: #27ae60;
+$info: #16a085;
+$warning: #f39c12;
+$danger: #e74c3c;
+
+// Typography
+$font-family-base: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$font-family-monospace: "Source Code Pro", Monaco, Consolas, "Courier New", monospace;
+$headings-font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$headings-font-weight: 600;
+
+// Spacing
+$grid-gutter-width: 30px;
+
+// Code
+$code-bg: #f8f9fa;
+$code-color: #e83e8c;
+
+// Links
+$link-color: $secondary;
+$link-decoration: none;
+$link-hover-color: darken($secondary, 15%);
+$link-hover-decoration: underline;
+
+/*-- scss:rules --*/
+
+// Header styling
+h1, h2, h3 {
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+h1 {
+  border-bottom: 3px solid $primary;
+  padding-bottom: 0.3em;
+}
+
+h2 {
+  color: $primary;
+  border-bottom: 2px solid lighten($primary, 40%);
+  padding-bottom: 0.2em;
+}
+
+h3 {
+  color: $secondary;
+}
+
+// Code blocks
+pre {
+  background-color: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+code {
+  background-color: $code-bg;
+  color: $code-color;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  font-size: 0.875em;
+}
+
+// Callout boxes
+.callout {
+  margin: 1.5em 0;
+  padding: 1em;
+  border-left: 5px solid;
+  border-radius: 4px;
+  
+  &.callout-note {
+    background-color: #e7f3ff;
+    border-left-color: $info;
+  }
+  
+  &.callout-tip {
+    background-color: #e8f5e9;
+    border-left-color: $success;
+  }
+  
+  &.callout-warning {
+    background-color: #fff3e0;
+    border-left-color: $warning;
+  }
+  
+  &.callout-important {
+    background-color: #ffebee;
+    border-left-color: $danger;
+  }
+}
+
+// Tables
+table {
+  margin: 1.5em 0;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  background-color: $primary;
+  color: white;
+  font-weight: 600;
+  padding: 12px;
+  text-align: left;
+}
+
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+tr:hover {
+  background-color: #f6f8fa;
+}
+
+// Grid system
+.grid {
+  display: grid;
+  gap: 2em;
+  margin: 2em 0;
+}
+
+.g-col-6 {
+  grid-column: span 6;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+// Cards for features
+.feature-card {
+  background: white;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5em;
+  transition: transform 0.2s, box-shadow 0.2s;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  h3 {
+    margin-top: 0;
+    color: $primary;
+  }
+}
+
+// Navigation
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+// Footer
+.page-footer {
+  background-color: #f6f8fa;
+  border-top: 1px solid #e1e4e8;
+  padding: 2em 0;
+  margin-top: 4em;
+}
+
+// Sidebar
+.sidebar {
+  background-color: #f8f9fa;
+  
+  .sidebar-title {
+    font-weight: 600;
+    color: $primary;
+    margin-bottom: 1em;
+  }
+  
+  .sidebar-item {
+    padding: 0.5em 0;
+    
+    a {
+      color: #24292e;
+      
+      &:hover {
+        color: $secondary;
+      }
+    }
+  }
+}
+
+// Buttons
+.btn {
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: $primary;
+  color: white;
+  
+  &:hover {
+    background-color: darken($primary, 10%);
+  }
+}
+
+// TOC
+#TOC {
+  border-left: 3px solid $secondary;
+  padding-left: 1em;
+  
+  ul {
+    list-style: none;
+    padding-left: 0;
+    
+    li {
+      padding: 0.3em 0;
+      
+      a {
+        color: #586069;
+        
+        &:hover {
+          color: $secondary;
+        }
+      }
+    }
+    
+    ul {
+      padding-left: 1em;
+      margin-top: 0.3em;
+    }
+  }
+}
+
+// Code copy button
+.code-copy-button {
+  background-color: $secondary;
+  
+  &:hover {
+    background-color: darken($secondary, 10%);
+  }
+}
+
+// Syntax highlighting
+.sourceCode {
+  .kw { color: #d73a49; font-weight: bold; }  // Keywords
+  .dt { color: #005cc5; }                     // Data types
+  .dv { color: #005cc5; }                     // Decimals
+  .bn { color: #005cc5; }                     // Base N
+  .fl { color: #005cc5; }                     // Floats
+  .ch { color: #032f62; }                     // Char
+  .st { color: #032f62; }                     // String
+  .co { color: #6a737d; font-style: italic; } // Comments
+  .fu { color: #6f42c1; }                     // Functions
+  .cn { color: #005cc5; }                     // Constants
+}
+
+// Responsive images
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+// Improve readability
+p {
+  line-height: 1.6;
+  margin-bottom: 1em;
+}
+
+// Lists
+ul, ol {
+  line-height: 1.6;
+  margin-bottom: 1em;
+  
+  li {
+    margin-bottom: 0.5em;
+  }
+}
+
+// Horizontal rule
+hr {
+  border: 0;
+  height: 1px;
+  background: #e1e4e8;
+  margin: 2em 0;
+}

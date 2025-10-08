@@ -1,0 +1,460 @@
+---
+title: "Content Analysis"
+---
+
+## Overview
+
+The `analyze_scientific_content()` function performs comprehensive analysis of scientific documents, including citation extraction, reference matching, text analytics, and network analysis.
+
+## Main Function
+
+### analyze_scientific_content()
+
+Perform comprehensive content analysis with CrossRef integration.
+
+**Usage**
+
+```r
+analyze_scientific_content(
+  text,
+  doi = NULL,
+  mailto = NULL,
+  window_size = 10,
+  remove_stopwords = TRUE,
+  custom_stopwords = NULL,
+  ngram_range = c(1, 3),
+  use_sections_for_citations = TRUE
+)
+```
+
+**Arguments**
+
+- `text`: Named list from `pdf2txt_auto()` containing document text
+- `doi`: Character string. DOI of the document (optional but recommended)
+- `mailto`: Character string. Email for CrossRef API access (required if using DOI)
+- `window_size`: Integer. Number of words before/after citations to extract
+- `remove_stopwords`: Logical. Remove common English stopwords
+- `custom_stopwords`: Character vector. Additional stopwords to remove
+- `ngram_range`: Numeric vector of length 2. Range of n-grams to extract (e.g., c(1,3) for unigrams to trigrams)
+- `use_sections_for_citations`: Logical. Include section information in citation analysis
+
+**Value**
+
+A list containing:
+
+- `text_analytics`: Summary statistics about the text
+- `citations`: Data frame of extracted citations
+- `citation_contexts`: Citation contexts with surrounding text
+- `citation_metrics`: Citation statistics by section
+- `citation_references_mapping`: Matched citations and references
+- `parsed_references`: Parsed reference entries
+- `word_frequencies`: Word frequency table
+- `ngrams`: N-gram frequency lists
+- `network_data`: Citation co-occurrence data
+- `section_colors`: Color mapping for sections
+- `summary`: Overall summary statistics
+
+## Basic Usage
+
+### Simple Analysis
+
+Analyze without CrossRef integration:
+
+```{r basic, eval=FALSE}
+library(contentanalysis)
+
+# Import document
+doc <- pdf2txt_auto("paper.pdf", n_columns = 2)
+
+# Basic analysis
+analysis <- analyze_scientific_content(
+  text = doc,
+  window_size = 10,
+  remove_stopwords = TRUE
+)
+
+# View summary
+print(analysis$summary)
+```
+
+### With CrossRef Integration
+
+Enhanced analysis with automatic reference matching:
+
+```{r crossref, eval=FALSE}
+# Analysis with DOI (recommended)
+analysis <- analyze_scientific_content(
+  text = doc,
+  doi = "10.1016/j.mlwa.2021.100094",
+  mailto = "your@email.com",
+  window_size = 10,
+  remove_stopwords = TRUE,
+  ngram_range = c(1, 3)
+)
+
+# Check reference matching quality
+matching_rate <- analysis$summary$references_matched / 
+                 analysis$summary$citations_extracted
+cat("Matching rate:", round(matching_rate * 100, 1), "%\n")
+```
+
+## Understanding Results
+
+### Summary Statistics
+
+The summary provides key metrics:
+
+```{r summary, eval=FALSE}
+analysis$summary
+
+# Example output:
+# $total_words: 5234
+# $citations_extracted: 42
+# $narrative_citations: 18
+# $parenthetical_citations: 24
+# $references_matched: 38
+# $lexical_diversity: 0.421
+# $citation_density: 8.03 (citations per 1000 words)
+```
+
+### Text Analytics
+
+Basic text statistics:
+
+```{r text_analytics, eval=FALSE}
+analysis$text_analytics
+
+# Includes:
+# - Total words
+# - Unique words
+# - Lexical diversity
+# - Average word length
+# - Sentence count (if available)
+```
+
+### Citation Extraction
+
+View extracted citations:
+
+```{r citations, eval=FALSE}
+library(dplyr)
+
+# All citations
+head(analysis$citations)
+
+# Citation types
+table(analysis$citations$citation_type)
+#  narrative parenthetical 
+#        18            24
+
+# Citations by section
+analysis$citation_metrics$section_distribution
+```
+
+### Citation Contexts
+
+Access text surrounding citations:
+
+```{r contexts, eval=FALSE}
+# View citation contexts
+contexts <- analysis$citation_contexts %>%
+  select(citation_text_clean, section, words_before, words_after)
+
+head(contexts, 3)
+
+# Example:
+# citation_text_clean    section       words_before              words_after
+# "Breiman (2001)"       Introduction  "as shown by"             "the method provides"
+# "(Smith & Jones 2020)" Methods       "following the approach"  "we implemented the"
+```
+
+## Advanced Usage
+
+### Custom Stopwords
+
+Add domain-specific stopwords:
+
+```{r custom_stop, eval=FALSE}
+# Define custom stopwords
+custom_stops <- c("however", "therefore", "thus", "moreover", 
+                  "furthermore", "additionally", "specifically")
+
+analysis <- analyze_scientific_content(
+  text = doc,
+  doi = "10.xxxx/xxxxx",
+  mailto = "your@email.com",
+  custom_stopwords = custom_stops,
+  remove_stopwords = TRUE
+)
+
+# Compare with default
+top_words_custom <- head(analysis$word_frequencies$word, 20)
+```
+
+### Adjusting Citation Window
+
+Control context extraction:
+
+```{r window, eval=FALSE}
+# Narrow window for focused context
+analysis_narrow <- analyze_scientific_content(
+  text = doc,
+  window_size = 5,  # 5 words before/after
+  doi = "10.xxxx/xxxxx",
+  mailto = "your@email.com"
+)
+
+# Wide window for broader context
+analysis_wide <- analyze_scientific_content(
+  text = doc,
+  window_size = 20,  # 20 words before/after
+  doi = "10.xxxx/xxxxx",
+  mailto = "your@email.com"
+)
+
+# Compare context lengths
+mean(nchar(analysis_narrow$citation_contexts$words_before))
+mean(nchar(analysis_wide$citation_contexts$words_before))
+```
+
+### N-gram Configuration
+
+Extract different n-gram ranges:
+
+```{r ngrams, eval=FALSE}
+# Only unigrams and bigrams
+analysis_12 <- analyze_scientific_content(
+  text = doc,
+  ngram_range = c(1, 2)
+)
+
+# Up to 4-grams
+analysis_14 <- analyze_scientific_content(
+  text = doc,
+  ngram_range = c(1, 4)
+)
+
+# Only bigrams and trigrams
+analysis_23 <- analyze_scientific_content(
+  text = doc,
+  ngram_range = c(2, 3)
+)
+
+# View results
+head(analysis_14$ngrams$`4gram`, 10)
+```
+
+## Working with Results
+
+### Citation Analysis Workflow
+
+```{r workflow1, eval=FALSE}
+# 1. Find citations to specific author
+breiman_cites <- analysis$citation_references_mapping %>%
+  filter(grepl("Breiman", ref_authors, ignore.case = TRUE))
+
+nrow(breiman_cites)
+
+# 2. Citations in Introduction
+intro_cites <- analysis$citations %>%
+  filter(section == "Introduction")
+
+# 3. Most cited references
+cite_counts <- analysis$citation_references_mapping %>%
+  count(ref_full_text, sort = TRUE)
+
+head(cite_counts, 10)
+
+# 4. Narrative vs parenthetical by section
+citation_types_by_section <- analysis$citations %>%
+  group_by(section, citation_type) %>%
+  summarise(count = n(), .groups = "drop")
+
+print(citation_types_by_section)
+```
+
+### Text Analysis Workflow
+
+```{r workflow2, eval=FALSE}
+# 1. Most frequent words
+top_20_words <- head(analysis$word_frequencies, 20)
+
+# 2. Domain-specific terms (e.g., methods)
+method_terms <- analysis$word_frequencies %>%
+  filter(grepl("model|algorithm|method|approach", word))
+
+head(method_terms, 10)
+
+# 3. Most common bigrams
+top_bigrams <- head(analysis$ngrams$`2gram`, 15)
+
+# 4. Technical trigrams
+tech_trigrams <- analysis$ngrams$`3gram` %>%
+  filter(frequency > 2)
+
+head(tech_trigrams)
+```
+
+### Reference Matching Quality
+
+Assess matching quality:
+
+```{r matching, eval=FALSE}
+# View matching diagnostics
+print_matching_diagnostics(analysis)
+
+# Confidence distribution
+table(analysis$citation_references_mapping$match_confidence)
+
+# High confidence matches
+high_conf <- analysis$citation_references_mapping %>%
+  filter(match_confidence == "high")
+
+cat("High confidence matches:", nrow(high_conf), "\n")
+
+# Low confidence matches (may need review)
+low_conf <- analysis$citation_references_mapping %>%
+  filter(match_confidence == "low")
+
+if (nrow(low_conf) > 0) {
+  cat("Low confidence matches requiring review:\n")
+  print(low_conf %>% select(citation_text_clean, ref_full_text))
+}
+```
+
+## Export and Reporting
+
+### Export Analysis Results
+
+```{r export, eval=FALSE}
+# Create output directory
+dir.create("analysis_output", showWarnings = FALSE)
+
+# Export main results
+write.csv(analysis$citations, 
+          "analysis_output/citations.csv", 
+          row.names = FALSE)
+
+write.csv(analysis$citation_references_mapping,
+          "analysis_output/matched_references.csv",
+          row.names = FALSE)
+
+write.csv(analysis$word_frequencies,
+          "analysis_output/word_frequencies.csv",
+          row.names = FALSE)
+
+write.csv(analysis$citation_contexts,
+          "analysis_output/citation_contexts.csv",
+          row.names = FALSE)
+
+# Export n-grams
+for (n in names(analysis$ngrams)) {
+  write.csv(analysis$ngrams[[n]],
+            paste0("analysis_output/", n, ".csv"),
+            row.names = FALSE)
+}
+```
+
+### Generate Report
+
+```{r report, eval=FALSE}
+# Create summary report
+report <- list(
+  document_info = list(
+    doi = "10.xxxx/xxxxx",
+    total_words = analysis$summary$total_words,
+    sections = names(doc)[names(doc) != "Full_text"]
+  ),
+  citation_stats = analysis$summary[grep("citation", names(analysis$summary))],
+  top_words = head(analysis$word_frequencies, 10),
+  top_bigrams = head(analysis$ngrams$`2gram`, 10),
+  section_citation_counts = analysis$citation_metrics$section_distribution
+)
+
+# Save as JSON
+library(jsonlite)
+write_json(report, "analysis_output/summary_report.json", 
+           pretty = TRUE, auto_unbox = TRUE)
+```
+
+## Batch Processing
+
+Process multiple documents:
+
+```{r batch, eval=FALSE}
+# Define papers to process
+papers <- data.frame(
+  file = c("paper1.pdf", "paper2.pdf", "paper3.pdf"),
+  doi = c("10.1000/1", "10.1000/2", "10.1000/3"),
+  stringsAsFactors = FALSE
+)
+
+# Process all
+results <- list()
+for (i in 1:nrow(papers)) {
+  cat("Processing:", papers$file[i], "\n")
+  
+  doc <- pdf2txt_auto(papers$file[i], n_columns = 2)
+  results[[i]] <- analyze_scientific_content(
+    text = doc,
+    doi = papers$doi[i],
+    mailto = "your@email.com"
+  )
+  
+  Sys.sleep(1)  # Be polite to CrossRef API
+}
+
+names(results) <- papers$file
+
+# Compare results
+comparison <- data.frame(
+  file = papers$file,
+  words = sapply(results, function(r) r$summary$total_words),
+  citations = sapply(results, function(r) r$summary$citations_extracted),
+  matched = sapply(results, function(r) r$summary$references_matched),
+  diversity = sapply(results, function(r) r$summary$lexical_diversity)
+)
+
+print(comparison)
+```
+
+## Tips and Best Practices
+
+::: {.callout-tip}
+## DOI and Email
+
+Always provide DOI and email when possible:
+
+- Enables automatic CrossRef reference matching
+- Dramatically improves citation-reference linking
+- Provides metadata about the document
+- Email should be valid (CrossRef policy)
+:::
+
+::: {.callout-tip}
+## Window Size
+
+Choose window size based on your needs:
+
+- **Small (5-7)**: Focused analysis, immediate context
+- **Medium (8-12)**: Balanced approach (recommended)
+- **Large (15-20)**: Broader context, sentence-level analysis
+:::
+
+::: {.callout-warning}
+## CrossRef API
+
+Be respectful of CrossRef API:
+
+- Use valid email in `mailto`
+- Add delays between requests in batch processing
+- Consider rate limits for large-scale analysis
+- Cache results when possible
+:::
+
+## See Also
+
+- [Citation Analysis](citation-analysis.qmd): Deep dive into citation features
+- [Network Visualization](network-viz.qmd): Create citation networks
+- [Text Analysis](text-analysis.qmd): Advanced text analytics
+- [Tutorial](../tutorial.qmd): Complete workflow examples
