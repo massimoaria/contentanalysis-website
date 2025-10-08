@@ -563,7 +563,7 @@
     "href": "index.html#citation",
     "title": "contentanalysis",
     "section": "Citation",
-    "text": "Citation\nIf you use contentanalysis in your research, please cite:\n@Manual{contentanalysis,\n  title = {contentanalysis: Tools for Scientific Content Analysis},\n  author = {Your Name},\n  year = {2024},\n  note = {R package version 0.1.0},\n  url = {https://github.com/yourusername/contentanalysis}\n}"
+    "text": "Citation\nIf you use contentanalysis in your research, please cite:\n@Manual{contentanalysis,\n  title = {contentanalysis: Scientific Content and Citation Analysis from PDF Documents},\n  author = {Massimo Aria},\n  year = {2025},\n  note = {R package version 0.1.0},\n  url = {https://github.com/massimoaria/contentanalysis}\n}"
   },
   {
     "objectID": "index.html#license",

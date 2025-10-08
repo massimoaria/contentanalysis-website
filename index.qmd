@@ -9,47 +9,49 @@ subtitle: "Comprehensive Tools for Scientific Content Analysis in R"
 
 ## Key Features
 
-::: {.grid}
-
-::: {.g-col-6}
+::::::: grid
+::: g-col-6
 ### 📄 PDF Processing
-- Multi-column PDF support
-- Automatic section detection
-- Structure preservation
-- Text extraction with layout awareness
+
+-   Multi-column PDF support
+-   Automatic section detection
+-   Structure preservation
+-   Text extraction with layout awareness
 :::
 
-::: {.g-col-6}
+::: g-col-6
 ### 📚 Citation Analysis
-- Multiple citation format detection
-- Automatic reference matching
-- Citation context extraction
-- CrossRef integration
+
+-   Multiple citation format detection
+-   Automatic reference matching
+-   Citation context extraction
+-   CrossRef integration
 :::
 
-::: {.g-col-6}
+::: g-col-6
 ### 🕸️ Network Visualization
-- Interactive citation networks
-- Co-occurrence analysis
-- Section-based coloring
-- Hub citation detection
+
+-   Interactive citation networks
+-   Co-occurrence analysis
+-   Section-based coloring
+-   Hub citation detection
 :::
 
-::: {.g-col-6}
+::: g-col-6
 ### 📊 Text Analytics
-- Word frequency analysis
-- N-gram extraction
-- Readability indices
-- Distribution tracking
-:::
 
+-   Word frequency analysis
+-   N-gram extraction
+-   Readability indices
+-   Distribution tracking
 :::
+:::::::
 
 ## Quick Start
 
 ### Installation
 
-```r
+``` r
 # Install from GitHub
 # install.packages("devtools")
 devtools::install_github("massimoaria/contentanalysis")
@@ -57,7 +59,7 @@ devtools::install_github("massimoaria/contentanalysis")
 
 ### Basic Usage
 
-```r
+``` r
 library(contentanalysis)
 
 # Import PDF with automatic section detection
@@ -102,65 +104,65 @@ attr(network, "stats")
 
 Import PDFs and automatically detect document structure:
 
-- **pdf2txt_auto()**: Import with automatic section detection
-- Supports single, double, and triple-column layouts
-- Identifies Abstract, Introduction, Methods, Results, Discussion, etc.
+-   **pdf2txt_auto()**: Import with automatic section detection
+-   Supports single, double, and triple-column layouts
+-   Identifies Abstract, Introduction, Methods, Results, Discussion, etc.
 
 ### 2. Citation Analysis
 
 Extract and analyze citations:
 
-- **analyze_scientific_content()**: Comprehensive content analysis
-- Detects narrative and parenthetical citations
-- Matches citations to references
-- Extracts citation contexts
+-   **analyze_scientific_content()**: Comprehensive content analysis
+-   Detects narrative and parenthetical citations
+-   Matches citations to references
+-   Extracts citation contexts
 
 ### 3. Network Visualization
 
 Visualize citation relationships:
 
-- **create_citation_network()**: Interactive network graphs
-- Shows co-occurrence patterns
-- Color-coded by document sections
-- Edge weights based on citation proximity
+-   **create_citation_network()**: Interactive network graphs
+-   Shows co-occurrence patterns
+-   Color-coded by document sections
+-   Edge weights based on citation proximity
 
 ### 4. Text Analytics
 
 Analyze document text:
 
-- **calculate_word_distribution()**: Track term usage
-- **calculate_readability_indices()**: Readability metrics
-- N-gram analysis
-- Lexical diversity measures
+-   **calculate_word_distribution()**: Track term usage
+-   **calculate_readability_indices()**: Readability metrics
+-   N-gram analysis
+-   Lexical diversity measures
 
 ## Use Cases
 
 The package is designed for:
 
-- **Systematic Literature Reviews**: Analyze citation patterns across multiple papers
-- **Content Analysis**: Extract and quantify key concepts and themes
-- **Bibliometric Studies**: Map citation networks and identify influential works
-- **Academic Writing Analysis**: Assess readability and citation practices
-- **Research Methodology**: Study how citations are deployed in scientific arguments
+-   **Systematic Literature Reviews**: Analyze citation patterns across multiple papers
+-   **Content Analysis**: Extract and quantify key concepts and themes
+-   **Bibliometric Studies**: Map citation networks and identify influential works
+-   **Academic Writing Analysis**: Assess readability and citation practices
+-   **Research Methodology**: Study how citations are deployed in scientific arguments
 
 ## Getting Help
 
-- [Get Started Guide](get-started.qmd): Step-by-step introduction
-- [Reference Documentation](reference/): Detailed function documentation
-- [Tutorial](tutorial.qmd): Complete workflow examples
-- [GitHub Issues](https://github.com/yourusername/contentanalysis/issues): Report bugs or request features
+-   [Get Started Guide](get-started.qmd): Step-by-step introduction
+-   [Reference Documentation](reference/): Detailed function documentation
+-   [Tutorial](tutorial.qmd): Complete workflow examples
+-   [GitHub Issues](https://github.com/yourusername/contentanalysis/issues): Report bugs or request features
 
 ## Citation
 
 If you use contentanalysis in your research, please cite:
 
-```bibtex
+``` bibtex
 @Manual{contentanalysis,
-  title = {contentanalysis: Tools for Scientific Content Analysis},
-  author = {Your Name},
-  year = {2024},
+  title = {contentanalysis: Scientific Content and Citation Analysis from PDF Documents},
+  author = {Massimo Aria},
+  year = {2025},
   note = {R package version 0.1.0},
-  url = {https://github.com/yourusername/contentanalysis}
+  url = {https://github.com/massimoaria/contentanalysis}
 }
 ```
 
