@@ -7,7 +7,7 @@ subtitle: "Comprehensive Tools for Scientific Content Analysis in R"
 
 **contentanalysis** is an R package that provides comprehensive tools for extracting and analyzing scientific content from PDF documents. It enables researchers to perform sophisticated content analysis, citation extraction, network visualization, and text mining on academic papers.
 
-::: {.callout-note}
+::: callout-note
 ## 🆕 New: AI-Enhanced PDF Import
 
 The package now supports **AI-assisted PDF text extraction** through Google's Gemini API, enabling more accurate parsing of complex document layouts. To use this feature, obtain an API key from [Google AI Studio](https://aistudio.google.com/apikey).
