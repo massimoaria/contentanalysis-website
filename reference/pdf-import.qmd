@@ -4,13 +4,26 @@ title: "PDF Import Functions"
 
 ## Overview
 
-The PDF import functions handle the extraction of text from PDF documents while preserving document structure. The package provides automatic section detection and supports various column layouts commonly found in academic papers.
+The PDF import functions handle the extraction of text from PDF documents while preserving document structure. The package provides automatic section detection, supports various column layouts, and now includes **AI-enhanced extraction** through Google's Gemini API for handling complex document layouts.
+
+::: {.callout-note}
+## 🆕 AI-Enhanced Extraction
+
+The package now supports AI-assisted PDF text extraction for improved accuracy with complex layouts. This feature uses Google's Gemini API to better parse:
+
+- Multi-column layouts with complex flow
+- Documents with tables and figures
+- Papers with unusual formatting
+- Scanned or low-quality PDFs
+
+To use AI features, you need a Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey).
+:::
 
 ## Main Function
 
 ### pdf2txt_auto()
 
-Import PDF with automatic section detection and multi-column support.
+Import PDF with automatic section detection and multi-column support. Now includes optional AI enhancement.
 
 **Usage**
 
@@ -19,7 +32,9 @@ pdf2txt_auto(
   file_path,
   n_columns = 1,
   sections = TRUE,
-  section_keywords = NULL
+  section_keywords = NULL,
+  use_ai = FALSE,        # New: Enable AI processing
+  ai_model = "2.0-flash" # New: Gemini model version
 )
 ```
 
@@ -29,6 +44,8 @@ pdf2txt_auto(
 - `n_columns`: Integer. Number of columns in the PDF layout (1, 2, or 3)
 - `sections`: Logical. Whether to split text into sections
 - `section_keywords`: Character vector. Custom keywords for section detection
+- `use_ai`: Logical. Whether to use AI-enhanced extraction (default: FALSE) 🆕
+- `ai_model`: Character. Gemini model version to use (default: "2.0-flash") 🆕
 
 **Value**
 
@@ -36,6 +53,70 @@ A named list containing:
 
 - `Full_text`: The complete document text
 - Section-specific text (e.g., `Abstract`, `Introduction`, `Methods`, etc.)
+
+## New AI Functions 🆕
+
+### gemini_content_ai()
+
+Process PDFs and images with Google Gemini AI for enhanced content extraction.
+
+**Usage**
+
+```r
+gemini_content_ai(
+  image = NULL,
+  docs = NULL,
+  prompt = "Explain these images",
+  model = "2.0-flash",
+  image_type = "png",
+  retry_503 = 5,
+  api_key = NULL,
+  outputSize = "medium"
+)
+```
+
+**Arguments**
+
+- `image`: Character vector. Path(s) to image file(s)
+- `docs`: Character vector. Path(s) to document file(s) (PDF, TXT, HTML, CSV, RTF)
+- `prompt`: Character. The prompt/instruction for the AI model
+- `model`: Character. Gemini model version ("1.5-flash", "2.0-flash", "2.5-flash")
+- `image_type`: Character. Image MIME type (default: "png")
+- `retry_503`: Integer. Retry attempts for HTTP 503 errors (default: 5)
+- `api_key`: Character. Gemini API key (uses GEMINI_API_KEY env var if NULL)
+- `outputSize`: Character. Output token limit: "small" (8K), "medium" (16K), "large" (32K), "huge" (131K)
+
+**Value**
+
+Character vector containing the AI-generated response(s).
+
+### process_large_pdf() 🆕
+
+Process large PDFs in chunks using AI for better handling of lengthy documents.
+
+**Usage**
+
+```r
+process_large_pdf(
+  file_path,
+  chunk_pages = 10,
+  ai_model = "2.0-flash",
+  prompt = "Extract and structure the text from this document",
+  api_key = NULL
+)
+```
+
+**Arguments**
+
+- `file_path`: Character string. Path to the PDF file
+- `chunk_pages`: Integer. Number of pages to process per chunk (default: 10)
+- `ai_model`: Character. Gemini model version to use
+- `prompt`: Character. Instruction for the AI model
+- `api_key`: Character. Gemini API key
+
+**Value**
+
+A named list with text extracted from all chunks, merged together.
 
 ## Examples
 
@@ -95,6 +176,44 @@ text_only <- pdf2txt_auto("paper.pdf", sections = FALSE)
 # Result is a list with only Full_text
 names(text_only)
 # [1] "Full_text"
+```
+
+### AI-Enhanced Import 🆕
+
+Use AI for complex or difficult PDFs:
+
+```{r ai_enhanced, eval=FALSE}
+# Set API key (if not in .Renviron)
+Sys.setenv(GEMINI_API_KEY = "your-api-key-here")
+
+# Basic AI-enhanced extraction
+doc_ai <- pdf2txt_auto(
+  "complex_paper.pdf",
+  n_columns = 2,
+  use_ai = TRUE,
+  ai_model = "2.0-flash"
+)
+
+# Process a large PDF in chunks
+large_doc <- process_large_pdf(
+  "long_paper.pdf",
+  chunk_pages = 10,
+  ai_model = "2.0-flash"
+)
+
+# Direct AI extraction with custom prompt
+result <- gemini_content_ai(
+  docs = "paper.pdf",
+  prompt = "Extract all section headings and their content from this paper",
+  outputSize = "large"
+)
+
+# Process multiple documents
+results <- gemini_content_ai(
+  docs = c("paper1.pdf", "paper2.pdf"),
+  prompt = "Summarize the main findings",
+  model = "2.0-flash"
+)
 ```
 
 ### Custom Section Keywords
