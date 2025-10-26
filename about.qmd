@@ -9,15 +9,19 @@ title: "About"
 ## Key Features
 
 ### PDF Processing
+- **AI-enhanced text extraction with Google Gemini** 🆕
 - Multi-column layout support (1, 2, or 3 columns)
 - Automatic section detection (Abstract, Introduction, Methods, Results, Discussion, etc.)
 - Structure preservation during text extraction
 - Handles complex academic paper layouts
+- Process large PDFs in chunks 🆕
 
 ### Citation Analysis
-- Detects multiple citation formats (narrative and parenthetical)
+- Detects multiple citation formats (narrative, parenthetical, and numeric) 🆕
+- **Enhanced numeric citation recognition** (`[1]`, `[1-3]`, `[1,5,7]`) 🆕
 - Extracts citation contexts with configurable window sizes
-- Automatic reference matching via CrossRef API
+- **Automatic reference matching via CrossRef and OpenAlex** 🆕
+- **Improved matching algorithms with confidence scoring** 🆕
 - Citation network visualization
 - Co-citation analysis
 
@@ -63,10 +67,13 @@ contentanalysis is built using:
 
 - **R**: Statistical computing environment
 - **pdftools**: PDF text extraction
+- **Google Gemini API**: AI-enhanced text processing 🆕
 - **rcrossref**: CrossRef API integration
+- **OpenAlex API**: Bibliographic metadata enrichment 🆕
 - **visNetwork**: Interactive network visualization
 - **quanteda**: Text analysis and natural language processing
 - **dplyr/tidyr**: Data manipulation
+- **httr2**: HTTP client for AI API communication 🆕
 
 ## Contributing
 
@@ -154,7 +161,16 @@ Special thanks to:
 
 ### Version 0.1.0 (Current)
 
-Initial release featuring:
+Recent updates (October 2025):
+
+- **AI-enhanced PDF extraction**: Integration with Google Gemini API for improved text extraction from complex layouts
+- **Improved citation matching**: Enhanced algorithms for matching citations to references
+- **OpenAlex integration**: Dual metadata enrichment from CrossRef and OpenAlex
+- **Better numeric citation recognition**: Improved handling of `[1]`, `[1-3]`, and `[1,5,7]` formats
+- **Enhanced author name matching**: Better handling of name variants and abbreviations
+- **Large PDF processing**: New function to process lengthy documents in chunks
+
+Initial release features:
 
 - PDF import with automatic section detection
 - Comprehensive citation analysis
@@ -183,15 +199,15 @@ R >= 4.0.0 is recommended.
 
 **Q: Can I analyze scanned PDFs?**
 
-No, the package requires text-based PDFs. Scanned documents need OCR processing first.
+The package primarily works with text-based PDFs. However, with the new AI-enhanced extraction feature (using Google Gemini), you may get better results with scanned or low-quality PDFs. For best results with scanned documents, use OCR processing first.
 
 **Q: Do I need a DOI for analysis?**
 
-No, but providing a DOI enables automatic reference matching via CrossRef, which significantly improves citation-reference linking.
+No, but providing a DOI enables automatic reference matching via CrossRef and OpenAlex, which significantly improves citation-reference linking accuracy.
 
 **Q: Is an internet connection required?**
 
-Only if you use the CrossRef integration features. Local analysis works offline.
+Only if you use the CrossRef/OpenAlex integration features or AI-enhanced extraction. Local analysis works offline.
 
 **Q: Can I analyze multiple papers at once?**
 
@@ -201,7 +217,7 @@ Yes! See the [Tutorial](tutorial.qmd) for batch processing examples.
 
 **Q: Why are some citations not detected?**
 
-Citation detection works best with standard formats (APA, MLA, Chicago). Non-standard or poorly formatted citations may be missed.
+Citation detection works best with standard formats (APA, MLA, Chicago, Vancouver). The package now includes improved numeric citation recognition. Non-standard or poorly formatted citations may still be missed.
 
 **Q: How accurate is the section detection?**
 
@@ -210,6 +226,18 @@ Very accurate for standard academic papers with clear section headers. Custom ke
 **Q: Can I customize the network visualization?**
 
 Yes, through the `max_distance`, `min_connections`, and `show_labels` parameters.
+
+**Q: How do I use the AI-enhanced extraction features?** 🆕
+
+Get a free API key from [Google AI Studio](https://aistudio.google.com/apikey) and set it as an environment variable:
+```r
+Sys.setenv(GEMINI_API_KEY = "your-api-key-here")
+```
+Then use `pdf2txt_auto()` with `use_ai = TRUE` or call `gemini_content_ai()` directly.
+
+**Q: Do I need to pay for the Gemini API?** 🆕
+
+Google offers a free tier for the Gemini API with generous limits. Check [Google AI Studio](https://aistudio.google.com/) for current pricing and limits.
 
 ## Support
 
@@ -222,13 +250,21 @@ For support:
 
 ## Roadmap
 
+Recent additions (October 2025):
+
+- ✅ AI-enhanced PDF extraction with Google Gemini
+- ✅ OpenAlex metadata integration
+- ✅ Improved numeric citation recognition
+- ✅ Enhanced citation matching algorithms
+- ✅ Large PDF chunk processing
+
 Planned features for future releases:
 
-- Enhanced PDF layout detection
+- Further enhanced PDF layout detection
 - Additional readability metrics
 - Support for more citation styles
 - Advanced network analysis metrics
-- Integration with bibliographic databases
+- Integration with additional bibliographic databases
 - Batch analysis reporting tools
 - Machine learning-based classification
 

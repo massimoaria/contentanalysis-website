@@ -14,6 +14,22 @@ if (!require("devtools")) install.packages("devtools")
 devtools::install_github("massimoaria/contentanalysis")
 ```
 
+::: {.callout-tip}
+## AI-Enhanced PDF Import (Optional)
+
+For improved text extraction from complex PDFs, you can enable AI support:
+
+1. Get a free API key from [Google AI Studio](https://aistudio.google.com/apikey)
+2. Set the environment variable:
+```{r, eval=FALSE}
+# In R
+Sys.setenv(GEMINI_API_KEY = "your-api-key-here")
+
+# Or in your .Renviron file
+GEMINI_API_KEY=your-api-key-here
+```
+:::
+
 Load the package:
 
 ```{r setup, message=FALSE}
@@ -53,7 +69,7 @@ Expected output:
 
 ### Step 3: Analyze the Content
 
-Perform comprehensive analysis with CrossRef integration:
+Perform comprehensive analysis with CrossRef and OpenAlex integration:
 
 ```{r analysis, eval=FALSE}
 analysis <- analyze_scientific_content(
@@ -67,9 +83,15 @@ analysis <- analyze_scientific_content(
 ```
 
 ::: {.callout-tip}
-## CrossRef Integration
+## Enhanced Metadata Integration 🆕
 
-Providing a DOI and email enables automatic reference matching through CrossRef. This significantly improves citation-reference matching accuracy.
+The package now automatically enriches references with metadata from **both CrossRef and OpenAlex**:
+
+- **CrossRef**: Retrieves structured reference data including authors, years, journals, and DOIs
+- **OpenAlex**: Fills gaps and provides comprehensive bibliographic information
+- **Improved matching**: Enhanced algorithms for connecting citations to references with confidence scoring
+
+This dual integration significantly improves citation-reference matching accuracy!
 :::
 
 ### Step 4: Explore the Results
@@ -190,6 +212,37 @@ readability_by_section <- lapply(sections, function(s) {
 names(readability_by_section) <- sections
 
 do.call(rbind, readability_by_section)
+```
+
+### Workflow 5: AI-Enhanced PDF Import 🆕
+
+For complex PDFs with difficult layouts, use AI-enhanced extraction:
+
+```{r workflow5, eval=FALSE}
+# Set your Gemini API key (if not in .Renviron)
+# Sys.setenv(GEMINI_API_KEY = "your-api-key-here")
+
+# Use AI-enhanced extraction for complex PDFs
+doc_enhanced <- pdf2txt_auto(
+  "complex_paper.pdf",
+  n_columns = 2,
+  use_ai = TRUE,           # Enable AI processing
+  ai_model = "2.0-flash"   # Use Gemini 2.0 Flash
+)
+
+# Process large PDFs in chunks
+large_doc <- process_large_pdf(
+  "large_paper.pdf",
+  chunk_pages = 10,        # Process 10 pages at a time
+  ai_model = "2.0-flash"
+)
+
+# Direct AI content analysis
+result <- gemini_content_ai(
+  docs = "paper.pdf",
+  prompt = "Extract and structure all citations from this document",
+  outputSize = "large"
+)
 ```
 
 ## Export Results

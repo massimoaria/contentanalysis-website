@@ -7,25 +7,34 @@ subtitle: "Comprehensive Tools for Scientific Content Analysis in R"
 
 **contentanalysis** is an R package that provides comprehensive tools for extracting and analyzing scientific content from PDF documents. It enables researchers to perform sophisticated content analysis, citation extraction, network visualization, and text mining on academic papers.
 
+::: {.callout-note}
+## 🆕 New: AI-Enhanced PDF Import
+
+The package now supports **AI-assisted PDF text extraction** through Google's Gemini API, enabling more accurate parsing of complex document layouts. To use this feature, obtain an API key from [Google AI Studio](https://aistudio.google.com/apikey).
+:::
+
 ## Key Features
 
 ::::::: grid
 ::: g-col-6
 ### 📄 PDF Processing
 
+-   **AI-enhanced text extraction** 🆕
 -   Multi-column PDF support
 -   Automatic section detection
 -   Structure preservation
--   Text extraction with layout awareness
+-   Complex layout handling
 :::
 
 ::: g-col-6
 ### 📚 Citation Analysis
 
 -   Multiple citation format detection
+-   **Enhanced numeric citation support** 🆕
+-   **Improved citation matching** 🆕
 -   Automatic reference matching
 -   Citation context extraction
--   CrossRef integration
+-   **CrossRef & OpenAlex integration** 🆕
 :::
 
 ::: g-col-6
@@ -105,17 +114,21 @@ attr(network, "stats")
 Import PDFs and automatically detect document structure:
 
 -   **pdf2txt_auto()**: Import with automatic section detection
+-   **AI-enhanced extraction with gemini_content_ai()** 🆕
 -   Supports single, double, and triple-column layouts
 -   Identifies Abstract, Introduction, Methods, Results, Discussion, etc.
+-   Handles complex layouts with Google Gemini AI support
 
 ### 2. Citation Analysis
 
 Extract and analyze citations:
 
 -   **analyze_scientific_content()**: Comprehensive content analysis
--   Detects narrative and parenthetical citations
--   Matches citations to references
+-   Detects narrative, parenthetical, and numeric citations
+-   **Enhanced matching algorithms** with confidence scoring 🆕
+-   Matches citations to references with high accuracy
 -   Extracts citation contexts
+-   **Integrated OpenAlex metadata enrichment** 🆕
 
 ### 3. Network Visualization
 

@@ -25,6 +25,20 @@ library(ggplot2)
 library(tidyr)
 ```
 
+::: {.callout-tip}
+## Optional: Setup AI-Enhanced Features 🆕
+
+For improved PDF extraction with complex layouts:
+
+```{r setup_ai, eval=FALSE}
+# Get API key from https://aistudio.google.com/apikey
+Sys.setenv(GEMINI_API_KEY = "your-api-key-here")
+
+# Or add to .Renviron file:
+# GEMINI_API_KEY=your-api-key-here
+```
+:::
+
 ## Step 1: Obtain Sample Paper
 
 We'll use an open-access paper on Machine Learning:
@@ -95,7 +109,7 @@ ggplot(section_df, aes(x = reorder(section, words), y = words, fill = section)) 
 ### Main Analysis
 
 ```{r analysis, eval=FALSE}
-# Perform comprehensive analysis
+# Perform comprehensive analysis with enhanced metadata integration
 analysis <- analyze_scientific_content(
   text = doc,
   doi = "10.1016/j.mlwa.2021.100094",  # Paper's DOI
@@ -109,6 +123,17 @@ analysis <- analyze_scientific_content(
 # View summary
 print(analysis$summary)
 ```
+
+::: {.callout-note}
+## 🆕 Enhanced Features
+
+The analysis now includes:
+
+- **Dual metadata integration**: Automatically retrieves references from both CrossRef and OpenAlex
+- **Improved citation matching**: Better handling of numeric citations (`[1]`, `[1-3]`) and author-year formats
+- **Enhanced confidence scoring**: More granular assessment of match quality
+- **Better author name handling**: Resolves variants like "Smith, J." vs "Smith, John"
+:::
 
 ### Interpret Summary Statistics
 
